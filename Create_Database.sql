@@ -60,3 +60,12 @@ create table tblControl_History(
     result varchar(10) not null CHECK (result IN ('ON','OFF','ERROR')) /* lưu kết quả của lệnh*/,
     control_time DATETIME DEFAULT GETDATE()
 )
+
+create table tblSchedule(
+    schedul_id int identity(1,1) primary key,
+    switch_id varchar(20) references tblSwitch(switch_id) not null,
+    user_id varchar(20) references tblUser(user_id) not null,
+    action varchar(3) not null check(action in ('ON','OFF')),
+    run_time time not null,
+    is_enabled bit default 1
+)
