@@ -8,7 +8,7 @@
 const char* ssid = "HALLO HOLLA";
 const char* password = "hihihihi";
 
-const char* mdnsName = "esp32-switch";
+const char* mdnsName = "esp32-switch1";
 
 // =======================
 // PIN
