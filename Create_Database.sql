@@ -30,8 +30,8 @@ create table tblESP32_Device(
     name nvarchar(50) not null,
     host_name varchar(255) not null,
     status VARCHAR(10) DEFAULT 'OFFLINE' CHECK (status IN ('ONLINE', 'OFFLINE', 'ERROR')), /* 3 trạng thái thiết bị*/
-    last_seen DATETIME 
-
+    last_seen DATETIME,
+    is_active bit DEFAULT 1
 )
 
 create table tblSwitch(
@@ -39,7 +39,8 @@ create table tblSwitch(
     device_id varchar(20) references tblESP32_Device(device_id) not null,
     switch_name nvarchar(50) not null,
     gpio_pin TINYINT not null,
-    status varchar(6) default 'OFF' check(status in('ON','OFF'))
+    status varchar(6) default 'OFF' check(status in('ON','OFF')),
+    is_active bit DEFAULT 1
 )
 
 create table tblDevice_Permission(
@@ -49,7 +50,8 @@ create table tblDevice_Permission(
     canView bit default 1,
     canControl bit default 1,
     granted_by varchar(20) references tblUser(user_id),
-    UNIQUE (user_id, switch_id)
+    UNIQUE (user_id, switch_id),
+    is_active bit DEFAULT 1
     )
 /* lưu lịch sử truy cập thiết bị*/
 create table tblControl_History(
@@ -67,5 +69,6 @@ create table tblSchedule(
     user_id varchar(20) references tblUser(user_id) not null,
     action varchar(3) not null check(action in ('ON','OFF')),
     run_time time not null,
-    is_enabled bit default 1
+    is_enabled bit default 1,
+    is_active bit DEFAULT 1
 )
