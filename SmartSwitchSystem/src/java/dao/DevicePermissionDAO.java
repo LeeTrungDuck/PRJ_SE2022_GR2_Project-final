@@ -19,7 +19,7 @@ import java.util.List;
 public class DevicePermissionDAO {
     private Connection connection;
 
-    private static final String SELECT = "SELECT permission_id, user_id, switch_id, canView, canControl, granted_by FROM tblDevice_Permission";
+    private static final String SELECT = "SELECT permission_id, user_id, switch_id, canView, canControl, granted_by, is_active FROM tblDevice_Permission";
 
     public DevicePermissionDAO(Connection connection) {
         this.connection = connection;
@@ -33,11 +33,12 @@ public class DevicePermissionDAO {
         p.setCanView(rs.getBoolean("canView"));
         p.setCanControl(rs.getBoolean("canControl"));
         p.setGrantedBy(rs.getString("granted_by"));
+        p.setActive(rs.getBoolean("is_active"));
         return p;
     }
 
     public DevicePermissionDTO findById(int id) {
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE permission_id = ?")) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE permission_id = ? AND is_active = 1")) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -51,11 +52,11 @@ public class DevicePermissionDAO {
     }
 
     public List<DevicePermissionDTO> findByUserId(String userId) {
-        return query(SELECT + " WHERE user_id = ?", userId);
+        return query(SELECT + " WHERE user_id = ? AND is_active = 1", userId);
     }
 
     public List<DevicePermissionDTO> findBySwitchId(String switchId) {
-        return query(SELECT + " WHERE switch_id = ?", switchId);
+        return query(SELECT + " WHERE switch_id = ? AND is_active = 1", switchId);
     }
 
     private List<DevicePermissionDTO> query(String sql, String param) {
@@ -74,13 +75,14 @@ public class DevicePermissionDAO {
     }
 
     public boolean insert(DevicePermissionDTO permission) {
-        String sql = "INSERT INTO tblDevice_Permission(user_id, switch_id, canView, canControl, granted_by) VALUES(?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tblDevice_Permission(user_id, switch_id, canView, canControl, granted_by, is_active) VALUES(?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, permission.getUserId());
             ps.setString(2, permission.getSwitchId());
             ps.setBoolean(3, permission.isCanView());
             ps.setBoolean(4, permission.isCanControl());
             ps.setString(5, permission.getGrantedBy());
+            ps.setBoolean(6, permission.isActive());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -89,14 +91,15 @@ public class DevicePermissionDAO {
     }
 
     public boolean update(DevicePermissionDTO permission) {
-        String sql = "UPDATE tblDevice_Permission SET user_id = ?, switch_id = ?, canView = ?, canControl = ?, granted_by = ? WHERE permission_id = ?";
+        String sql = "UPDATE tblDevice_Permission SET user_id = ?, switch_id = ?, canView = ?, canControl = ?, granted_by = ?, is_active = ? WHERE permission_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, permission.getUserId());
             ps.setString(2, permission.getSwitchId());
             ps.setBoolean(3, permission.isCanView());
             ps.setBoolean(4, permission.isCanControl());
             ps.setString(5, permission.getGrantedBy());
-            ps.setInt(6, permission.getPermissionId());
+            ps.setBoolean(6, permission.isActive());
+            ps.setInt(7, permission.getPermissionId());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,7 +108,7 @@ public class DevicePermissionDAO {
     }
 
     public boolean delete(int id) {
-        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM tblDevice_Permission WHERE permission_id = ?")) {
+        try (PreparedStatement ps = connection.prepareStatement("UPDATE tblDevice_Permission SET is_active = 0 WHERE permission_id = ?")) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

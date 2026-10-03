@@ -15,17 +15,19 @@ public class DevicePermissionDTO {
     private boolean canView;
     private boolean canControl;
     private String grantedBy;
+    private boolean isActive;
 
     public DevicePermissionDTO() {
     }
 
-    public DevicePermissionDTO(int permissionId, String userId, String switchId, boolean canView, boolean canControl, String grantedBy) {
+    public DevicePermissionDTO(int permissionId, String userId, String switchId, boolean canView, boolean canControl, String grantedBy, boolean isActive) {
         this.permissionId = permissionId;
         this.userId = userId;
         this.switchId = switchId;
         this.canView = canView;
         this.canControl = canControl;
         this.grantedBy = grantedBy;
+        this.isActive = isActive;
     }
 
     public int getPermissionId() { return permissionId; }
@@ -40,4 +42,6 @@ public class DevicePermissionDTO {
     public void setCanControl(boolean canControl) { this.canControl = canControl; }
     public String getGrantedBy() { return grantedBy; }
     public void setGrantedBy(String grantedBy) { this.grantedBy = grantedBy; }
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean isActive) { this.isActive = isActive; }
 }
