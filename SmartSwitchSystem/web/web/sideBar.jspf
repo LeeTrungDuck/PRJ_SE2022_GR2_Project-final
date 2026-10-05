@@ -1,0 +1,79 @@
+<%@ page pageEncoding="UTF-8" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/sideBarCss.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<div class="sidebar">
+    <!-- 1. Header (Logo & Status) -->
+    <!-- 2. Menu Navigation (Dùng nav-pills nav-stacked của Bootstrap 3) -->
+    <div class="sidebar-menu">
+        <!-- Nhóm 1 -->
+        <div class="menu-group">
+            <div class="menu-title">ĐIỀU KHIỂN & GIÁM SÁT</div>
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active">
+                    <a href="${pageContext.request.contextPath}/switch">
+                        <i class="fa-solid fa-sliders"></i> <span>Điều Khiển Switch</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/devices">
+                        <i class="fa-solid fa-gear"></i> <span>Quản Lý Thiết Bị & GPIO</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/history">
+                        <i class="fa-solid fa-clock-rotate-left"></i> <span>Lịch Sử Điều Khiển</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nhóm 2 -->
+        <div class="menu-group">
+            <div class="menu-title">CẤU HÌNH & BẢO MẬT</div>
+            <ul class="nav nav-pills nav-stacked">
+                <li>
+                    <a href="${pageContext.request.contextPath}/permissions">
+                        <i class="fa-solid fa-shield-halved"></i> <span>Phân Quyền Viewer</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/users">
+                        <i class="fa-solid fa-users"></i> <span>Quản Lý Tài Khoản</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/schedule">
+                        <i class="fa-solid fa-calendar-days"></i> <span>Lịch Hẹn Giờ</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Nhóm 3 -->
+        <div class="menu-group">
+            <div class="menu-title">HỆ THỐNG</div>
+            <ul class="nav nav-pills nav-stacked">
+                <li>
+                    <a href="${pageContext.request.contextPath}/profile">
+                        <i class="fa-solid fa-id-card"></i> <span>Thông Tin Tài Khoản</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 3. Footer (Thông tin User & Logout) -->
+    <div class="sidebar-footer clearfix">
+        <div class="pull-left media user-media">
+            <div class="media-body media-middle">
+                <h5 class="media-heading user-name">Nguyễn Văn An</h5>
+                <span class="user-role">ADMINISTRATOR</span>
+            </div>
+        </div>
+        <div class="pull-right logout-box">
+            <a href="${pageContext.request.contextPath}/web/login.jsp" class="logout-btn" title="Đăng xuất">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+    </div>
+</div>

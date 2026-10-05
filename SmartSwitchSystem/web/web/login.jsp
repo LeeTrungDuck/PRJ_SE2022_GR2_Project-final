@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="login-form">
-                <form class="form-horizontal" action="web/DeviceControl.jsp"> <!-- sau nay doi thanh LOGIN --> 
+                <form class="form-horizontal" action="${pageContext.request.contextPath}/web/deviceControl.jsp" method="post"> <!-- sau nay doi thanh "LOGIN" --> 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="user">User</label>
                         <div class="col-sm-10">

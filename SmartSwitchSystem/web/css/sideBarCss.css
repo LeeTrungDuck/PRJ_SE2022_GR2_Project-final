@@ -1,0 +1,165 @@
+
+/* --- Khung Sidebar chính --- */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background-color: #0b1329;
+    color: #94a3b8;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* --- Header --- */
+.sidebar-header {
+    margin-bottom: 15px;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    background-color: #1e293b;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 36px;
+    color: #3b82f6;
+    font-size: 16px;
+}
+
+.brand-title {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 0 2px 0;
+}
+
+.brand-subtitle {
+    color: #64748b;
+    font-size: 10px;
+    display: block;
+}
+
+.status-container {
+    margin-top: 10px;
+}
+
+.status-badge {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #10b981;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+
+/* --- Menu & Navigation --- */
+.sidebar-menu {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.menu-group {
+    margin-bottom: 15px;
+    
+}
+
+.menu-title {
+    color: #475569;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    padding-left: 10px;
+}
+
+/* Ghi đè class nav-pills của Bootstrap 3 */
+.sidebar .nav-pills > li > a {
+    color: #94a3b8;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: white;
+
+}
+
+.sidebar .nav-pills > li > a i {
+    width: 20px;
+    text-align: center;
+    margin-right: 8px;
+    color: white;
+    font-size:14px;
+}
+
+.sidebar .nav-pills > li > a:hover,
+.sidebar .nav-pills > li > a:focus {
+    font-size:16px;
+}
+.sidebar .nav-pills > li {
+    margin-bottom: 15px;
+    background-color: #2563eb;
+    padding:10px;
+    height: 15px;
+    border-radius: 5px;
+
+}
+
+/* --- Footer User --- */
+.sidebar-footer {
+    padding-top: 12px;
+    border-top: 1px solid #1e293b;
+}
+.user-name {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.user-role {
+    color: #64748b;
+    font-size: 10px;
+    display: block;
+}
+
+.logout-box {
+    line-height: 32px;
+}
+
+.logout-btn {
+    color: #64748b;
+    font-size: 16px;
+}
+
+.logout-btn:hover {
+    color: #ef4444;
+}
+.sidebar{
+    background-color: #0b1226;
+    font-size: 16px}
+.sidebar .nav-pills {
+    list-style: none; /* Bỏ dấu chấm đầu dòng */
+    padding-left: 0;  /* Xóa khoảng thụt lề mặc định của thẻ ul */
+    margin: 0;
+}
+
+.clearfix{
+    display: flex;
+    justify-content: space-between;
+}
