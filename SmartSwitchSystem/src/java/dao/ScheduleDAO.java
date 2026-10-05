@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import utills.DBConnection;
 
 /**
  *
@@ -23,8 +24,8 @@ public class ScheduleDAO {
 
     private static final String SELECT = "SELECT schedul_id, switch_id, user_id, action, run_time, is_enabled FROM tblSchedule";
 
-    public ScheduleDAO(Connection connection) {
-        this.connection = connection;
+    public ScheduleDAO() throws SQLException {
+        this.connection = DBConnection.getConnection();
     }
 
     private ScheduleDTO map(ResultSet rs) throws SQLException {

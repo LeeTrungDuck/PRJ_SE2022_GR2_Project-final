@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import utills.DBConnection;
 
 /**
  *
@@ -22,8 +23,8 @@ public class UserDAO {
 
     private static final String SELECT = "SELECT user_id, user_name, password, full_name, role, is_active FROM tblUser";
 
-    public UserDAO(Connection connection) {
-        this.connection = connection;
+    public UserDAO() throws SQLException {
+        this.connection = DBConnection.getConnection();
     }
 
     private UserDTO map(ResultSet rs) throws SQLException {
@@ -117,5 +118,9 @@ public class UserDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public UserDTO checkLogin(String userName, String passWord) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

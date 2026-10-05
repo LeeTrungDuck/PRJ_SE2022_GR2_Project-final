@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import utills.DBConnection;
 
 /**
  *
@@ -21,8 +22,8 @@ public class DevicePermissionDAO {
 
     private static final String SELECT = "SELECT permission_id, user_id, switch_id, canView, canControl, granted_by FROM tblDevice_Permission";
 
-    public DevicePermissionDAO(Connection connection) {
-        this.connection = connection;
+    public DevicePermissionDAO() throws SQLException {
+        this.connection = DBConnection.getConnection();
     }
 
     private DevicePermissionDTO map(ResultSet rs) throws SQLException {

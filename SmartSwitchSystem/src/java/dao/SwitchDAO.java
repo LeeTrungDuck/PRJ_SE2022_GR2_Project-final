@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import utills.DBConnection;
 
 /**
  *
@@ -22,8 +23,8 @@ public class SwitchDAO {
 
     private static final String SELECT = "SELECT switch_id, device_id, switch_name, gpio_pin, status FROM tblSwitch";
 
-    public SwitchDAO(Connection connection) {
-        this.connection = connection;
+    public SwitchDAO() throws SQLException {
+        this.connection = DBConnection.getConnection();
     }
 
     private SwitchDTO map(ResultSet rs) throws SQLException {

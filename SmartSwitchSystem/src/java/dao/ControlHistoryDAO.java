@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import utills.DBConnection;
 
 /**
  *
@@ -24,8 +25,8 @@ public class ControlHistoryDAO {
 
     private static final String SELECT = "SELECT history_id, user_id, switch_id, command, result, control_time FROM tblControl_History";
 
-    public ControlHistoryDAO(Connection connection) {
-        this.connection = connection;
+    public ControlHistoryDAO() throws SQLException {
+        this.connection = DBConnection.getConnection();
     }
 
     private ControlHistoryDTO map(ResultSet rs) throws SQLException {

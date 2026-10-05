@@ -1,0 +1,44 @@
+.logo {
+    max-width:100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center ;
+
+}
+.login-card{
+    max-width: 30%;
+    background-color: rgba(128, 128, 128, 0.5);
+    padding: 30px;
+    color: white;
+}
+.logo_img {
+    max-width: 80%;
+    height: auto;
+    border-radius: 10px;
+}
+.login-form{
+    width: 70%;
+    background-color: rgba(128, 128, 128, 0.3);
+    padding: 30px;
+}
+.page{
+    display: flex;
+    width: 80%;
+    border-radius: 20px;
+    overflow: hidden;
+}
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* Phủ kín 100% chiều cao khung hình */
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center;     /* Căn giữa theo chiều dọc */
+    background-color: #0b1226; /* Màu nền nhẹ (tùy chọn) */
+}
+
+.submit-btn{
+    background-color: #2563eb;
+    color: white;
+    font-size: 20px; 
+}

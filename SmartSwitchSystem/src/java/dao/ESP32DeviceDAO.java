@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import utills.DBConnection;
 
 /**
  *
@@ -23,8 +24,8 @@ public class ESP32DeviceDAO {
 
     private static final String SELECT = "SELECT device_id, name, host_name, status, last_seen FROM tblESP32_Device";
 
-    public ESP32DeviceDAO(Connection connection) {
-        this.connection = connection;
+    public ESP32DeviceDAO() throws SQLException {
+        this.connection = DBConnection.getConnection();
     }
 
     private ESP32DeviceDTO map(ResultSet rs) throws SQLException {
