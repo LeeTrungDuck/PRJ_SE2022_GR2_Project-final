@@ -1,48 +1,19 @@
 <%-- 
-    Document   : DeviceControl
-    Created on : Oct 5, 2026, 6:22:16 PM
+    Document   : test
+    Created on : Oct 5, 2026, 8:19:09 PM
     Author     : ltrun
 --%>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Device Control Page</title>
-
-        <style>
-            .main-content {
-                margin-left: 260px;
-                padding: 20px;
-                min-height: 100vh;
-                background-color: #0b1329; /* Màu nền xuyệt tông với sidebar */
-                color: #ffffff;
-            }
-        </style>
+        <title>JSP Page</title>
+        <%@include file="includeFile.jspf" %>
     </head>
     <body>
-        <%@ include file="sideBar.jspf" %>
-        <div class="main-content container-fluid">
-            <h2>Bảng Điều Khiển Công Tắc</h2>
-            <hr>
-            <div class="row">
-                <c:choose>
-                    <%-- Trường hợp 1: Danh sách rỗng hoặc null --%>
-                    <c:when test="${empty requestScope.ds}">
-                        <div class="col-xs-12">
-                            <div class="alert alert-info text-center">
-                                <i class="fa-solid fa-circle-info"></i> Không có thiết bị nào.
-                            </div>
-                        </div>
-                    </c:when>
-
-                    <%-- Trường hợp 2: Có dữ liệu -> Tạo card cho mỗi phần tử --%>
-                    <c:otherwise>
-                        <c:forEach var="i" items="${requestScope.ds}">
-                            <%-- Chia cột: 1 cột trên điện thoại (col-xs-12), 2 cột trên máy tính bảng (col-sm-6), 3 cột trên PC (col-md-4) --%>
-                            <div class="col-xs-12 col-sm-6 col-md-4" style="margin-bottom: 20px;">
+        <div class="col-xs-12 col-sm-6 col-md-4" style="margin-bottom: 20px;">
                                 <div class="device-card">
 
                                     <!-- Header Card: ID & Nút Xóa -->
@@ -81,10 +52,5 @@
 
                                 </div>
                             </div>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-        </div>
     </body>
 </html>

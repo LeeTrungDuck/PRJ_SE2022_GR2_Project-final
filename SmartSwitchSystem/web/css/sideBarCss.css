@@ -3,7 +3,6 @@
 .sidebar {
     width: 260px;
     height: 100vh;
-    background-color: #0b1329;
     color: #94a3b8;
     position: fixed;
     top: 0;
@@ -13,6 +12,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    background-color: rgba(27,32,58,0.8);
+    font-size: 16px
 }
 
 /* --- Header --- */
@@ -110,10 +111,10 @@
 .sidebar .nav-pills > li > a:hover,
 .sidebar .nav-pills > li > a:focus {
     font-size:16px;
+    background-color: #2563eb;
 }
 .sidebar .nav-pills > li {
     margin-bottom: 15px;
-    background-color: #2563eb;
     padding:10px;
     height: 15px;
     border-radius: 5px;
@@ -150,12 +151,10 @@
 .logout-btn:hover {
     color: #ef4444;
 }
-.sidebar{
-    background-color: #0b1226;
-    font-size: 16px}
+
 .sidebar .nav-pills {
-    list-style: none; /* Bỏ dấu chấm đầu dòng */
-    padding-left: 0;  /* Xóa khoảng thụt lề mặc định của thẻ ul */
+    list-style: none; 
+    padding-left: 0; 
     margin: 0;
 }
 
