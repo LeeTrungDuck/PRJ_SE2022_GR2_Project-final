@@ -17,16 +17,18 @@ public class ESP32DeviceDTO {
     private String hostName;
     private DeviceStatus status;
     private LocalDateTime lastSeen;
+    private boolean isActive;
 
     public ESP32DeviceDTO() {
     }
 
-    public ESP32DeviceDTO(String deviceId, String name, String hostName, DeviceStatus status, LocalDateTime lastSeen) {
+    public ESP32DeviceDTO(String deviceId, String name, String hostName, DeviceStatus status, LocalDateTime lastSeen, boolean isActive) {
         this.deviceId = deviceId;
         this.name = name;
         this.hostName = hostName;
         this.status = status;
         this.lastSeen = lastSeen;
+        this.isActive = isActive;
     }
 
     public String getDeviceId() { return deviceId; }
@@ -39,4 +41,6 @@ public class ESP32DeviceDTO {
     public void setStatus(DeviceStatus status) { this.status = status; }
     public LocalDateTime getLastSeen() { return lastSeen; }
     public void setLastSeen(LocalDateTime lastSeen) { this.lastSeen = lastSeen; }
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean isActive) { this.isActive = isActive; }
 }

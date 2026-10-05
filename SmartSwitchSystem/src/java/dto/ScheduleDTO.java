@@ -18,17 +18,19 @@ public class ScheduleDTO {
     private ScheduleAction action;
     private LocalTime runTime;
     private boolean isEnabled;
+    private boolean isActive;
 
     public ScheduleDTO() {
     }
 
-    public ScheduleDTO(int scheduleId, String switchId, String userId, ScheduleAction action, LocalTime runTime, boolean isEnabled) {
+    public ScheduleDTO(int scheduleId, String switchId, String userId, ScheduleAction action, LocalTime runTime, boolean isEnabled, boolean isActive) {
         this.scheduleId = scheduleId;
         this.switchId = switchId;
         this.userId = userId;
         this.action = action;
         this.runTime = runTime;
         this.isEnabled = isEnabled;
+        this.isActive = isActive;
     }
 
     public int getScheduleId() { return scheduleId; }
@@ -43,4 +45,6 @@ public class ScheduleDTO {
     public void setRunTime(LocalTime runTime) { this.runTime = runTime; }
     public boolean isEnabled() { return isEnabled; }
     public void setEnabled(boolean isEnabled) { this.isEnabled = isEnabled; }
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean isActive) { this.isActive = isActive; }
 }

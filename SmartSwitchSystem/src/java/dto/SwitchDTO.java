@@ -16,16 +16,18 @@ public class SwitchDTO {
     private String switchName;
     private int gpioPin;
     private SwitchStatus status;
+    private boolean isActive;
 
     public SwitchDTO() {
     }
 
-    public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status) {
+    public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status, boolean isActive) {
         this.switchId = switchId;
         this.deviceId = deviceId;
         this.switchName = switchName;
         this.gpioPin = gpioPin;
         this.status = status;
+        this.isActive = isActive;
     }
 
     public String getSwitchId() { return switchId; }
@@ -38,4 +40,6 @@ public class SwitchDTO {
     public void setGpioPin(int gpioPin) { this.gpioPin = gpioPin; }
     public SwitchStatus getStatus() { return status; }
     public void setStatus(SwitchStatus status) { this.status = status; }
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean isActive) { this.isActive = isActive; }
 }
