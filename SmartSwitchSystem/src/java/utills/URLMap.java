@@ -14,13 +14,13 @@ import java.util.Map;
 public class URLMap {
 
     private static final String LOGIN_PAGE = "web/login.jsp";
-    private static final String ERROR_PAGE = "error.jsp"; // sau nay them
+    private static final String ERROR_PAGE = "web/errorPage.jsp";
     private final Map<String, String> urlMap = new HashMap<>();
 
 
     public URLMap() {
         urlMap.put("LOGIN", "LoginController");
-        urlMap.put("DEVICE_CONTROL","web/DeviceControl.jsp" ); // sua thanh controller sau
+        urlMap.put("DEVICE_CONTROL","web/deviceControl.jsp" ); // sua thanh controller sau
     }
     
     public String getUrl(String action){

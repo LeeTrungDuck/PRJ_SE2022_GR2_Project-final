@@ -27,6 +27,7 @@ public class LoginController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String success = new URLMap().getUrl("DEVICE_CONTROL");
+        String error = URLMap.getERROR_PAGE();;
         String url = URLMap.getLOGIN_PAGE();
         try{
             String userName = (String)request.getAttribute("userName");
@@ -37,9 +38,9 @@ public class LoginController extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("LOGIN_USER",dto);
                 url = success;
+            }else{
+                url = error;
             }
-            
-            
         }catch(SQLException e){
             log("Error at LoginController: " + e.toString());
             request.setAttribute("ERROR", "Database connect error, please try again!");

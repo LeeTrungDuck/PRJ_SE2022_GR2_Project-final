@@ -27,14 +27,14 @@
             </div>
 
             <div class="login-form">
-                <form action="${pageContext.request.contextPath}/web/deviceControl.jsp" method="post">
+                <form action="${pageContext.request.contextPath}/MainController?action=DEVICE_CONTROL" method="post">
                     <div class="form-group">
                         <label for="userName">USER NAME</label>
-                        <input type="userName" class="form-control userName" id="userName">
+                        <input type="userName" class="form-control userName" id="userName" name="userName">
                     </div>
                     <div class="form-group">
                         <label for="passWord">Password</label>
-                        <input type="password" class="form-control password" id="passWord">
+                        <input type="password" class="form-control password" id="passWord" name="passWord">
                     </div>
                     <button type="submit" class="btn btn-default submit-btn">ĐĂNG NHẬP VÀO HỆ THỐNG <span>&rarr;</span></button>
                 </form> 

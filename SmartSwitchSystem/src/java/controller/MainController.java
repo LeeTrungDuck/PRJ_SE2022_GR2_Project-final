@@ -36,6 +36,9 @@ map de luu hanh dong, key la hanh dong - cai sau la ten cua controller trong web
                 url = URLMap.getLOGIN_PAGE();
             }else{
                 url = new URLMap().getUrl(action);
+                if (url == null || url.trim().isEmpty()) {
+                    url = URLMap.getERROR_PAGE();
+                }
             }
         }catch(Exception e){
             log("Error at MainController: " + e.toString());
