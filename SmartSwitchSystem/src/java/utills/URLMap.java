@@ -24,6 +24,9 @@ public class URLMap {
         urlMap.put("USER_MANAGER", "web/UserManager.jsp");
         urlMap.put("PERMISSION_MANAGER", "web/PermissionManager.jsp");
         urlMap.put("ACCOUNT_MANAGER", "web/AccountManager.jsp");
+        urlMap.put("DEVICE_MANAGER", "web/DeviceManager.jsp");
+        urlMap.put("SCHEDULE_MANAGER", "web/ScheduleManager.jsp");
+        urlMap.put("CONTROL_HISTORY", "web/ControlHistory.jsp");
     }
     
     public String getUrl(String action){

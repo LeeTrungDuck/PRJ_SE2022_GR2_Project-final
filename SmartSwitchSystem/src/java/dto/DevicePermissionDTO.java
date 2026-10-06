@@ -9,6 +9,7 @@ package dto;
  * @author ADMIN
  */
 public class DevicePermissionDTO {
+
     private int permissionId;
     private String userId;
     private String switchId;
@@ -30,18 +31,59 @@ public class DevicePermissionDTO {
         this.isActive = isActive;
     }
 
-    public int getPermissionId() { return permissionId; }
-    public void setPermissionId(int permissionId) { this.permissionId = permissionId; }
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-    public String getSwitchId() { return switchId; }
-    public void setSwitchId(String switchId) { this.switchId = switchId; }
-    public boolean isCanView() { return canView; }
-    public void setCanView(boolean canView) { this.canView = canView; }
-    public boolean isCanControl() { return canControl; }
-    public void setCanControl(boolean canControl) { this.canControl = canControl; }
-    public String getGrantedBy() { return grantedBy; }
-    public void setGrantedBy(String grantedBy) { this.grantedBy = grantedBy; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean isActive) { this.isActive = isActive; }
+    public int getPermissionId() {
+        return permissionId;
+    }
+
+    public void setPermissionId(int permissionId) {
+        this.permissionId = permissionId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getSwitchId() {
+        return switchId;
+    }
+
+    public void setSwitchId(String switchId) {
+        this.switchId = switchId;
+    }
+
+    public boolean isCanView() {
+        return canView;
+    }
+
+    public void setCanView(boolean canView) {
+        this.canView = canView;
+    }
+
+    public boolean isCanControl() {
+        return canControl;
+    }
+
+    public void setCanControl(boolean canControl) {
+        this.canControl = canControl;
+    }
+
+    public String getGrantedBy() {
+        return grantedBy;
+    }
+
+    public void setGrantedBy(String grantedBy) {
+        this.grantedBy = grantedBy;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
 }
