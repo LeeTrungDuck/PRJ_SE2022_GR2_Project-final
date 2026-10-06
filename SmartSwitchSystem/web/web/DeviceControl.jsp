@@ -5,86 +5,72 @@
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<c:set var="activePage" value="DEVICE_CONTROL" scope="request" />
 <!DOCTYPE html>
-<html>
+<html lang="vi">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Device Control Page</title>
-
-        <style>
-            .main-content {
-                margin-left: 260px;
-                padding: 20px;
-                min-height: 100vh;
-                background-color: #0b1329; /* Màu nền xuyệt tông với sidebar */
-                color: #ffffff;
-            }
-        </style>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Điều khiển công tắc | ESP32 IoT Hub</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/userManagerCss.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/deviceControlcss.css?v=20261006-dashboard">
     </head>
-    <body>
+    <body class="user-manager-page device-control-page">
         <%@ include file="sideBar.jspf" %>
-        <div class="main-content container-fluid">
-            <h2>Bảng Điều Khiển Công Tắc</h2>
-            <hr>
-            <div class="row">
-                <c:choose>
-                    <%-- Trường hợp 1: Danh sách rỗng hoặc null --%>
-                    <c:when test="${empty requestScope.ds}">
-                        <div class="col-xs-12">
-                            <div class="alert alert-info text-center">
-                                <i class="fa-solid fa-circle-info"></i> Không có thiết bị nào.
-                            </div>
-                        </div>
-                    </c:when>
-
-                    <%-- Trường hợp 2: Có dữ liệu -> Tạo card cho mỗi phần tử --%>
-                    <c:otherwise>
-                        <c:forEach var="i" items="${requestScope.ds}">
-                            <%-- Chia cột: 1 cột trên điện thoại (col-xs-12), 2 cột trên máy tính bảng (col-sm-6), 3 cột trên PC (col-md-4) --%>
-                            <div class="col-xs-12 col-sm-6 col-md-4" style="margin-bottom: 20px;">
-                                <div class="device-card">
-
-                                    <!-- Header Card: ID & Nút Xóa -->
-                                    <div class="card-header-row">
-                                        <span class="badge-gpio">ID: ${i.id}</span>
-                                        <a href="${pageContext.request.contextPath}/DeleteTypeController?id=${i.id}" 
-                                           class="btn-delete" 
-                                           title="Xóa thiết bị"
-                                           onclick="return confirm('Bạn có chắc chắn muốn xóa thiết bị này?');">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </a>
-                                    </div>
-
-                                    <!-- Body Card: Tên thiết bị -->
-                                    <div class="card-body-row">
-                                        <div class="device-icon">
-                                            <i class="fa-solid fa-microchip"></i>
-                                        </div>
-                                        <div class="device-meta">
-                                            <h4 class="device-title">${i.name}</h4>
-                                            <span class="device-mode">CONNECTED</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Footer Card: Trạng thái & Thao tác -->
-                                    <div class="card-footer-row">
-                                        <div class="status-box">
-                                            <span class="status-label">TRẠNG THÁI</span>
-                                            <span class="status-text text-on">ACTIVE</span>
-                                        </div>
-                                        <label class="switch-toggle">
-                                            <input type="checkbox" checked>
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
+        <header class="um-topbar">
+            <span class="um-section-label">ĐIỀU KHIỂN &amp; GIÁM SÁT</span>
+            <div class="um-topbar-user">
+                <span class="dc-topbar-role">Vai trò: <span class="um-admin-tag">Admin</span></span>
+                <span class="um-profile-icon" aria-label="Giao diện quản trị viên"><i class="fa-regular fa-user" aria-hidden="true"></i></span>
             </div>
-        </div>
+        </header>
+        <main class="um-main dc-main" id="main-content">
+            <header class="dc-page-heading">
+                <h1 id="dc-title">Bảng Điều Khiển Công Tắc</h1>
+                <p>Theo dõi thiết bị và thao tác với các công tắc trong hệ thống ESP32.</p>
+            </header>
+            <c:choose>
+                <c:when test="${empty requestScope.ds}">
+                    <section class="dc-empty-state" aria-labelledby="dc-empty-title">
+                        <span class="dc-empty-icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></span>
+                        <h2 id="dc-empty-title">Không có thiết bị nào.</h2>
+                        <p>Các công tắc sẽ hiển thị tại đây khi danh sách thiết bị được tải.</p>
+                    </section>
+                </c:when>
+                <c:otherwise>
+                    <section class="dc-device-grid" aria-label="Danh sách thiết bị và công tắc">
+                        <c:forEach var="i" items="${requestScope.ds}">
+                            <article class="device-card">
+                                <div class="card-header-row">
+                                    <span class="badge-gpio">ID: <c:out value="${i.id}" /></span>
+                                    <c:url var="dcDeleteUrl" value="/DeleteTypeController"><c:param name="id" value="${i.id}" /></c:url>
+                                    <a href="<c:out value='${dcDeleteUrl}' />" class="btn-delete" title="Xóa thiết bị" aria-label="Xóa thiết bị" onclick="return confirm('Bạn có chắc chắn muốn xóa thiết bị này?');">
+                                        <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                                <div class="card-body-row">
+                                    <span class="device-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span>
+                                    <div class="device-meta">
+                                        <h2 class="device-title"><c:out value="${i.name}" /></h2>
+                                        <span class="device-mode"><span aria-hidden="true"></span> CONNECTED</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer-row">
+                                    <div class="status-box"><span class="status-label">TRẠNG THÁI</span><span class="status-text text-on">ACTIVE</span></div>
+                                    <label class="switch-toggle">
+                                        <input type="checkbox" role="switch" aria-label="Bật hoặc tắt công tắc" checked>
+                                        <span class="slider" aria-hidden="true"></span>
+                                    </label>
+                                </div>
+                            </article>
+                        </c:forEach>
+                    </section>
+                </c:otherwise>
+            </c:choose>
+        </main>
     </body>
 </html>

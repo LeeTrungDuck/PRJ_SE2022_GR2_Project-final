@@ -20,7 +20,10 @@ public class URLMap {
 
     public URLMap() {
         urlMap.put("LOGIN", "LoginController");
-        urlMap.put("DEVICE_CONTROL","web/deviceControl.jsp" ); // sua thanh controller sau
+        urlMap.put("DEVICE_CONTROL", "web/DeviceControl.jsp"); // sua thanh controller sau
+        urlMap.put("USER_MANAGER", "web/UserManager.jsp");
+        urlMap.put("PERMISSION_MANAGER", "web/PermissionManager.jsp");
+        urlMap.put("ACCOUNT_MANAGER", "web/AccountManager.jsp");
     }
     
     public String getUrl(String action){

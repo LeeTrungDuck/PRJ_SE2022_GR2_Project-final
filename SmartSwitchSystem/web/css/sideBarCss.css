@@ -3,7 +3,7 @@
 .sidebar {
     width: 260px;
     height: 100vh;
-    color: #94a3b8;
+    color: #e2e8f0;
     position: fixed;
     top: 0;
     left: 0;
@@ -12,8 +12,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: rgba(27,32,58,0.8);
-    font-size: 16px
+    background-color: #131b2e;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
 }
 
 /* --- Header --- */
@@ -40,7 +42,7 @@
 }
 
 .brand-subtitle {
-    color: #64748b;
+    color: #cbd5e1;
     font-size: 10px;
     display: block;
 }
@@ -80,8 +82,8 @@
     
 }
 
-.menu-title {
-    color: #475569;
+.sidebar .sidebar-menu .menu-group > .menu-title {
+    color: #ffffff;
     font-size: 16px;
     font-weight: 700;
     margin-bottom: 6px;
@@ -90,13 +92,12 @@
 
 /* Ghi đè class nav-pills của Bootstrap 3 */
 .sidebar .nav-pills > li > a {
-    color: #94a3b8;
+    color: #f1f5f9;
     font-size: 13px;
     padding: 8px 12px;
     border-radius: 6px;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     text-decoration: none;
-    color: white;
 
 }
 
@@ -104,14 +105,22 @@
     width: 20px;
     text-align: center;
     margin-right: 8px;
-    color: white;
+    color: inherit;
     font-size:14px;
 }
 
 .sidebar .nav-pills > li > a:hover,
 .sidebar .nav-pills > li > a:focus {
-    font-size:16px;
     background-color: #2563eb;
+    color: #ffffff;
+}
+.sidebar .nav-pills > li.active > a {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+.sidebar a:focus-visible {
+    outline: 2px solid #b4c5ff;
+    outline-offset: 3px;
 }
 .sidebar .nav-pills > li {
     margin-bottom: 15px;
@@ -134,8 +143,8 @@
 }
 
 .user-role {
-    color: #64748b;
-    font-size: 10px;
+    color: #cbd5e1;
+    font-size: 11px;
     display: block;
 }
 
@@ -144,12 +153,12 @@
 }
 
 .logout-btn {
-    color: #64748b;
+    color: #e2e8f0;
     font-size: 16px;
 }
 
 .logout-btn:hover {
-    color: #ef4444;
+    color: #ffb4ab;
 }
 
 .sidebar .nav-pills {

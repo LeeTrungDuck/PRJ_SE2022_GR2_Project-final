@@ -1,16 +1,26 @@
 <%@ page pageEncoding="UTF-8" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/sideBarCss.css">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/sideBarCss.css?v=20261006-white-headings">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <div class="sidebar">
+    <c:if test="${requestScope.activePage eq 'USER_MANAGER' or requestScope.activePage eq 'PERMISSION_MANAGER' or requestScope.activePage eq 'ACCOUNT_MANAGER' or requestScope.activePage eq 'DEVICE_CONTROL'}">
+        <div class="sidebar-header">
+            <div class="um-brand">
+                <span class="um-brand-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span>
+                <div><strong>ESP32 IoT Hub</strong><span>TELEMETRY ENGINE</span></div>
+            </div>
+            <span class="um-preview-badge"><span aria-hidden="true"></span> BẢN XEM UI</span>
+        </div>
+    </c:if>
     <!-- 2. Menu Navigation (Dùng nav-pills nav-stacked của Bootstrap 3) -->
     <div class="sidebar-menu">
         <!-- Nhóm 1 -->
         <div class="menu-group">
             <div class="menu-title">ĐIỀU KHIỂN & GIÁM SÁT</div>
             <ul class="nav nav-pills nav-stacked">
-                <li class="active">
-                    <a href="${pageContext.request.contextPath}/MainController?action=a">
+                <li class="${empty requestScope.activePage or requestScope.activePage eq 'DEVICE_CONTROL' ? 'active' : ''}">
+                    <a href="${pageContext.request.contextPath}/MainController?action=DEVICE_CONTROL" aria-current="${empty requestScope.activePage or requestScope.activePage eq 'DEVICE_CONTROL' ? 'page' : 'false'}">
                         <i class="fa-solid fa-sliders"></i> <span>Điều Khiển Switch</span>
                     </a>
                 </li>
@@ -31,13 +41,13 @@
         <div class="menu-group">
             <div class="menu-title">CẤU HÌNH & BẢO MẬT</div>
             <ul class="nav nav-pills nav-stacked">
-                <li>
-                    <a href="${pageContext.request.contextPath}/MainController?action=a">
+                <li class="${requestScope.activePage eq 'PERMISSION_MANAGER' ? 'active' : ''}">
+                    <a href="${pageContext.request.contextPath}/MainController?action=PERMISSION_MANAGER" aria-current="${requestScope.activePage eq 'PERMISSION_MANAGER' ? 'page' : 'false'}">
                         <i class="fa-solid fa-shield-halved"></i> <span>Phân Quyền Viewer</span>
                     </a>
                 </li>
-                <li>
-                    <a href="${pageContext.request.contextPath}/MainController?action=a">
+                <li class="${requestScope.activePage eq 'USER_MANAGER' ? 'active' : ''}">
+                    <a href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER" aria-current="${requestScope.activePage eq 'USER_MANAGER' ? 'page' : 'false'}">
                         <i class="fa-solid fa-users"></i> <span>Quản Lý Tài Khoản</span>
                     </a>
                 </li>
@@ -53,8 +63,8 @@
         <div class="menu-group">
             <div class="menu-title">HỆ THỐNG</div>
             <ul class="nav nav-pills nav-stacked">
-                <li>
-                    <a href="${pageContext.request.contextPath}/MainController?action=a">
+                <li class="${requestScope.activePage eq 'ACCOUNT_MANAGER' ? 'active' : ''}">
+                    <a href="${pageContext.request.contextPath}/MainController?action=ACCOUNT_MANAGER" aria-current="${requestScope.activePage eq 'ACCOUNT_MANAGER' ? 'page' : 'false'}">
                         <i class="fa-solid fa-id-card"></i> <span>Thông Tin Tài Khoản</span>
                     </a>
                 </li>

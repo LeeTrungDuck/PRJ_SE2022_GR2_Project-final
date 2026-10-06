@@ -1,3 +1,56 @@
-body{
-    background-color: black;
+/* Device Control shares the dashboard shell with Permission / User / Account. */
+.device-control-page .sidebar { font-family: inherit; }
+.device-control-page .sidebar .sidebar-menu .menu-group > .menu-title {
+    color: #ffffff;
+    font-size: 11px;
+    padding-left: 8px;
+}
+.dc-topbar-role { display: inline-flex; align-items: center; gap: 8px; color: var(--um-secondary); font: 500 11px/1.5 var(--um-mono); }
+.dc-main { padding-top: 64px; }
+.dc-page-heading { padding: 20px 24px; margin-bottom: 24px; border-radius: 8px; background: var(--um-surface); }
+.dc-page-heading h1 { margin: 0 0 6px; color: var(--um-text); font-size: 30px; line-height: 1.3; font-weight: 700; letter-spacing: -.035em; text-wrap: balance; }
+.dc-page-heading p { max-width: 75ch; margin: 0; color: var(--um-secondary); line-height: 1.6; }
+.dc-empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; padding: 40px 24px; border-radius: 8px; background: var(--um-surface); text-align: center; }
+.dc-empty-icon { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 18px; border-radius: 12px; background: var(--um-inset); color: var(--um-primary); font-size: 26px; }
+.dc-empty-state h2 { margin: 0 0 8px; color: var(--um-text); font-size: 20px; line-height: 1.4; font-weight: 600; text-wrap: balance; }
+.dc-empty-state p { max-width: 55ch; margin: 0; color: var(--um-secondary); font-size: 13px; line-height: 1.7; }
+.dc-device-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 24px; }
+.device-control-page .device-card { min-width: 0; padding: 16px; border: 1px solid var(--um-line); border-radius: 8px; background: var(--um-surface); }
+.device-control-page .card-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.device-control-page .badge-gpio { max-width: calc(100% - 44px); padding: 3px 7px; border-radius: 2px; background: var(--um-raised); color: var(--um-primary); font: 500 10px/1.6 var(--um-mono); overflow-wrap: anywhere; }
+.device-control-page .btn-delete { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; border-radius: 4px; color: var(--um-secondary); text-decoration: none; transition: background-color 160ms ease, color 160ms ease; }
+.device-control-page .btn-delete:hover { background: var(--um-raised); color: var(--um-red); }
+.device-control-page .card-body-row { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.device-control-page .device-icon { display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; border-radius: 6px; background: var(--um-inset); color: var(--um-green); font-size: 24px; }
+.device-control-page .device-meta { min-width: 0; }
+.device-control-page .device-title { margin: 0 0 6px; color: var(--um-text); font-size: 16px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; text-wrap: balance; }
+.device-control-page .device-mode { display: inline-flex; align-items: center; gap: 5px; color: var(--um-green); font: 500 10px/1.5 var(--um-mono); }
+.device-control-page .device-mode > span { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.device-control-page .card-footer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid var(--um-line); }
+.device-control-page .status-box { display: flex; flex-direction: column; gap: 3px; }
+.device-control-page .status-label { color: var(--um-muted); font: 500 9px/1.5 var(--um-mono); }
+.device-control-page .status-text { color: var(--um-green); font: 600 11px/1.5 var(--um-mono); }
+.device-control-page .switch-toggle { position: relative; display: inline-flex; align-items: center; flex-shrink: 0; width: 48px; height: 44px; cursor: pointer; }
+.device-control-page .switch-toggle input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; }
+.device-control-page .slider { position: relative; display: block; width: 48px; height: 26px; border: 1px solid var(--um-muted); border-radius: 16px; background: var(--um-raised); transition: background-color 160ms ease, border-color 160ms ease; }
+.device-control-page .slider::before { content: ""; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--um-text); transition: transform 160ms ease; }
+.device-control-page .switch-toggle input:checked + .slider { border-color: var(--um-green); background: var(--um-green); }
+.device-control-page .switch-toggle input:checked + .slider::before { transform: translateX(22px); background: var(--um-inset); }
+.device-control-page .switch-toggle input:focus-visible + .slider { outline: 2px solid var(--um-primary); outline-offset: 4px; }
+@media (max-width: 1200px) {
+    .dc-page-heading h1 { font-size: 26px; }
+}
+@media (max-width: 700px) {
+    .dc-main { padding-top: 72px; }
+    .dc-page-heading { padding: 16px; }
+    .dc-page-heading h1 { font-size: 23px; }
+    .dc-page-heading p { font-size: 13px; }
+    .dc-empty-state { min-height: 260px; padding: 32px 16px; }
+    .dc-device-grid { gap: 16px; }
+    .device-control-page .btn-delete { width: 44px; height: 44px; }
+    .device-control-page .badge-gpio { max-width: calc(100% - 56px); }
+    .dc-topbar-role { gap: 5px; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .device-control-page .btn-delete, .device-control-page .slider, .device-control-page .slider::before { transition: none; }
 }
