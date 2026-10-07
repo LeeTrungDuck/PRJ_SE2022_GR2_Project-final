@@ -39,7 +39,6 @@
             <section class="login-access" aria-labelledby="login-title">
                 <div class="login-form-content">
                     <header class="login-form-heading">
-                        <span class="login-access-icon"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i></span>
                         <h2 id="login-title">Đăng Nhập</h2>
                         <p>Nhập tài khoản của bạn để truy cập hệ thống.</p>
                     </header>

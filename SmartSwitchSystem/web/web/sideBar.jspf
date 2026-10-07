@@ -10,7 +10,7 @@
                 <span class="um-brand-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span>
                 <div><strong>ESP32 IoT Hub</strong><span>TELEMETRY ENGINE</span></div>
             </div>
-            <span class="um-preview-badge"><span aria-hidden="true"></span> BẢN XEM UI</span>
+            
         </div>
     </c:if>
     <!-- 2. Menu Navigation (Dùng nav-pills nav-stacked của Bootstrap 3) -->
