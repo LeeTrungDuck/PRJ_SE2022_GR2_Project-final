@@ -22,7 +22,9 @@ create table tblUser(
     password varchar(50) not null,
     full_name Nvarchar(50) not null,
     role varchar(10) default 'VIEWER' check (role IN ('ADMIN','OPERATOR','VIEWER')),
-    is_active bit DEFAULT 1
+    is_active bit DEFAULT 1,
+    email varchar(50) unique,
+    phone_number varchar(10) unique
 )
 
 create table tblESP32_Device(
