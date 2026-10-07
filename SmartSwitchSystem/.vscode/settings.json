@@ -1,6 +1,0 @@
-{
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "c:\\Users\\tagor\\Desktop\\PRJ\\tomcat-9.0.113-windows-x64\\apache-tomcat-9.0.113\\lib\\servlet-api.jar"
-    ]
-}
