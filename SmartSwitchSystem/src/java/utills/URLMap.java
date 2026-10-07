@@ -20,13 +20,9 @@ public class URLMap {
 
     public URLMap() {
         urlMap.put("LOGIN", "LoginController");
-        urlMap.put("DEVICE_CONTROL", "web/DeviceControl.jsp"); // sua thanh controller sau
-        urlMap.put("USER_MANAGER", "web/UserManager.jsp");
-        urlMap.put("PERMISSION_MANAGER", "web/PermissionManager.jsp");
-        urlMap.put("ACCOUNT_MANAGER", "web/AccountManager.jsp");
-        urlMap.put("DEVICE_MANAGER", "web/DeviceManager.jsp");
-        urlMap.put("SCHEDULE_MANAGER", "web/ScheduleManager.jsp");
-        urlMap.put("CONTROL_HISTORY", "web/ControlHistory.jsp");
+        for (String page : new String[]{"DEVICE_CONTROL", "USER_MANAGER", "PERMISSION_MANAGER", "ACCOUNT_MANAGER", "DEVICE_MANAGER", "SCHEDULE_MANAGER", "CONTROL_HISTORY"}) {
+            urlMap.put(page, "DashboardController");
+        }
     }
     
     public String getUrl(String action){

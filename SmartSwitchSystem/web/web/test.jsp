@@ -19,12 +19,11 @@
                                     <!-- Header Card: ID & Nút Xóa -->
                                     <div class="card-header-row">
                                         <span class="badge-gpio">ID: ${i.id}</span>
-                                        <a href="${pageContext.request.contextPath}/DeleteTypeController?id=${i.id}" 
-                                           class="btn-delete" 
-                                           title="Xóa thiết bị"
-                                           onclick="return confirm('Bạn có chắc chắn muốn xóa thiết bị này?');">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </a>
+                                        <details>
+                                            <summary class="btn-delete" title="Xóa thiết bị"><i class="fa-solid fa-trash-can"></i> Xóa</summary>
+                                            <p>Bạn có chắc chắn muốn xóa thiết bị này?</p>
+                                            <a href="${pageContext.request.contextPath}/DeleteTypeController?id=${i.id}" class="btn-delete">Xác nhận xóa</a>
+                                        </details>
                                     </div>
 
                                     <!-- Body Card: Tên thiết bị -->

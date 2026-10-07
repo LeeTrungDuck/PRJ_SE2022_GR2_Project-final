@@ -37,6 +37,7 @@ public class LoginController extends HttpServlet {
             if (dto != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("LOGIN_USER",dto);
+                request.setAttribute("UI_PAGE", "DEVICE_CONTROL");
                 url = success;
             }else{
                 url = error;

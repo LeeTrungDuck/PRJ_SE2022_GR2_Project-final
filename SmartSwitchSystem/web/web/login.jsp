@@ -18,7 +18,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/userManagerCss.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loginCss.css?v=20261006-dashboard">
-        <script src="${pageContext.request.contextPath}/js/login.js" defer></script>
     </head>
     <body class="user-manager-page login-page">
         <main class="login-shell" aria-labelledby="login-title">
@@ -60,7 +59,6 @@
                             <div class="login-input-wrap login-password-wrap">
                                 <i class="fa-solid fa-lock" aria-hidden="true"></i>
                                 <input id="passWord" name="passWord" type="password" placeholder="Nhập mật khẩu" autocomplete="current-password" required>
-                                <button type="button" class="login-password-toggle" id="login-password-toggle" aria-label="Hiện mật khẩu" aria-pressed="false" aria-controls="passWord" hidden><i class="fa-regular fa-eye" aria-hidden="true"></i></button>
                             </div>
                         </div>
                         <button type="submit" class="um-button um-button-primary login-submit"><span>Đăng Nhập Vào Hệ Thống</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>

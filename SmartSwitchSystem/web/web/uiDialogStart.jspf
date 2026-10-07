@@ -1,0 +1,4 @@
+<div class="ui-dialog-backdrop" aria-hidden="true"></div>
+<dialog open class="um-dialog ui-dialog" aria-modal="true" aria-labelledby="ui-dialog-title">
+    <div class="um-dialog-heading"><h2 id="ui-dialog-title"><c:out value="${ui.dialogTitle}" /></h2><a class="um-icon-button" href="${pageContext.request.contextPath}/MainController?action=${activePage}&amp;viewer=<c:out value='${ui.activeViewer.id}' />" aria-label="Đóng hộp thoại"><i class="fa-solid fa-xmark" aria-hidden="true"></i></a></div>
+    <c:if test="${not empty uiError}"><p class="ui-notice ui-error" role="alert"><c:out value="${uiError}" /></p></c:if>
