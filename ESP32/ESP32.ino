@@ -6,8 +6,8 @@
 // WIFI CONFIGURATION
 // ==================================================
 
-const char* ssid = "HALLO HOLLA";
-const char* password = "hihihihi";
+const char* ssid = "WINDOWS 9012";
+const char* password = "07-039fC";
 
 // Tên mDNS của ESP32.
 // Mỗi ESP32 phải có tên KHÁC nhau.
@@ -25,7 +25,7 @@ const int BUTTON_PIN = 4;
 // Các GPIO được phép điều khiển từ Java
 //
 // GPIO 4 KHÔNG nằm ở đây vì đang dùng cho BUTTON.
-//
+
 const int CONTROL_PINS[] = {
     2,
     5,
