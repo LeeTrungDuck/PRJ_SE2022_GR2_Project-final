@@ -25,7 +25,7 @@ public class ControlHistoryDAO {
 
     private static final String SELECT = "SELECT history_id, user_id, switch_id, command, result, control_time FROM tblControl_History";
 
-    public ControlHistoryDAO() throws SQLException {
+    public ControlHistoryDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
     }
 

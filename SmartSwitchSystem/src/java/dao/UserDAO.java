@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import utills.DBConnection;
 
 /**
@@ -19,11 +21,12 @@ import utills.DBConnection;
  * @author ADMIN
  */
 public class UserDAO {
+
     private Connection connection;
 
     private static final String SELECT = "SELECT user_id, user_name, password, full_name, role, is_active FROM tblUser";
 
-    public UserDAO() throws SQLException {
+    public UserDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
     }
 
@@ -39,9 +42,9 @@ public class UserDAO {
     }
 
     public UserDTO findById(String userId) {
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE user_id = ?")) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE user_id = ?")) {
             ps.setString(1, userId);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return map(rs);
                 }
@@ -53,9 +56,9 @@ public class UserDAO {
     }
 
     public UserDTO findByUserName(String userName) {
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE user_name = ?")) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE user_name = ?")) {
             ps.setString(1, userName);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return map(rs);
                 }
@@ -68,7 +71,7 @@ public class UserDAO {
 
     public List<UserDTO> findAll() {
         List<UserDTO> list = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT); ResultSet rs = ps.executeQuery()) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(map(rs));
             }
@@ -80,7 +83,7 @@ public class UserDAO {
 
     public boolean insert(UserDTO user) {
         String sql = "INSERT INTO tblUser(user_id, user_name, password, full_name, role, is_active) VALUES(?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getUserId());
             ps.setString(2, user.getUserName());
             ps.setString(3, user.getPassword());
@@ -96,7 +99,7 @@ public class UserDAO {
 
     public boolean update(UserDTO user) {
         String sql = "UPDATE tblUser SET user_name = ?, password = ?, full_name = ?, role = ?, is_active = ? WHERE user_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getUserName());
             ps.setString(2, user.getPassword());
             ps.setString(3, user.getFullName());
@@ -111,7 +114,7 @@ public class UserDAO {
     }
 
     public boolean delete(String userId) {
-        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM tblUser WHERE user_id = ?")) {
+        try ( PreparedStatement ps = connection.prepareStatement("DELETE FROM tblUser WHERE user_id = ?")) {
             ps.setString(1, userId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -121,6 +124,33 @@ public class UserDAO {
     }
 
     public UserDTO checkLogin(String userName, String passWord) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "SELECT user_id, user_name, password, full_name, role, is_active, email, phone_number "
+                + "FROM [SmartSwitchSystem].[dbo].[tblUser] WHERE user_name = ? AND password = ?";
+        UserDTO dto = null;
+
+        // Sử dụng try-with-resources để tự động đóng Connection và PreparedStatement
+        try ( Connection cn = DBConnection.getConnection();  PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setString(1, userName);
+            ps.setString(2, passWord);
+
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    dto = new UserDTO(
+                            rs.getString("user_id"),
+                            rs.getString("user_name"),
+                            rs.getString("password"),
+                            rs.getString("full_name"),
+                            Role.valueOf(rs.getString("role")),
+                            rs.getBoolean("is_active"),
+                            rs.getString("email"),
+                            rs.getString("phone_number")
+                    );
+                }
+            }
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return dto;
     }
 }

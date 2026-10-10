@@ -16,30 +16,77 @@ public class SwitchDTO {
     private String switchName;
     private int gpioPin;
     private SwitchStatus status;
-    private boolean isActive;
+    private boolean active;
+    private String espName;
 
     public SwitchDTO() {
     }
 
-    public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status, boolean isActive) {
+    public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status, boolean active,String espName) {
         this.switchId = switchId;
         this.deviceId = deviceId;
         this.switchName = switchName;
         this.gpioPin = gpioPin;
         this.status = status;
-        this.isActive = isActive;
+        this.active = active;
+        this.espName = espName;
     }
 
-    public String getSwitchId() { return switchId; }
-    public void setSwitchId(String switchId) { this.switchId = switchId; }
-    public String getDeviceId() { return deviceId; }
-    public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
-    public String getSwitchName() { return switchName; }
-    public void setSwitchName(String switchName) { this.switchName = switchName; }
-    public int getGpioPin() { return gpioPin; }
-    public void setGpioPin(int gpioPin) { this.gpioPin = gpioPin; }
-    public SwitchStatus getStatus() { return status; }
-    public void setStatus(SwitchStatus status) { this.status = status; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean isActive) { this.isActive = isActive; }
+    public String getSwitchId() {
+        return switchId;
+    }
+
+    public void setSwitchId(String switchId) {
+        this.switchId = switchId;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getSwitchName() {
+        return switchName;
+    }
+
+    public void setSwitchName(String switchName) {
+        this.switchName = switchName;
+    }
+
+    public int getGpioPin() {
+        return gpioPin;
+    }
+
+    public void setGpioPin(int gpioPin) {
+        this.gpioPin = gpioPin;
+    }
+
+    public SwitchStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SwitchStatus status) {
+        this.status = status;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getEspName() {
+        return espName;
+    }
+
+    public void setEspName(String espName) {
+        this.espName = espName;
+    }
+
+    
 }

@@ -1,11 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-            <c:if test="${empty requestScope.ui}">
-                <c:redirect url="/MainController">
-                    <c:param name="action" value="DEVICE_CONTROL" />
-                </c:redirect>
-            </c:if>
             <c:set var="activePage" value="DEVICE_CONTROL" scope="request" />
             <!DOCTYPE html>
             <html lang="vi">
@@ -29,14 +24,10 @@
                     <%@ include file="sideBar.jspf" %>
                        
                         <main class="um-main dc-main" id="main-content">
-                            <c:if test="${not empty uiMessage}">
-                                <p class="ui-notice" role="status">
-                                    <c:out value="${uiMessage}" />
-                                </p>
-                            </c:if>
-                            <c:if test="${not empty uiError and not ui.dialog}">
+
+                            <c:if test="${not empty ERROR and not ui.dialog}">
                                 <p class="ui-notice ui-error" role="alert">
-                                    <c:out value="${uiError}" />
+                                    <c:out value="${ERROR}" />
                                 </p>
                             </c:if>
                             <header class="dc-page-heading">
@@ -46,21 +37,16 @@
                                 </h1>
                             </header>
                             <section class="dc-device-grid" aria-label="Danh sách công tắc">
-                                <c:forEach var="relay" items="${ui.relays}">
-                                    <article class="dc-relay-card" data-on="${relay.on}">
+                                <c:forEach var="relay" items="${requestScope.list}">
+                                    <article class="dc-relay-card" data-on="${relay.active}">
                                         <div class="dc-card-heading">
                                             <div class="dc-relay-meta">
-                                                <span class="dc-gpio">GPIO ${relay.gpio}</span>
+                                                <span class="dc-gpio">GPIO ${relay.gpioPin}</span>
                                                 <p class="dc-location">
-                                                    <c:out value="${relay.node}" /> ·
-                                                    <c:out value="${relay.location}" />
+                                                    <c:out value="${relay.deviceId}" /> ·
+                                                    <c:out value="${relay.espName}" />
                                                 </p>
                                             </div>
-                                            <c:if test="${relay.kind eq 'valve'}">
-                                                <span class="dc-valve-badge">
-                                                    <span aria-hidden="true">
-                                                    </span>${relay.on ? 'OPEN' : 'CLOSED'}</span>
-                                            </c:if>
                                         </div>
                                         <div class="dc-card-body">
 
@@ -68,27 +54,24 @@
                                             </span>
                                             <div class="dc-relay-identity">
                                                 <h2 class="dc-relay-name">
-                                                    <c:out value="${relay.name}" />
+                                                    <c:out value="${relay.switchName}" />
                                                 </h2>
-                                                <span class="dc-relay-mode">
-                                                    <c:out value="${relay.mode}" />
-                                                </span>
                                             </div>
                                         </div>
                                         <div class="dc-card-footer">
                                             <div class="dc-status-box">
                                                 <span class="dc-status-label">TRẠNG THÁI</span>
-                                                <span class="dc-relay-state">${relay.on ? 'ON' : 'OFF'}</span>
+                                                <span class="dc-relay-state">${relay.status eq 'ON' ? 'ON' : 'OFF'}</span>
                                             </div>
                                             <form class="dc-controls"
                                                 action="${pageContext.request.contextPath}/MainController"
                                                 method="post">
                                                 <%@ include file="uiPostFields.jspf" %>
-                                                    <input name="id" value="${relay.id}" type="hidden">
+                                                    <input name="id" value="${relay.switchId}" type="hidden">
                                                     
                                                     <button type="submit" name="uiOp" value="toggleRelay"
-                                                        class="dc-switch" role="switch" aria-checked="${relay.on}"
-                                                        aria-label="Đổi trạng thái ${fn:escapeXml(relay.name)}">
+                                                        class="dc-switch" role="switch" aria-checked="${relay.status}"
+                                                        aria-label="Đổi trạng thái ${fn:escapeXml(relay.espName)}">
                                                         <span class="dc-switch-track" aria-hidden="true">
                                                             <span>
                                                             </span>
@@ -101,11 +84,6 @@
                             </section>
                             <footer class="ui-demo-footer">
                                
-                                <form action="${pageContext.request.contextPath}/MainController" method="post">
-                                    <%@ include file="uiPostFields.jspf" %>
-                                        <button class="um-button um-button-secondary" type="submit" name="uiOp"
-                                            value="resetPreview">Đặt lại dữ liệu mẫu</button>
-                                </form>
                             </footer>
                         </main>
                 </div>

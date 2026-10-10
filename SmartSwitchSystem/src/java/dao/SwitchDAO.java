@@ -23,7 +23,7 @@ public class SwitchDAO {
 
     private static final String SELECT = "SELECT switch_id, device_id, switch_name, gpio_pin, status, is_active FROM tblSwitch";
 
-    public SwitchDAO() throws SQLException {
+    public SwitchDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
     }
 

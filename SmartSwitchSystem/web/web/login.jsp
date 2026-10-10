@@ -45,7 +45,7 @@
                     <c:if test="${not empty requestScope.ERROR}">
                         <div class="login-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><p><c:out value="${requestScope.ERROR}" /></p></div>
                     </c:if>
-                    <form id="login-form" action="${pageContext.request.contextPath}/MainController?action=DEVICE_CONTROL" method="post">
+                    <form id="login-form" action="${pageContext.request.contextPath}/MainController?action=LOGIN" method="post">
                         <div class="login-field">
                             <label for="userName">Tên Đăng Nhập</label>
                             <div class="login-input-wrap">

@@ -17,15 +17,22 @@ public class URLMap {
     private static final String ERROR_PAGE = "web/errorPage.jsp";
     private final Map<String, String> urlMap = new HashMap<>();
 
-
     public URLMap() {
         urlMap.put("LOGIN", "LoginController");
-        for (String page : new String[]{"DEVICE_CONTROL", "USER_MANAGER", "PERMISSION_MANAGER", "ACCOUNT_MANAGER", "DEVICE_MANAGER", "SCHEDULE_MANAGER", "CONTROL_HISTORY"}) {
-            urlMap.put(page, "DashboardController");
-        }
+        urlMap.put("LOGOUT", "LogOutController");
+        urlMap.put("DEVICE_CONTROL", "/DeviceControlController");
+        urlMap.put("USER_MANAGER", "UserManager.jsp");
+        urlMap.put("PERMISSION_MANAGER", "PermissionManager.jsp");
+        urlMap.put("ACCOUNT_MANAGER", "AccountManager.jsp");
+        urlMap.put("DEVICE_MANAGER", "DeviceManager.jsp");
+        urlMap.put("SCHEDULE_MANAGER", "ScheduleManager.jsp");
+        urlMap.put("CONTROL_HISTORY", "ControlHistory.jsp");
+        
+        
+
     }
-    
-    public String getUrl(String action){
+
+    public String getUrl(String action) {
         return urlMap.get(action);
     }
 
@@ -36,6 +43,5 @@ public class URLMap {
     public static String getERROR_PAGE() {
         return ERROR_PAGE;
     }
-    
 
 }

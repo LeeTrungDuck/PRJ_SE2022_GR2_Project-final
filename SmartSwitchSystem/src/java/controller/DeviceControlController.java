@@ -4,7 +4,9 @@
  */
 package controller;
 
+import dao.SwitchDAO;
 import dto.SwitchDTO;
+import dto.UserDTO;
 import enums.Role;
 import enums.SwitchStatus;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import utills.URLMap;
 
 /**
@@ -36,22 +39,21 @@ public class DeviceControlController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String success = "web/deviceControl.jsp";
+        String success = "web/DeviceControl.jsp";
         String error = URLMap.getERROR_PAGE();
-        
         String url = error;
         try {
-            // check role
-            //
-            List<SwitchDTO> list = new ArrayList<>();
-//            SwitchDTO sw1 = new SwitchDTO("1111", "deviceID", "Switch 1", 2 , SwitchStatus.ON, true);
-//            sw1.setEsp32Name("ESP1");
-//            SwitchDTO sw2 = new SwitchDTO("1211", "deviceID", "Switch 2", 2 , SwitchStatus.OFF, true);
-//            sw2.setEsp32Name("ESP2");
-//            list.add(sw1);
-//            list.add(sw2);
-            request.setAttribute("list", list);
-            url = success;            
+            HttpSession session = request.getSession(false);
+            UserDTO user = (session == null) ? null : (UserDTO) session.getAttribute("LOGIN_USER");
+            if (user == null) {
+                url = URLMap.getLOGIN_PAGE();
+            } else {
+                SwitchDAO dao = new SwitchDAO();
+                List<SwitchDTO> list = dao.findAll();
+                // lấy danh sách switch theo quyền (SwitchDAO) rồi đặt vào request
+                request.setAttribute("list", list);
+                url = success;
+            }
         } catch (Exception e) {
             log("Error at DeviceControlController: " + e.toString());
             request.setAttribute("ERROR", "Device Controller has an error, please try again!");

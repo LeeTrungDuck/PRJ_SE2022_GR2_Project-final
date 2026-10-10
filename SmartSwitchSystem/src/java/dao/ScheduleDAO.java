@@ -24,7 +24,7 @@ public class ScheduleDAO {
 
     private static final String SELECT = "SELECT schedul_id, switch_id, user_id, action, run_time, is_enabled, is_active FROM tblSchedule";
 
-    public ScheduleDAO() throws SQLException {
+    public ScheduleDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
     }
 

@@ -80,8 +80,9 @@
                 <span class="user-role">ADMINISTRATOR</span>
             </div>
         </div>
+                
         <div class="pull-right logout-box">
-            <a href="${pageContext.request.contextPath}/web/login.jsp" class="logout-btn" title="Đăng xuất">
+            <a href="${pageContext.request.contextPath}/MainController?acion=LOGOUT" class="logout-btn" title="Đăng xuất">
                 <i class="fa-solid fa-right-from-bracket"></i>
             </a>
         </div>

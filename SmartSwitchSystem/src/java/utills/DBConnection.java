@@ -13,16 +13,21 @@ import java.sql.SQLException;
  * @author ADMIN
  */
 public class DBConnection {
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=SmartSwitchSystem;encrypt=true;trustServerCertificate=true";
-    private static final String USER = "sa";
+
+    private static final String SERVER = "localhost";
+    private static final String PORT = "1433";
+    private static final String DB_NAME = "SmartSwitchSystem";
+    private static final String USER_NAME = "sa";
     private static final String PASSWORD = "12345";
 
-    public static Connection getConnection() throws SQLException {
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("SQL Server JDBC driver not found", e);
-        }
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    public static Connection getConnection() throws ClassNotFoundException, SQLException {
+        // 1. Nap driver. Dong nay hong la do thieu sqljdbc4.jar
+        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+
+        // 2. Dung chuoi ket noi
+        String url = "jdbc:sqlserver://" + SERVER + ":" + PORT + ";databaseName=" + DB_NAME;
+
+        // 3. Mo ket noi. Dong nay hong la do sai tai khoan hoac chua bat cong 1433
+        return DriverManager.getConnection(url, USER_NAME, PASSWORD);
     }
 }

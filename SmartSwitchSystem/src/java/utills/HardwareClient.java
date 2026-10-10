@@ -31,7 +31,6 @@ public class HardwareClient {
     // ==================================================
 
     private final String baseUrl;
-
     private static final int TIMEOUT_MS = 3000;
 
     public HardwareClient(String hostName)

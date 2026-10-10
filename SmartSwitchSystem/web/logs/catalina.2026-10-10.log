@@ -1,0 +1,690 @@
+10-Oct-2026 10:31:48.782 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/9.0.113
+10-Oct-2026 10:31:48.784 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Dec 2 2025 19:51:24 UTC
+10-Oct-2026 10:31:48.785 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 9.0.113.0
+10-Oct-2026 10:31:48.785 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Windows 11
+10-Oct-2026 10:31:48.785 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            10.0
+10-Oct-2026 10:31:48.785 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+10-Oct-2026 10:31:48.785 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             C:\Users\ltrun\.jdks\openjdk-26
+10-Oct-2026 10:31:48.785 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           26+35-2893
+10-Oct-2026 10:31:48.786 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Oracle Corporation
+10-Oct-2026 10:31:48.786 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web
+10-Oct-2026 10:31:48.786 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         C:\FPT\learningProplem\PRJ\tomcat-9.0.113-windows-x64\apache-tomcat-9.0.113
+10-Oct-2026 10:31:48.791 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+10-Oct-2026 10:31:48.791 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+10-Oct-2026 10:31:48.791 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+10-Oct-2026 10:31:48.791 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+10-Oct-2026 10:31:48.791 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+10-Oct-2026 10:31:48.791 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=C:\FPT\learningProplem\PRJ\tomcat-9.0.113-windows-x64\apache-tomcat-9.0.113
+10-Oct-2026 10:31:48.791 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web
+10-Oct-2026 10:31:48.792 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\temp
+10-Oct-2026 10:31:48.792 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\logging.properties
+10-Oct-2026 10:31:48.792 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+10-Oct-2026 10:31:48.792 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2026.1\lib\idea_rt.jar=61000
+10-Oct-2026 10:31:48.792 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dfile.encoding=UTF-8
+10-Oct-2026 10:31:48.792 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dsun.stdout.encoding=UTF-8
+10-Oct-2026 10:31:48.792 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dsun.stderr.encoding=UTF-8
+10-Oct-2026 10:31:48.795 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent Loaded Apache Tomcat Native library [1.3.1] using APR version [1.7.4].
+10-Oct-2026 10:31:48.795 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true], UDS [true].
+10-Oct-2026 10:31:48.795 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+10-Oct-2026 10:31:48.801 INFO [main] org.apache.catalina.core.AprLifecycleListener.initializeSSL OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+10-Oct-2026 10:31:49.146 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:31:49.161 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [542] milliseconds
+10-Oct-2026 10:31:49.205 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+10-Oct-2026 10:31:49.205 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.113]
+10-Oct-2026 10:31:49.213 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\bai2_44.xml]
+10-Oct-2026 10:31:49.221 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/bai2_44] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\bai2_44.xml] has been ignored
+10-Oct-2026 10:31:49.464 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\bai2_44.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[Catalina].StandardHost[localhost].StandardContext[/bai2_44]]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: Invalid <servlet-name> [] in servlet definition.
+		at org.apache.tomcat.util.descriptor.web.ServletDef.setServletName(ServletDef.java:108)
+		at org.apache.catalina.startup.ContextConfig.processAnnotationWebServlet(ContextConfig.java:2488)
+		at org.apache.catalina.startup.ContextConfig.processClass(ContextConfig.java:2260)
+		at org.apache.catalina.startup.ContextConfig.processAnnotationsStream(ContextConfig.java:2249)
+		at org.apache.catalina.startup.ContextConfig.processAnnotationsWebResource(ContextConfig.java:2160)
+		at org.apache.catalina.startup.ContextConfig.processAnnotationsWebResource(ContextConfig.java:2155)
+		at org.apache.catalina.startup.ContextConfig.processClasses(ContextConfig.java:1360)
+		at org.apache.catalina.startup.ContextConfig.webConfig(ContextConfig.java:1270)
+		at org.apache.catalina.startup.ContextConfig.configureStart(ContextConfig.java:971)
+		at org.apache.catalina.startup.ContextConfig.lifecycleEvent(ContextConfig.java:288)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4395)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 36 more
+10-Oct-2026 10:31:49.473 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\bai2_44.xml] has finished in [257] ms
+10-Oct-2026 10:31:49.473 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyPhoneProject.xml]
+10-Oct-2026 10:31:49.473 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/MyPhoneProject] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyPhoneProject.xml] has been ignored
+10-Oct-2026 10:31:49.478 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyPhoneProject.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [org.apache.catalina.webresources.StandardRoot@2e48362c]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4160)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4282)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: The main resource set specified [C:\FPT\learningProplem\PRJ\MyPhoneProject\build\web] is not a directory or war file, or is not readable (it does not exist or permissions to access it are missing)
+		at org.apache.catalina.webresources.StandardRoot.createMainResourceSet(StandardRoot.java:758)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:715)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 39 more
+10-Oct-2026 10:31:49.483 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyPhoneProject.xml] has finished in [10] ms
+10-Oct-2026 10:31:49.483 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyUser.xml]
+10-Oct-2026 10:31:49.484 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/MyUser] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyUser.xml] has been ignored
+10-Oct-2026 10:31:49.487 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyUser.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [org.apache.catalina.webresources.StandardRoot@7e5c856f]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4160)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4282)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: The main resource set specified [C:\FPT\learningProplem\PRJ\co_dua\MyUser\build\web] is not a directory or war file, or is not readable (it does not exist or permissions to access it are missing)
+		at org.apache.catalina.webresources.StandardRoot.createMainResourceSet(StandardRoot.java:758)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:715)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 39 more
+10-Oct-2026 10:31:49.491 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyUser.xml] has finished in [8] ms
+10-Oct-2026 10:31:49.492 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\PhoneManagement.xml]
+10-Oct-2026 10:31:49.492 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/PhoneManagement] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\PhoneManagement.xml] has been ignored
+10-Oct-2026 10:31:49.744 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:31:49.785 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\PhoneManagement.xml] has finished in [292] ms
+10-Oct-2026 10:31:49.785 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\ROOT.xml]
+10-Oct-2026 10:31:49.786 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/SmartSwitchSystem] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\ROOT.xml] has been ignored
+10-Oct-2026 10:31:50.475 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:31:50.478 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\ROOT.xml] has finished in [693] ms
+10-Oct-2026 10:31:50.478 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitch.xml]
+10-Oct-2026 10:31:50.479 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/SmartSwitch] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitch.xml] has been ignored
+10-Oct-2026 10:31:50.610 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:31:50.613 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitch.xml] has finished in [135] ms
+10-Oct-2026 10:31:50.614 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitchSystem.xml]
+10-Oct-2026 10:31:50.614 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/SmartSwitchSystem] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitchSystem.xml] has been ignored
+10-Oct-2026 10:31:50.810 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:31:50.842 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitchSystem.xml] has finished in [228] ms
+10-Oct-2026 10:31:50.842 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SpaConsultationPortal.xml]
+10-Oct-2026 10:31:50.843 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/SpaConsultationPortal] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SpaConsultationPortal.xml] has been ignored
+10-Oct-2026 10:31:50.951 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:31:50.954 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SpaConsultationPortal.xml] has finished in [111] ms
+10-Oct-2026 10:31:50.954 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\testWeb.xml]
+10-Oct-2026 10:31:50.954 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/testWeb] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\testWeb.xml] has been ignored
+10-Oct-2026 10:31:50.957 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\testWeb.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [org.apache.catalina.webresources.StandardRoot@1cb37ee4]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4160)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4282)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: The main resource set specified [C:\FPT\learningProplem\PRJ\testWeb\build\web] is not a directory or war file, or is not readable (it does not exist or permissions to access it are missing)
+		at org.apache.catalina.webresources.StandardRoot.createMainResourceSet(StandardRoot.java:758)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:715)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 39 more
+10-Oct-2026 10:31:50.960 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\testWeb.xml] has finished in [6] ms
+10-Oct-2026 10:31:50.960 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement.xml]
+10-Oct-2026 10:31:50.961 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/UserManagement] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement.xml] has been ignored
+10-Oct-2026 10:31:50.964 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [org.apache.catalina.webresources.StandardRoot@2bef09c0]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4160)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4282)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: The main resource set specified [C:\FPT\learningProplem\PRJ\co_dua\UserManagement_MVC2\UserManagement\build\web] is not a directory or war file, or is not readable (it does not exist or permissions to access it are missing)
+		at org.apache.catalina.webresources.StandardRoot.createMainResourceSet(StandardRoot.java:758)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:715)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 39 more
+10-Oct-2026 10:31:50.970 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement.xml] has finished in [10] ms
+10-Oct-2026 10:31:50.970 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement_NoJSTL.xml]
+10-Oct-2026 10:31:50.971 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/UserManagement_NoJSTL] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement_NoJSTL.xml] has been ignored
+10-Oct-2026 10:31:51.240 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:31:51.243 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement_NoJSTL.xml] has finished in [273] ms
+10-Oct-2026 10:31:51.243 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagent.xml]
+10-Oct-2026 10:31:51.244 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/UserManagent] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagent.xml] has been ignored
+10-Oct-2026 10:31:51.760 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:31:51.762 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagent.xml] has finished in [519] ms
+10-Oct-2026 10:31:51.765 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:31:51.784 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [2620] milliseconds
+10-Oct-2026 10:33:04.048 INFO [Thread-1] org.apache.coyote.AbstractProtocol.pause Pausing ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:33:04.051 INFO [Thread-1] org.apache.catalina.core.StandardService.stopInternal Stopping service [Catalina]
+10-Oct-2026 10:33:04.067 INFO [Thread-1] org.apache.coyote.AbstractProtocol.stop Stopping ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:33:04.074 INFO [Thread-1] org.apache.coyote.AbstractProtocol.destroy Destroying ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:33:07.326 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/9.0.113
+10-Oct-2026 10:33:07.328 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Dec 2 2025 19:51:24 UTC
+10-Oct-2026 10:33:07.328 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 9.0.113.0
+10-Oct-2026 10:33:07.328 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Windows 11
+10-Oct-2026 10:33:07.328 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            10.0
+10-Oct-2026 10:33:07.328 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          amd64
+10-Oct-2026 10:33:07.328 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             C:\Users\ltrun\.jdks\openjdk-26
+10-Oct-2026 10:33:07.329 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           26+35-2893
+10-Oct-2026 10:33:07.329 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Oracle Corporation
+10-Oct-2026 10:33:07.329 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web
+10-Oct-2026 10:33:07.329 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         C:\FPT\learningProplem\PRJ\tomcat-9.0.113-windows-x64\apache-tomcat-9.0.113
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.lang=ALL-UNNAMED
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.io=ALL-UNNAMED
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util=ALL-UNNAMED
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=C:\FPT\learningProplem\PRJ\tomcat-9.0.113-windows-x64\apache-tomcat-9.0.113
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\temp
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\logging.properties
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2026.1\lib\idea_rt.jar=51732
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dfile.encoding=UTF-8
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dsun.stdout.encoding=UTF-8
+10-Oct-2026 10:33:07.334 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dsun.stderr.encoding=UTF-8
+10-Oct-2026 10:33:07.337 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent Loaded Apache Tomcat Native library [1.3.1] using APR version [1.7.4].
+10-Oct-2026 10:33:07.337 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true], UDS [true].
+10-Oct-2026 10:33:07.337 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+10-Oct-2026 10:33:07.344 INFO [main] org.apache.catalina.core.AprLifecycleListener.initializeSSL OpenSSL successfully initialized [OpenSSL 3.0.14 4 Jun 2024]
+10-Oct-2026 10:33:07.614 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:33:07.627 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [412] milliseconds
+10-Oct-2026 10:33:07.659 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+10-Oct-2026 10:33:07.659 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.113]
+10-Oct-2026 10:33:07.669 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\bai2_44.xml]
+10-Oct-2026 10:33:07.679 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/bai2_44] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\bai2_44.xml] has been ignored
+10-Oct-2026 10:33:07.824 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\bai2_44.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[Catalina].StandardHost[localhost].StandardContext[/bai2_44]]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: Invalid <servlet-name> [] in servlet definition.
+		at org.apache.tomcat.util.descriptor.web.ServletDef.setServletName(ServletDef.java:108)
+		at org.apache.catalina.startup.ContextConfig.processAnnotationWebServlet(ContextConfig.java:2488)
+		at org.apache.catalina.startup.ContextConfig.processClass(ContextConfig.java:2260)
+		at org.apache.catalina.startup.ContextConfig.processAnnotationsStream(ContextConfig.java:2249)
+		at org.apache.catalina.startup.ContextConfig.processAnnotationsWebResource(ContextConfig.java:2160)
+		at org.apache.catalina.startup.ContextConfig.processAnnotationsWebResource(ContextConfig.java:2155)
+		at org.apache.catalina.startup.ContextConfig.processClasses(ContextConfig.java:1360)
+		at org.apache.catalina.startup.ContextConfig.webConfig(ContextConfig.java:1270)
+		at org.apache.catalina.startup.ContextConfig.configureStart(ContextConfig.java:971)
+		at org.apache.catalina.startup.ContextConfig.lifecycleEvent(ContextConfig.java:288)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4395)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 36 more
+10-Oct-2026 10:33:07.834 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\bai2_44.xml] has finished in [161] ms
+10-Oct-2026 10:33:07.834 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyPhoneProject.xml]
+10-Oct-2026 10:33:07.834 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/MyPhoneProject] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyPhoneProject.xml] has been ignored
+10-Oct-2026 10:33:07.838 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyPhoneProject.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [org.apache.catalina.webresources.StandardRoot@2e48362c]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4160)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4282)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: The main resource set specified [C:\FPT\learningProplem\PRJ\MyPhoneProject\build\web] is not a directory or war file, or is not readable (it does not exist or permissions to access it are missing)
+		at org.apache.catalina.webresources.StandardRoot.createMainResourceSet(StandardRoot.java:758)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:715)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 39 more
+10-Oct-2026 10:33:07.839 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyPhoneProject.xml] has finished in [5] ms
+10-Oct-2026 10:33:07.839 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyUser.xml]
+10-Oct-2026 10:33:07.840 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/MyUser] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyUser.xml] has been ignored
+10-Oct-2026 10:33:07.843 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyUser.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [org.apache.catalina.webresources.StandardRoot@7e5c856f]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4160)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4282)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: The main resource set specified [C:\FPT\learningProplem\PRJ\co_dua\MyUser\build\web] is not a directory or war file, or is not readable (it does not exist or permissions to access it are missing)
+		at org.apache.catalina.webresources.StandardRoot.createMainResourceSet(StandardRoot.java:758)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:715)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 39 more
+10-Oct-2026 10:33:07.848 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\MyUser.xml] has finished in [9] ms
+10-Oct-2026 10:33:07.849 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\PhoneManagement.xml]
+10-Oct-2026 10:33:07.849 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/PhoneManagement] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\PhoneManagement.xml] has been ignored
+10-Oct-2026 10:33:08.049 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:33:08.088 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\PhoneManagement.xml] has finished in [238] ms
+10-Oct-2026 10:33:08.088 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\ROOT.xml]
+10-Oct-2026 10:33:08.088 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/SmartSwitchSystem] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\ROOT.xml] has been ignored
+10-Oct-2026 10:33:08.430 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:33:08.445 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\ROOT.xml] has finished in [357] ms
+10-Oct-2026 10:33:08.445 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitch.xml]
+10-Oct-2026 10:33:08.446 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/SmartSwitch] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitch.xml] has been ignored
+10-Oct-2026 10:33:08.512 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:33:08.515 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitch.xml] has finished in [70] ms
+10-Oct-2026 10:33:08.515 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitchSystem.xml]
+10-Oct-2026 10:33:08.516 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/SmartSwitchSystem] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitchSystem.xml] has been ignored
+10-Oct-2026 10:33:08.669 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:33:08.687 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SmartSwitchSystem.xml] has finished in [171] ms
+10-Oct-2026 10:33:08.687 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SpaConsultationPortal.xml]
+10-Oct-2026 10:33:08.687 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/SpaConsultationPortal] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SpaConsultationPortal.xml] has been ignored
+10-Oct-2026 10:33:08.803 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:33:08.805 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\SpaConsultationPortal.xml] has finished in [118] ms
+10-Oct-2026 10:33:08.806 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\testWeb.xml]
+10-Oct-2026 10:33:08.806 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/testWeb] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\testWeb.xml] has been ignored
+10-Oct-2026 10:33:08.809 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\testWeb.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [org.apache.catalina.webresources.StandardRoot@5e2a3040]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4160)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4282)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: The main resource set specified [C:\FPT\learningProplem\PRJ\testWeb\build\web] is not a directory or war file, or is not readable (it does not exist or permissions to access it are missing)
+		at org.apache.catalina.webresources.StandardRoot.createMainResourceSet(StandardRoot.java:758)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:715)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 39 more
+10-Oct-2026 10:33:08.814 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\testWeb.xml] has finished in [8] ms
+10-Oct-2026 10:33:08.814 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement.xml]
+10-Oct-2026 10:33:08.815 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/UserManagement] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement.xml] has been ignored
+10-Oct-2026 10:33:08.818 SEVERE [main] org.apache.catalina.startup.HostConfig.deployDescriptor Error deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement.xml]
+	java.lang.IllegalStateException: Error starting child
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:600)
+		at org.apache.catalina.core.ContainerBase.addChild(ContainerBase.java:569)
+		at org.apache.catalina.core.StandardHost.addChild(StandardHost.java:608)
+		at org.apache.catalina.startup.HostConfig.deployDescriptor(HostConfig.java:677)
+		at org.apache.catalina.startup.HostConfig$DeployDescriptor.run(HostConfig.java:1836)
+		at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:125)
+		at org.apache.catalina.startup.HostConfig.deployDescriptors(HostConfig.java:572)
+		at org.apache.catalina.startup.HostConfig.deployApps(HostConfig.java:463)
+		at org.apache.catalina.startup.HostConfig.start(HostConfig.java:1576)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:309)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:109)
+		at org.apache.catalina.util.LifecycleBase.setStateInternal(LifecycleBase.java:389)
+		at org.apache.catalina.util.LifecycleBase.setState(LifecycleBase.java:336)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:774)
+		at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:726)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1201)
+		at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1191)
+		at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:330)
+		at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:82)
+		at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:149)
+		at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:747)
+		at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:209)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardService.startInternal(StandardService.java:410)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:872)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.startup.Catalina.start(Catalina.java:736)
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+		at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+		at org.apache.catalina.startup.Bootstrap.start(Bootstrap.java:342)
+		at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:473)
+	Caused by: org.apache.catalina.LifecycleException: Failed to start component [org.apache.catalina.webresources.StandardRoot@79d06bbd]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:404)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:179)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4160)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4282)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		at org.apache.catalina.core.ContainerBase.addChildInternal(ContainerBase.java:597)
+		... 35 more
+	Caused by: java.lang.IllegalArgumentException: The main resource set specified [C:\FPT\learningProplem\PRJ\co_dua\UserManagement_MVC2\UserManagement\build\web] is not a directory or war file, or is not readable (it does not exist or permissions to access it are missing)
+		at org.apache.catalina.webresources.StandardRoot.createMainResourceSet(StandardRoot.java:758)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:715)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164)
+		... 39 more
+10-Oct-2026 10:33:08.824 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement.xml] has finished in [10] ms
+10-Oct-2026 10:33:08.824 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement_NoJSTL.xml]
+10-Oct-2026 10:33:08.825 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/UserManagement_NoJSTL] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement_NoJSTL.xml] has been ignored
+10-Oct-2026 10:33:08.912 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:33:08.915 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagement_NoJSTL.xml] has finished in [91] ms
+10-Oct-2026 10:33:08.915 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deploying deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagent.xml]
+10-Oct-2026 10:33:08.916 WARNING [main] org.apache.catalina.startup.HostConfig.deployDescriptor The path attribute with value [/UserManagent] in deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagent.xml] has been ignored
+10-Oct-2026 10:33:09.000 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10-Oct-2026 10:33:09.002 INFO [main] org.apache.catalina.startup.HostConfig.deployDescriptor Deployment of deployment descriptor [C:\FPT\learningProplem\PRJ\Project_Final\PRJ_SE2022_GR2_Project-final\SmartSwitchSystem\web\conf\Catalina\localhost\UserManagent.xml] has finished in [87] ms
+10-Oct-2026 10:33:09.005 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:33:09.022 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [1394] milliseconds
+10-Oct-2026 10:41:28.318 INFO [Thread-1] org.apache.coyote.AbstractProtocol.pause Pausing ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:41:28.322 INFO [Thread-1] org.apache.catalina.core.StandardService.stopInternal Stopping service [Catalina]
+10-Oct-2026 10:41:28.335 WARNING [Thread-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesJdbc The web application [ROOT] registered the JDBC driver [com.microsoft.sqlserver.jdbc.SQLServerDriver] but failed to unregister it when the web application was stopped. To prevent a memory leak, the JDBC Driver has been forcibly unregistered.
+10-Oct-2026 10:41:28.336 SEVERE [Thread-1] org.apache.catalina.loader.WebappClassLoaderBase.checkThreadLocalMapForLeaks The web application [ROOT] created a ThreadLocal with key of type [com.microsoft.sqlserver.jdbc.ActivityCorrelator$1] (value [com.microsoft.sqlserver.jdbc.ActivityCorrelator$1@330096bb]) and a value of type [com.microsoft.sqlserver.jdbc.ActivityId] (value [fd1bd199-f531-40de-bf98-b7b68844d6a6-2]) but failed to remove it when the web application was stopped. Threads are going to be renewed over time to try and avoid a probable memory leak.
+10-Oct-2026 10:41:28.347 INFO [Thread-1] org.apache.coyote.AbstractProtocol.stop Stopping ProtocolHandler ["http-nio-8080"]
+10-Oct-2026 10:41:28.356 INFO [Thread-1] org.apache.coyote.AbstractProtocol.destroy Destroying ProtocolHandler ["http-nio-8080"]

@@ -22,7 +22,7 @@ public class DevicePermissionDAO {
 
     private static final String SELECT = "SELECT permission_id, user_id, switch_id, canView, canControl, granted_by, is_active FROM tblDevice_Permission";
 
-    public DevicePermissionDAO() throws SQLException {
+    public DevicePermissionDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
     }
 

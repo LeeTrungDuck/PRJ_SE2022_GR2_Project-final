@@ -9,6 +9,8 @@ import dto.UserDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,11 +29,11 @@ public class LoginController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String success = new URLMap().getUrl("DEVICE_CONTROL");
-        String error = URLMap.getERROR_PAGE();;
+        String error = URLMap.getLOGIN_PAGE();
         String url = URLMap.getLOGIN_PAGE();
         try{
-            String userName = (String)request.getAttribute("userName");
-            String passWord = (String)request.getAttribute("password");
+            String userName = (String)request.getParameter("userName");
+            String passWord = (String)request.getParameter("passWord");
             UserDTO dto = new UserDAO().checkLogin(userName, passWord);
             
             if (dto != null) {
@@ -40,11 +42,17 @@ public class LoginController extends HttpServlet {
                 request.setAttribute("UI_PAGE", "DEVICE_CONTROL");
                 url = success;
             }else{
+                request.setAttribute("ERROR", "USER DOEST NOT EXIST!");
                 url = error;
             }
         }catch(SQLException e){
             log("Error at LoginController: " + e.toString());
+            url = URLMap.getERROR_PAGE();
             request.setAttribute("ERROR", "Database connect error, please try again!");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+            url = URLMap.getERROR_PAGE();
+            request.setAttribute("ERROR", "Class not found, please try again!");
         }finally{
             request.getRequestDispatcher(url).forward(request, response);
         }

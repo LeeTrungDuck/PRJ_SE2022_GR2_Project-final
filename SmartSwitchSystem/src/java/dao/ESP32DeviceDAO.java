@@ -24,7 +24,7 @@ public class ESP32DeviceDAO {
 
     private static final String SELECT = "SELECT device_id, name, host_name, status, last_seen, is_active FROM tblESP32_Device";
 
-    public ESP32DeviceDAO() throws SQLException {
+    public ESP32DeviceDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
     }
 

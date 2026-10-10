@@ -16,19 +16,24 @@ public class UserDTO {
     private String password;
     private String fullName;
     private Role role;
-    private boolean isActive;
-
+    private boolean active;
+    private String email;
+    private String phone;
+ 
     public UserDTO() {
     }
 
-    public UserDTO(String userId, String userName, String password, String fullName, Role role, boolean isActive) {
+    public UserDTO(String userId, String userName, String password, String fullName, Role role, boolean active, String email, String phone) {
         this.userId = userId;
         this.userName = userName;
         this.password = password;
         this.fullName = fullName;
         this.role = role;
-        this.isActive = isActive;
+        this.active = active;
+        this.email = email;
+        this.phone = phone;
     }
+
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
@@ -40,6 +45,30 @@ public class UserDTO {
     public void setFullName(String fullName) { this.fullName = fullName; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean isActive) { this.isActive = isActive; }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
 }
