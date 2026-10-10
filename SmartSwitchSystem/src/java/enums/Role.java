@@ -10,6 +10,6 @@ package enums;
  */
 public enum Role {
     ADMIN,
-    OPERATION,
+    OPERATOR,
     VIEWER
 }

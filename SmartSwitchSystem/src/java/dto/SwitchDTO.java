@@ -18,11 +18,12 @@ public class SwitchDTO {
     private SwitchStatus status;
     private boolean active;
     private String espName;
-
+    private String espHostName;
     public SwitchDTO() {
     }
 
-    public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status, boolean active,String espName) {
+    public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status, boolean active,String espName,
+            String espHostName) {
         this.switchId = switchId;
         this.deviceId = deviceId;
         this.switchName = switchName;
@@ -30,6 +31,7 @@ public class SwitchDTO {
         this.status = status;
         this.active = active;
         this.espName = espName;
+        this.espHostName = espHostName;
     }
 
     public String getSwitchId() {
@@ -86,6 +88,14 @@ public class SwitchDTO {
 
     public void setEspName(String espName) {
         this.espName = espName;
+    }
+
+    public String getEspHostName() {
+        return espHostName;
+    }
+
+    public void setEspHostName(String espHostName) {
+        this.espHostName = espHostName;
     }
 
     

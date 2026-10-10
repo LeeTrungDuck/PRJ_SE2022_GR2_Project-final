@@ -8,7 +8,7 @@ import dao.SwitchDAO;
 import dto.SwitchDTO;
 import dto.UserDTO;
 import enums.Role;
-import enums.SwitchStatus;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +49,15 @@ public class DeviceControlController extends HttpServlet {
                 url = URLMap.getLOGIN_PAGE();
             } else {
                 SwitchDAO dao = new SwitchDAO();
-                List<SwitchDTO> list = dao.findAll();
+                List<SwitchDTO> list = new ArrayList<>();
                 // lấy danh sách switch theo quyền (SwitchDAO) rồi đặt vào request
-                request.setAttribute("list", list);
-                url = success;
+                if (user.getRole() == Role.VIEWER) {
+                    //
+                } else {
+                    list = dao.findAll();
+                }
+                    request.setAttribute("list", list);
+                    url = success;
             }
         } catch (Exception e) {
             log("Error at DeviceControlController: " + e.toString());

@@ -76,8 +76,8 @@
     <div class="sidebar-footer clearfix">
         <div class="pull-left media user-media">
             <div class="media-body media-middle">
-                <h5 class="media-heading user-name"><c:out value="${empty ui.profile.fullName ? 'Nguyễn Văn An' : ui.profile.fullName}" /></h5>
-                <span class="user-role">ADMINISTRATOR</span>
+                <h5 class="media-heading user-name"><c:out value="${LOGIN_USER.fullName}" /></h5>
+                <span class="user-role">${LOGIN_USER.role}</span>
             </div>
         </div>
                 

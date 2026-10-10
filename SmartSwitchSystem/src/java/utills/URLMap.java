@@ -27,6 +27,7 @@ public class URLMap {
         urlMap.put("DEVICE_MANAGER", "DeviceManager.jsp");
         urlMap.put("SCHEDULE_MANAGER", "ScheduleManager.jsp");
         urlMap.put("CONTROL_HISTORY", "ControlHistory.jsp");
+        urlMap.put("CHANGE_SWITCH_STAGE", "/SwitchStageController");
         
         
 

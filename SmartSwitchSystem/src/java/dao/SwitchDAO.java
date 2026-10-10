@@ -21,7 +21,9 @@ import utills.DBConnection;
 public class SwitchDAO {
     private Connection connection;
 
-    private static final String SELECT = "SELECT switch_id, device_id, switch_name, gpio_pin, status, is_active FROM tblSwitch";
+    private static final String SELECT =
+            " SELECT sw.switch_id, sw.device_id, sw.switch_name, sw.gpio_pin, sw.status, sw.is_active, esp.name as esp_name, esp.host_name as esp_host_name "
+            + " FROM tblSwitch sw  join tblESP32_Device esp on sw.device_id = esp.device_id ";
 
     public SwitchDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
@@ -35,11 +37,13 @@ public class SwitchDAO {
         s.setGpioPin(rs.getInt("gpio_pin"));
         s.setStatus(SwitchStatus.valueOf(rs.getString("status")));
         s.setActive(rs.getBoolean("is_active"));
+        s.setEspName(rs.getString("esp_name"));
+        s.setEspHostName(rs.getString("esp_host_name"));
         return s;
     }
 
     public SwitchDTO findById(String switchId) {
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE switch_id = ? AND is_active = 1")) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE sw.switch_id = ? AND sw.is_active = 1 AND esp.is_active = 1")) {
             ps.setString(1, switchId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -54,7 +58,7 @@ public class SwitchDAO {
 
     public List<SwitchDTO> findByDeviceId(String deviceId) {
         List<SwitchDTO> list = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE device_id = ? AND is_active = 1")) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE sw.device_id = ? AND sw.is_active = 1 AND esp.is_active = 1")) {
             ps.setString(1, deviceId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -69,7 +73,7 @@ public class SwitchDAO {
 
     public List<SwitchDTO> findAll() {
         List<SwitchDTO> list = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE is_active = 1"); ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(map(rs));
             }
@@ -78,7 +82,6 @@ public class SwitchDAO {
         }
         return list;
     }
-
     public boolean insert(SwitchDTO sw) {
         String sql = "INSERT INTO tblSwitch(switch_id, device_id, switch_name, gpio_pin, status, is_active) VALUES(?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {

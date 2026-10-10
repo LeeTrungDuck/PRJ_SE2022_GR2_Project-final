@@ -18,7 +18,7 @@ GO
 
 create table tblUser(
     user_id varchar(20) primary key CHECK (user_id LIKE 'U%'), 
-    user_name Nvarchar(50) not null,
+    user_name Nvarchar(50) not null unique,
     password varchar(50) not null,
     full_name Nvarchar(50) not null,
     role varchar(10) default 'VIEWER' check (role IN ('ADMIN','OPERATOR','VIEWER')),

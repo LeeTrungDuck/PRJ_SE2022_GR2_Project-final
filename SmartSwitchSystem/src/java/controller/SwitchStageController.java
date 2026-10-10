@@ -4,53 +4,39 @@
  */
 package controller;
 
-import dao.UserDAO;
-import dto.UserDTO;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import utills.URLMap;
 
 /**
  *
  * @author ltrun
  */
-public class LoginController extends HttpServlet {
+@WebServlet(name = "SwitchStageController", urlPatterns = {"/SwitchStageController"})
+public class SwitchStageController extends HttpServlet {
 
-
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String success = new URLMap().getUrl("DEVICE_CONTROL");
-        String error = URLMap.getLOGIN_PAGE();
-        String url = URLMap.getLOGIN_PAGE();
+        String url = new URLMap().getUrl("DEVICE_CONTROL");
         try{
-            String userName = (String)request.getParameter("userName");
-            String passWord = (String)request.getParameter("passWord");
-            UserDTO dto = new UserDAO().checkLogin(userName, passWord);
             
-            if (dto != null) {
-                HttpSession session = request.getSession();
-                session.setAttribute("LOGIN_USER",dto);
-                url = success;
-            }else{
-                request.setAttribute("ERROR", "USER DOEST NOT EXIST!");
-                url = error;
-            }
-        }catch(SQLException e){
-            log("Error at LoginController: " + e.toString());
-            url = URLMap.getERROR_PAGE();
-            request.setAttribute("ERROR", "Database connect error, please try again!");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
-            url = URLMap.getERROR_PAGE();
-            request.setAttribute("ERROR", "Class not found, please try again!");
+            /* TODO output your page here. You may use following sample code. */
+            
         }finally{
             request.getRequestDispatcher(url).forward(request, response);
         }
