@@ -38,6 +38,36 @@ public class SwitchDAO {
         return s;
     }
 
+    public List<SwitchDTO> getSwitchesForViewer(String userId) throws Exception {
+        List<SwitchDTO> list = new ArrayList<>();
+        String sql = "SELECT s.switch_id, s.device_id, s.switch_name, s.gpio_pin, s.status, s.is_active "
+            + "FROM tblSwitch s, tblESP32_Device d, tblDevice_Permission p "
+            + "WHERE s.device_id = d.device_id "
+            + "AND p.device_id = d.device_id "
+            + "AND p.user_id = ? "
+            + "AND ISNULL(p.is_active, 0) = 1 "
+            + "AND ISNULL(d.is_active, 0) = 1 "
+            + "AND ISNULL(s.is_active, 0) = 1 "
+            + "ORDER BY s.device_id, s.switch_name";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    SwitchDTO s = new SwitchDTO();
+                    s.setSwitchId(rs.getString("switch_id"));
+                    s.setDeviceId(rs.getString("device_id"));
+                    s.setSwitchName(rs.getString("switch_name"));
+                    s.setGpioPin(rs.getInt("gpio_pin"));
+                    s.setStatus(SwitchStatus.valueOf(rs.getString("status")));
+                    s.setActive(rs.getBoolean("is_active"));
+                    list.add(s);
+                }
+            }
+        }
+        return list;
+    }
+    
     public SwitchDTO findById(String switchId) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE switch_id = ? AND is_active = 1")) {
             ps.setString(1, switchId);

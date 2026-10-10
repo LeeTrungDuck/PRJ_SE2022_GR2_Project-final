@@ -22,5 +22,3 @@ select * from tblSwitch
 select * from tblESP32_Device
 select * from tblUser
 
-
-
