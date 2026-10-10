@@ -23,36 +23,36 @@ import utills.URLMap;
  */
 public class LoginController extends HttpServlet {
 
-
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String success = new URLMap().getUrl("DEVICE_CONTROL");
-        String error = URLMap.getLOGIN_PAGE();
-        String url = URLMap.getLOGIN_PAGE();
-        try{
-            String userName = (String)request.getParameter("userName");
-            String passWord = (String)request.getParameter("passWord");
+
+        try {
+            String userName = (String) request.getParameter("userName");
+            String passWord = (String) request.getParameter("passWord");
             UserDTO dto = new UserDAO().checkLogin(userName, passWord);
-            
+
             if (dto != null) {
+                // Đăng nhập thành công: Dùng Redirect qua MainController để tránh lỗi F5 (PRG Pattern)
                 HttpSession session = request.getSession();
-                session.setAttribute("LOGIN_USER",dto);
-                url = success;
-            }else{
-                request.setAttribute("ERROR", "USER DOEST NOT EXIST!");
-                url = error;
+                session.setAttribute("LOGIN_USER", dto);
+                response.sendRedirect("MainController?action=DEVICE_CONTROL");
+                return; // Dừng hàm ngay lập tức, không chạy xuống dưới nữa
+            } else {
+                // Đăng nhập thất bại (Sai user/pass): Forward về trang login kèm thông báo lỗi
+                request.setAttribute("ERROR", "USER DOES NOT EXIST!");
+                request.getRequestDispatcher(URLMap.getLOGIN_PAGE()).forward(request, response);
             }
-        }catch(SQLException e){
+
+        } catch (SQLException e) {
             log("Error at LoginController: " + e.toString());
-            url = URLMap.getERROR_PAGE();
             request.setAttribute("ERROR", "Database connect error, please try again!");
+            request.getRequestDispatcher(URLMap.getERROR_PAGE()).forward(request, response);
+
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
-            url = URLMap.getERROR_PAGE();
             request.setAttribute("ERROR", "Class not found, please try again!");
-        }finally{
-            request.getRequestDispatcher(url).forward(request, response);
+            request.getRequestDispatcher(URLMap.getERROR_PAGE()).forward(request, response);
         }
     }
 

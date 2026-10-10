@@ -38,7 +38,7 @@
                 </header>
                 <section class="dc-device-grid" aria-label="Danh sách công tắc">
                     <c:forEach var="relay" items="${requestScope.list}">
-                        <article class="dc-relay-card" data-on="${relay.status eq 'ON'}">
+                        <article class="dc-relay-card" data-on="${relay.status eq 'ON'}" data-esp-active="${relay.espActive}">
                             <div class="dc-card-heading">
                                 <div class="dc-relay-meta">
                                     <span class="dc-gpio">GPIO ${relay.gpioPin}</span>

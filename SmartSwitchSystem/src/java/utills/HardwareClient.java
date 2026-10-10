@@ -86,7 +86,7 @@ public class HardwareClient {
      * http://esp32-switch1.local/
      * switch/on?gpio=2
      */
-    public boolean turnOn(int gpio) {
+    public boolean turnOn(int gpio) throws HardwareException{
 
         return callAndCheckOk(
                 "/switch/on?gpio=" + gpio
@@ -101,7 +101,7 @@ public class HardwareClient {
     /**
      * Tắt switch tại GPIO.
      */
-    public boolean turnOff(int gpio) {
+    public boolean turnOff(int gpio) throws HardwareException{
 
         return callAndCheckOk(
                 "/switch/off?gpio=" + gpio
@@ -131,7 +131,7 @@ public class HardwareClient {
      *
      * hoặc null nếu không lấy được.
      */
-    public String getStatus(int gpio) {
+    public String getStatus(int gpio) throws HardwareException {
 
         String body = callAndGetBody(
                 "/switch/status?gpio=" + gpio
@@ -180,7 +180,7 @@ public class HardwareClient {
      *
      * @return true nếu ESP32 trả HTTP 200
      */
-    public boolean isOnline() {
+    public boolean isOnline() throws HardwareException {
 
         return callAndCheckOk(
                 "/device/status"
@@ -214,7 +214,7 @@ public class HardwareClient {
      *
      * Method này trả nguyên JSON dưới dạng String.
      */
-    public String getDeviceInfo() {
+    public String getDeviceInfo() throws HardwareException {
 
         return callAndGetBody(
                 "/device/info"
@@ -237,7 +237,7 @@ public class HardwareClient {
      *
      * @return true nếu ESP32 trả HTTP 200
      */
-    private boolean callAndCheckOk(String path) {
+    private boolean callAndCheckOk(String path) throws HardwareException{
 
         HttpURLConnection conn = null;
 
@@ -274,17 +274,7 @@ public class HardwareClient {
 
 
         } catch (IOException e) {
-
-            System.err.println(
-                    "Khong the ket noi ESP32: "
-                    + baseUrl
-                    + path
-            );
-
-
-            return false;
-
-
+            throw new HardwareException(e.getMessage());
         } finally {
 
             if (conn != null) {
@@ -308,7 +298,7 @@ public class HardwareClient {
      * /switch/status
      * /device/info
      */
-    private String callAndGetBody(String path) {
+    private String callAndGetBody(String path) throws HardwareException {
 
         HttpURLConnection conn = null;
 
@@ -377,17 +367,7 @@ public class HardwareClient {
 
 
         } catch (IOException e) {
-
-            System.err.println(
-                    "Khong the doc response tu ESP32: "
-                    + baseUrl
-                    + path
-            );
-
-
-            return null;
-
-
+            throw new HardwareException(e.getMessage());
         } finally {
 
             if (conn != null) {

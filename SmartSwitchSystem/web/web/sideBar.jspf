@@ -4,15 +4,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <div class="sidebar">
-    <c:if test="${requestScope.activePage eq 'USER_MANAGER' or requestScope.activePage eq 'PERMISSION_MANAGER' or requestScope.activePage eq 'ACCOUNT_MANAGER' or requestScope.activePage eq 'DEVICE_CONTROL' or requestScope.activePage eq 'DEVICE_MANAGER' or requestScope.activePage eq 'SCHEDULE_MANAGER' or requestScope.activePage eq 'CONTROL_HISTORY'}">
-        <div class="sidebar-header">
-            <div class="um-brand">
-                <span class="um-brand-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span>
-                <div><strong>ESP32 IoT Hub</strong><span>TELEMETRY ENGINE</span></div>
-            </div>
-            
+    <div class="sidebar-header">
+        <div class="um-brand">
+            <span class="um-brand-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span>
+            <div><strong>ESP32 IoT Hub</strong><span>TELEMETRY ENGINE</span></div>
         </div>
-    </c:if>
+
+    </div>
     <!-- 2. Menu Navigation (Dùng nav-pills nav-stacked của Bootstrap 3) -->
     <div class="sidebar-menu">
         <!-- Nhóm 1 -->
@@ -24,11 +22,13 @@
                         <i class="fa-solid fa-sliders"></i> <span>Điều Khiển Switch</span>
                     </a>
                 </li>
-                <li class="${requestScope.activePage eq 'DEVICE_MANAGER' ? 'active' : ''}">
-                    <a href="${pageContext.request.contextPath}/MainController?action=DEVICE_MANAGER" aria-current="${requestScope.activePage eq 'DEVICE_MANAGER' ? 'page' : 'false'}">
-                        <i class="fa-solid fa-microchip"></i> <span>Quản Lý Thiết Bị &amp; GPIO</span>
-                    </a>
-                </li>
+                <c:if test="${LOGIN_USER.role ne 'VIEWER'}">
+                    <li class="${requestScope.activePage eq 'DEVICE_MANAGER' ? 'active' : ''}">
+                        <a href="${pageContext.request.contextPath}/MainController?action=DEVICE_MANAGER" aria-current="${requestScope.activePage eq 'DEVICE_MANAGER' ? 'page' : 'false'}">
+                            <i class="fa-solid fa-microchip"></i> <span>Quản Lý Thiết Bị &amp; GPIO</span>
+                        </a>
+                    </li>
+                </c:if>
                 <li class="${requestScope.activePage eq 'CONTROL_HISTORY' ? 'active' : ''}">
                     <a href="${pageContext.request.contextPath}/MainController?action=CONTROL_HISTORY" aria-current="${requestScope.activePage eq 'CONTROL_HISTORY' ? 'page' : 'false'}">
                         <i class="fa-solid fa-clock-rotate-left"></i> <span>Lịch Sử Điều Khiển</span>
@@ -39,18 +39,25 @@
 
         <!-- Nhóm 2 -->
         <div class="menu-group">
+
             <div class="menu-title">CẤU HÌNH & BẢO MẬT</div>
             <ul class="nav nav-pills nav-stacked">
-                <li class="${requestScope.activePage eq 'PERMISSION_MANAGER' ? 'active' : ''}">
-                    <a href="${pageContext.request.contextPath}/MainController?action=PERMISSION_MANAGER" aria-current="${requestScope.activePage eq 'PERMISSION_MANAGER' ? 'page' : 'false'}">
-                        <i class="fa-solid fa-shield-halved"></i> <span>Phân Quyền Viewer</span>
-                    </a>
-                </li>
-                <li class="${requestScope.activePage eq 'USER_MANAGER' ? 'active' : ''}">
-                    <a href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER" aria-current="${requestScope.activePage eq 'USER_MANAGER' ? 'page' : 'false'}">
-                        <i class="fa-solid fa-users"></i> <span>Quản Lý Tài Khoản</span>
-                    </a>
-                </li>
+                <c:if test="${LOGIN_USER.role ne 'VIEWER'}">
+                    <li class="${requestScope.activePage eq 'PERMISSION_MANAGER' ? 'active' : ''}">
+                        <a href="${pageContext.request.contextPath}/MainController?action=PERMISSION_MANAGER" aria-current="${requestScope.activePage eq 'PERMISSION_MANAGER' ? 'page' : 'false'}">
+                            <i class="fa-solid fa-shield-halved"></i> <span>Phân Quyền Viewer</span>
+                        </a>
+
+                    </li>
+                </c:if>
+                <c:if test="${LOGIN_USER.role eq 'ADMIN'}">
+                    <li class="${requestScope.activePage eq 'USER_MANAGER' ? 'active' : ''}">
+                        <a href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER" aria-current="${requestScope.activePage eq 'USER_MANAGER' ? 'page' : 'false'}">
+                            <i class="fa-solid fa-users"></i> <span>Quản Lý Tài Khoản</span>
+                        </a>
+                    </li>
+                </c:if>
+
                 <li class="${requestScope.activePage eq 'SCHEDULE_MANAGER' ? 'active' : ''}">
                     <a href="${pageContext.request.contextPath}/MainController?action=SCHEDULE_MANAGER" aria-current="${requestScope.activePage eq 'SCHEDULE_MANAGER' ? 'page' : 'false'}">
                         <i class="fa-solid fa-calendar-days"></i> <span>Lịch Hẹn Giờ</span>
@@ -80,7 +87,7 @@
                 <span class="user-role">${LOGIN_USER.role}</span>
             </div>
         </div>
-                
+
         <div class="pull-right logout-box">
             <a href="${pageContext.request.contextPath}/MainController?acion=LOGOUT" class="logout-btn" title="Đăng xuất">
                 <i class="fa-solid fa-right-from-bracket"></i>

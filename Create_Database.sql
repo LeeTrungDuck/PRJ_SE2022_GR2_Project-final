@@ -49,11 +49,11 @@ create table tblDevice_Permission(
     permission_id INT IDENTITY(1,1) primary key,
     user_id varchar(20) references tblUser(user_id) not null,
     switch_id varchar(20) references tblSwitch(switch_id) not null,
-    canView bit default 1,
     canControl bit default 1,
     granted_by varchar(20) references tblUser(user_id),
     UNIQUE (user_id, switch_id),
     is_active bit DEFAULT 1
+    CONSTRAINT UQ_User_Switch UNIQUE (user_id, switch_id)
     )
 /* lưu lịch sử truy cập thiết bị*/
 create table tblControl_History(

@@ -44,6 +44,20 @@
 .dc-relay-card[data-on="true"] .dc-switch-track { background: var(--um-blue); box-shadow: 0 0 12px #2563eb55; }
 .dc-relay-card[data-on="true"] .dc-switch-track > span { transform: translateX(28px); background: #eeefff; }
 .dc-relay-card[data-on="true"] .dc-valve-badge { color: var(--um-green); }
+.dc-relay-card[data-esp-active="false"] {
+    background-color: #ffb4ab !important; /* Mã màu đỏ */
+    border-color: #bd2130 !important;
+    color: #0005 !important;
+}
+
+.dc-relay-card[data-esp-active="false"] .dc-location,
+.dc-relay-card[data-esp-active="false"] .dc-gpio,
+.dc-relay-card[data-esp-active="false"] .dc-relay-name,
+.dc-relay-card[data-esp-active="false"] .dc-relay-state,
+.dc-relay-card[data-esp-active="false"] .dc-status-label{
+    background-color: #ffb4ab !important;
+    color: #0005 !important;
+}
 .device-control-page .dc-action-button:disabled, .device-control-page .dc-switch:disabled { cursor: not-allowed; }
 .dc-preview-note { display: flex; align-items: baseline; gap: 7px; max-width: 75ch; margin: 20px 0 0; color: var(--um-muted); font-size: 11px; line-height: 1.7; }
 .dc-preview-note i { color: var(--um-primary); }

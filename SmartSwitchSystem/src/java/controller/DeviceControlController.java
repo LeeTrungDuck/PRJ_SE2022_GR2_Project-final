@@ -10,6 +10,7 @@ import dto.UserDTO;
 import enums.Role;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -46,38 +47,42 @@ public class DeviceControlController extends HttpServlet {
             HttpSession session = request.getSession(false);
             UserDTO user = (session == null) ? null : (UserDTO) session.getAttribute("LOGIN_USER");
             if (user == null) {
-                url = URLMap.getLOGIN_PAGE();
+                url = error;
+                request.setAttribute("ERROR","LOGIN PLS!");
             } else {
                 SwitchDAO dao = new SwitchDAO();
                 List<SwitchDTO> list = new ArrayList<>();
                 // lấy danh sách switch theo quyền (SwitchDAO) rồi đặt vào request
                 if (user.getRole() == Role.VIEWER) {
-                    //
+                    list = dao.getSwitchesForViewer(user.getUserId());
                 } else {
                     list = dao.findAll();
                 }
-                    request.setAttribute("list", list);
-                    url = success;
+                request.setAttribute("list", list);
+                url = success;
             }
-        } catch (Exception e) {
-            log("Error at DeviceControlController: " + e.toString());
-            request.setAttribute("ERROR", "Device Controller has an error, please try again!");
-        } finally {
+        } catch (SQLException ex) {
+            log("Error at DeviceControlController (SQL): " + ex.toString());
+            request.setAttribute("ERROR", "Device Controller has an error (SQL), please try again!");
+        } catch (ClassNotFoundException ex) {
+            log("Error at DeviceControlController (class): " + ex.toString());
+            request.setAttribute("ERROR", "Device Controller has an error(Class), please try again!");
+        }finally {
             request.getRequestDispatcher(url).forward(request, response);
-        }
     }
+}
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+/**
+ * Handles the HTTP <code>GET</code> method.
+ *
+ * @param request servlet request
+ * @param response servlet response
+ * @throws ServletException if a servlet-specific error occurs
+ * @throws IOException if an I/O error occurs
+ */
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -91,7 +96,7 @@ public class DeviceControlController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -102,7 +107,7 @@ public class DeviceControlController extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
-    public String getServletInfo() {
+public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 

@@ -19,7 +19,16 @@ public class SwitchDTO {
     private boolean active;
     private String espName;
     private String espHostName;
+    private boolean espActive;
     public SwitchDTO() {
+    }
+
+    public boolean isEspActive() {
+        return espActive;
+    }
+
+    public void setEspActive(boolean espActive) {
+        this.espActive = espActive;
     }
 
     public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status, boolean active,String espName,
@@ -34,6 +43,18 @@ public class SwitchDTO {
         this.espHostName = espHostName;
     }
 
+    public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status, boolean active, String espName, String espHostName, boolean espActive) {
+        this.switchId = switchId;
+        this.deviceId = deviceId;
+        this.switchName = switchName;
+        this.gpioPin = gpioPin;
+        this.status = status;
+        this.active = active;
+        this.espName = espName;
+        this.espHostName = espHostName;
+        this.espActive = espActive;
+    }
+    
     public String getSwitchId() {
         return switchId;
     }
