@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * HardwareClient
@@ -32,6 +36,10 @@ public class HardwareClient {
 
     private final String baseUrl;
     private static final int TIMEOUT_MS = 3000;
+    private static final Pattern SWITCH_STATUS_PATTERN = Pattern.compile(
+            "\\{\\s*\"gpio\"\\s*:\\s*(\\d+)\\s*,\\s*\"status\"\\s*:\\s*\"(on|off)\"\\s*\\}",
+            Pattern.CASE_INSENSITIVE
+    );
 
     public HardwareClient(String hostName)
             throws HardwareException {
@@ -219,6 +227,23 @@ public class HardwareClient {
         return callAndGetBody(
                 "/device/info"
         );
+    }
+
+    /**
+     * Lấy trạng thái của tất cả GPIO từ một lần gọi /device/info.
+     */
+    public Map<Integer, String> getSwitchStatuses() throws HardwareException {
+        Map<Integer, String> statuses = new LinkedHashMap<>();
+        String body = getDeviceInfo();
+        if (body == null) {
+            return statuses;
+        }
+
+        Matcher matcher = SWITCH_STATUS_PATTERN.matcher(body);
+        while (matcher.find()) {
+            statuses.put(Integer.valueOf(matcher.group(1)), matcher.group(2).toUpperCase());
+        }
+        return statuses;
     }
 
 

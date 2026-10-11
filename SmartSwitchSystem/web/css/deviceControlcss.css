@@ -63,6 +63,13 @@
 .dc-preview-note { display: flex; align-items: baseline; gap: 7px; max-width: 75ch; margin: 20px 0 0; color: var(--um-muted); font-size: 11px; line-height: 1.7; }
 .dc-preview-note i { color: var(--um-primary); }
 .dc-noscript { padding: 16px; border-radius: 4px; background: var(--um-raised); }
+.dc-pagination-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; }
+.dc-pagination-summary { margin: 0; color: var(--um-muted); font-size: 12px; line-height: 1.5; }
+.dc-pagination { display: flex; align-items: center; gap: 4px; }
+.dc-pagination a, .dc-pagination span { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; min-height: 32px; padding: 5px 8px; border-radius: 3px; font: 500 11px/1.5 var(--um-mono); text-decoration: none; }
+.dc-pagination a { background: var(--um-raised); color: var(--um-text); }
+.dc-pagination a:hover { background: #31394d; }
+.dc-pagination span { background: var(--um-blue); color: #ffffff; }
 @media (max-width: 1200px) {
     .dc-page-heading h1 { font-size: 26px; }
 }
@@ -73,6 +80,7 @@
     .dc-empty-state { min-height: 260px; padding: 32px 16px; }
     .dc-device-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 224px), 1fr)); }
     .dc-topbar-role { gap: 5px; font-size: 10px; }
+    .dc-pagination-row { align-items: flex-start; flex-direction: column; }
 }
 @media (prefers-reduced-motion: reduce) {
     .dc-action-button, .dc-switch-track, .dc-switch-track > span { transition: none; }

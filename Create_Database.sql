@@ -30,7 +30,7 @@ create table tblUser(
 create table tblESP32_Device(
     device_id varchar(20) primary key CHECK (device_id LIKE 'ESP%'),
     name nvarchar(50) not null,
-    host_name varchar(255) not null,
+    host_name varchar(255) not null unique,
     status VARCHAR(10) DEFAULT 'OFFLINE' CHECK (status IN ('ONLINE', 'OFFLINE', 'ERROR')), /* 3 trạng thái thiết bị*/
     last_seen DATETIME,
     is_active bit DEFAULT 1
@@ -42,7 +42,8 @@ create table tblSwitch(
     switch_name nvarchar(50) not null,
     gpio_pin TINYINT not null,
     status varchar(6) default 'OFF' check(status in('ON','OFF')),
-    is_active bit DEFAULT 1
+    is_active bit DEFAULT 1,
+    constraint UQ_DEVICE_GPIO unique(device_id,gpio_pin)
 )
 
 create table tblDevice_Permission(

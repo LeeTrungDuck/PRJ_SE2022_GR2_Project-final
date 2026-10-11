@@ -9,7 +9,6 @@ import dto.SwitchDTO;
 import dto.UserDTO;
 import enums.Role;
 import enums.SwitchStatus;
-import exception.HardwareException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -17,6 +16,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +38,8 @@ import utills.URLMap;
 public class DeviceControlController extends HttpServlet {
 
     private static final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
+    private static final int PAGE_SIZE = 20;
+    private static final int MAX_CONCURRENT_ESP_CHECKS = 5;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,10 +80,24 @@ public class DeviceControlController extends HttpServlet {
                 } else {
                     list = dao.findAll();
                 }
+                int totalSwitches = list.size();
+                int pageCount = Math.max(1, (totalSwitches + PAGE_SIZE - 1) / PAGE_SIZE);
+                int pageNumber = parsePageNumber(request.getParameter("page"));
+                pageNumber = Math.min(pageNumber, pageCount);
+                int startIndex = (pageNumber - 1) * PAGE_SIZE;
+                int endIndex = Math.min(startIndex + PAGE_SIZE, totalSwitches);
+                List<SwitchDTO> pageSwitches = list.subList(startIndex, endIndex);
+
                 if (request.getAttribute("ERROR") == null) {
-                    syncSwitchStatuses(dao, list, request);
+                    syncSwitchStatuses(dao, pageSwitches, request);
                 }
-                request.setAttribute("list", list);
+
+                request.setAttribute("list", new ArrayList<>(pageSwitches));
+                request.setAttribute("pageNumber", pageNumber);
+                request.setAttribute("pageCount", pageCount);
+                request.setAttribute("totalSwitches", totalSwitches);
+                request.setAttribute("firstSwitchNumber", totalSwitches == 0 ? 0 : startIndex + 1);
+                request.setAttribute("lastSwitchNumber", endIndex);
                 url = success;
             }
         } catch (SQLException ex) {
@@ -91,34 +111,98 @@ public class DeviceControlController extends HttpServlet {
     }
 }
 
+    private int parsePageNumber(String pageParameter) {
+        if (pageParameter == null) {
+            return 1;
+        }
+        try {
+            return Math.max(1, Integer.parseInt(pageParameter));
+        } catch (NumberFormatException ex) {
+            return 1;
+        }
+    }
+
     private void syncSwitchStatuses(SwitchDAO dao, List<SwitchDTO> switches,
             HttpServletRequest request) throws SQLException {
         Map<String, String> switchSyncErrors = new LinkedHashMap<>();
-
+        Map<String, List<SwitchDTO>> switchesByDevice = new LinkedHashMap<>();
         for (SwitchDTO sw : switches) {
+            switchesByDevice.computeIfAbsent(sw.getDeviceId(), key -> new ArrayList<>()).add(sw);
+        }
+
+        if (switchesByDevice.isEmpty()) {
+            request.setAttribute("switchSyncErrors", switchSyncErrors);
+            return;
+        }
+
+        ExecutorService executor = Executors.newFixedThreadPool(
+                Math.min(MAX_CONCURRENT_ESP_CHECKS, switchesByDevice.size()));
+        try {
+            List<String> deviceIds = new ArrayList<>(switchesByDevice.keySet());
+            List<Callable<Map<Integer, String>>> checks = new ArrayList<>();
+            for (String deviceId : deviceIds) {
+                String hostName = switchesByDevice.get(deviceId).get(0).getEspHostName();
+                checks.add(() -> new HardwareClient(hostName).getSwitchStatuses());
+            }
+
+            List<Future<Map<Integer, String>>> results;
             try {
-                String status = new HardwareClient(sw.getEspHostName())
-                        .getStatus(sw.getGpioPin());
-                if (!"ON".equals(status) && !"OFF".equals(status)) {
-                    switchSyncErrors.put(sw.getSwitchId(), "Lỗi kết nối");
+                results = executor.invokeAll(checks);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                log("Interrupted while checking ESP32 switch statuses: " + ex.getMessage());
+                markConnectionErrors(switches, switchSyncErrors);
+                request.setAttribute("switchSyncErrors", switchSyncErrors);
+                return;
+            }
+
+            for (int i = 0; i < deviceIds.size(); i++) {
+                String deviceId = deviceIds.get(i);
+                List<SwitchDTO> deviceSwitches = switchesByDevice.get(deviceId);
+                Map<Integer, String> statuses;
+                try {
+                    statuses = results.get(i).get();
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    log("Interrupted while reading ESP32 status result: " + ex.getMessage());
+                    markConnectionErrors(deviceSwitches, switchSyncErrors);
+                    continue;
+                } catch (ExecutionException ex) {
+                    Throwable cause = ex.getCause();
+                    log("Unable to sync switches for ESP32 " + deviceId + ": "
+                            + (cause == null ? ex.getMessage() : cause.getMessage()));
+                    markConnectionErrors(deviceSwitches, switchSyncErrors);
                     continue;
                 }
 
-                SwitchStatus actualStatus = SwitchStatus.valueOf(status);
-                SwitchStatus previousStatus = sw.getStatus();
-                sw.setStatus(actualStatus);
-                if (actualStatus != previousStatus
-                        && !dao.updateStatus(sw.getSwitchId(), actualStatus)) {
-                    switchSyncErrors.put(sw.getSwitchId(), "Không lưu được trạng thái");
+                for (SwitchDTO sw : deviceSwitches) {
+                    String status = statuses.get(sw.getGpioPin());
+                    if (!"ON".equals(status) && !"OFF".equals(status)) {
+                        switchSyncErrors.put(sw.getSwitchId(), "Lỗi kết nối");
+                        continue;
+                    }
+
+                    SwitchStatus actualStatus = SwitchStatus.valueOf(status);
+                    SwitchStatus previousStatus = sw.getStatus();
+                    sw.setStatus(actualStatus);
+                    if (actualStatus != previousStatus
+                            && !dao.updateStatus(sw.getSwitchId(), actualStatus)) {
+                        switchSyncErrors.put(sw.getSwitchId(), "Không lưu được trạng thái");
+                    }
                 }
-            } catch (HardwareException ex) {
-                log("Unable to sync switch " + sw.getSwitchId()
-                        + " from ESP32: " + ex.getMessage());
-                switchSyncErrors.put(sw.getSwitchId(), "Lỗi kết nối");
             }
+        } finally {
+            executor.shutdownNow();
         }
 
         request.setAttribute("switchSyncErrors", switchSyncErrors);
+    }
+
+    private void markConnectionErrors(List<SwitchDTO> switches,
+            Map<String, String> switchSyncErrors) {
+        for (SwitchDTO sw : switches) {
+            switchSyncErrors.put(sw.getSwitchId(), "Lỗi kết nối");
+        }
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -1,7 +1,9 @@
 insert into tblESP32_Device values ('ESP1',N'Phòng ngủ','esp32-switch1','ONLINE',null,1);
 insert into tblESP32_Device values ('ESP2',N'Phòng Bếp','esp32-switch2','ONLINE',null,1);
 insert into tblESP32_Device values ('ESP3',N'Phòng Khách','esp32-switch3','ONLINE',null,0);
-insert into tblESP32_Device values ('ESP4',N'Phòng ngủ 2','esp32-switch4','ONLINE',null,0);
+insert into tblESP32_Device values ('ESP4',N'Phòng ngủ 2','esp32-switch4','ONLINE',null,1);
+insert into tblESP32_Device values ('ESP5',N'Phòng ngủ 3','esp32-switch5','ONLINE',null,1);
+insert into tblESP32_Device values ('ESP6',N'Phòng ngủ 4','esp32-switch6','ONLINE',null,0);
 
 
 insert into tblUser values('U1',N'LeeDuck','123456',N'Lê Trung Đức','ADMIN',1,'ltrungduc05@gmail.com','0123456789')
@@ -14,9 +16,29 @@ insert into tblSwitch values ('SW2','ESP1',N'Đèn 2',5,'OFF',1);
 insert into tblSwitch values ('SW3','ESP1',N'Đèn 3',18,'OFF',1);
 insert into tblSwitch values ('SW4','ESP1',N'Đèn 4',19,'OFF',0);
 insert into tblSwitch values ('SW5','ESP2',N'Đèn 5',2,'OFF',1);
-insert into tblSwitch values ('SW6','ESP3',N'Đèn 6',5,'OFF',1);
+insert into tblSwitch values ('SW6','ESP2',N'Đèn 6',5,'OFF',1);
 insert into tblSwitch values ('SW7','ESP2',N'Đèn 7',18,'OFF',1);
-insert into tblSwitch values ('SW8','ESP3',N'Đèn 8',19,'OFF',1);
+insert into tblSwitch values ('SW8','ESP2',N'Đèn 8',19,'OFF',1);
+insert into tblSwitch values ('SW9','ESP3',N'Đèn 9',2,'OFF',1);
+insert into tblSwitch values ('SW10','ESP3',N'Đèn 10',5,'OFF',1);
+insert into tblSwitch values ('SW11','ESP3',N'Đèn 11',18,'OFF',1);
+insert into tblSwitch values ('SW12','ESP3',N'Đèn 12',19,'OFF',1);
+insert into tblSwitch values ('SW13','ESP4',N'Đèn 13',2,'OFF',1);
+insert into tblSwitch values ('SW14','ESP4',N'Đèn 14',5,'OFF',1);
+insert into tblSwitch values ('SW15','ESP4',N'Đèn 15',18,'OFF',1);
+insert into tblSwitch values ('SW16','ESP4',N'Đèn 16',19,'OFF',1);
+insert into tblSwitch values ('SW17','ESP5',N'Đèn 17',2,'OFF',1);
+insert into tblSwitch values ('SW18','ESP5',N'Đèn 18',5,'OFF',1);
+insert into tblSwitch values ('SW19','ESP5',N'Đèn 19',18,'OFF',1);
+insert into tblSwitch values ('SW20','ESP5',N'Đèn 20',19,'OFF',1);
+insert into tblSwitch values ('SW21','ESP6',N'Đèn 21',2,'OFF',1);
+insert into tblSwitch values ('SW22','ESP6',N'Máy Bơm',5,'OFF',1);
+insert into tblSwitch values ('SW23','ESP6',N'Đèn 23',18,'OFF',1);
+insert into tblSwitch values ('SW24','ESP6',N'Đèn 24',19,'OFF',1);
+
+
+
+
 
 
 

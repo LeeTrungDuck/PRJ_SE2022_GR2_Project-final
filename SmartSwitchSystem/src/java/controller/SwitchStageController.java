@@ -52,6 +52,7 @@ public class SwitchStageController extends HttpServlet {
             response.setContentType("text/html;charset=UTF-8");
             String url = new URLMap().getUrl("DEVICE_CONTROL");
             boolean redirectAfterAction = false;
+            int pageNumber = parsePageNumber(request.getParameter("page"));
             ControlHistoryDAO hisDao = new ControlHistoryDAO();
             try {
                 HttpSession session = request.getSession();
@@ -132,7 +133,7 @@ public class SwitchStageController extends HttpServlet {
                         session.removeAttribute(FLASH_ERROR_ATTRIBUTE);
                     }
                     response.sendRedirect(response.encodeRedirectURL(
-                            request.getContextPath() + url
+                            request.getContextPath() + url + "?page=" + pageNumber
                     ));
                 } else {
                     request.getRequestDispatcher(url).forward(request, response);
@@ -143,6 +144,17 @@ public class SwitchStageController extends HttpServlet {
             Logger.getLogger(SwitchStageController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(SwitchStageController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private int parsePageNumber(String pageParameter) {
+        if (pageParameter == null) {
+            return 1;
+        }
+        try {
+            return Math.max(1, Integer.parseInt(pageParameter));
+        } catch (NumberFormatException ex) {
+            return 1;
         }
     }
 

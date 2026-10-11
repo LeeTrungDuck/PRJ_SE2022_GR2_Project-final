@@ -70,6 +70,7 @@
                                     <!-- Các input hidden để truyền dữ liệu -->
                                     <input type="hidden" name="action" value="CHANGE_SWITCH_STAGE">
                                     <input name="id" value="${relay.switchId}" type="hidden">
+                                    <input name="page" value="${requestScope.pageNumber}" type="hidden">
 
                                     <!-- Nút bấm đồng bộ trạng thái bật/tắt theo Enum -->
                                     <button type="submit" name="uiOp" value="toggleRelay"
@@ -91,6 +92,40 @@
                         </article>
                     </c:forEach>
                 </section>
+                <c:if test="${requestScope.totalSwitches gt 0}">
+                    <div class="dc-pagination-row">
+                        <p class="dc-pagination-summary">
+                            Hiển thị ${requestScope.firstSwitchNumber}–${requestScope.lastSwitchNumber}
+                            trên ${requestScope.totalSwitches} switch
+                        </p>
+                        <c:if test="${requestScope.pageCount gt 1}">
+                            <nav class="dc-pagination" aria-label="Phân trang danh sách switch">
+                                <c:if test="${requestScope.pageNumber gt 1}">
+                                    <a href="${pageContext.request.contextPath}/DeviceControlController?page=${requestScope.pageNumber - 1}">
+                                        Trước
+                                    </a>
+                                </c:if>
+                                <c:forEach var="page" begin="1" end="${requestScope.pageCount}">
+                                    <c:choose>
+                                        <c:when test="${page eq requestScope.pageNumber}">
+                                            <span aria-current="page">${page}</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a href="${pageContext.request.contextPath}/DeviceControlController?page=${page}">
+                                                ${page}
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:forEach>
+                                <c:if test="${requestScope.pageNumber lt requestScope.pageCount}">
+                                    <a href="${pageContext.request.contextPath}/DeviceControlController?page=${requestScope.pageNumber + 1}">
+                                        Sau
+                                    </a>
+                                </c:if>
+                            </nav>
+                        </c:if>
+                    </div>
+                </c:if>
                 <footer class="ui-demo-footer">
 
                 </footer>
