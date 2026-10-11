@@ -143,7 +143,7 @@ public class HardwareClient {
         }
 
 
-        body = body.toLowerCase();
+        body = body.toLowerCase().replaceAll("\\s+", "");
 
 
         if (body.contains("\"status\":\"on\"")) {

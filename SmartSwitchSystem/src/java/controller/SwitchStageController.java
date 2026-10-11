@@ -63,19 +63,30 @@ public class SwitchStageController extends HttpServlet {
                 return;
             }
 
-            SwitchDTO sw = new SwitchDAO().findById(switchID);
+            SwitchDAO switchDAO = new SwitchDAO();
+            SwitchDTO sw = switchDAO.findById(switchID);
             if (sw == null) {
                 request.setAttribute("ERROR", "switch id is not exist!, please try again !");
                 return;
             }
 
             HardwareClient hardwareClient = new HardwareClient(sw.getEspHostName());
-            String statusStr = request.getParameter("status");
-            SwitchStatus status = "ON".equalsIgnoreCase(statusStr) ? SwitchStatus.ON : SwitchStatus.OFF;
-            if (status.equals(SwitchStatus.ON)) {
-                hardwareClient.turnOn(sw.getGpioPin());
-            } else {
-                hardwareClient.turnOff(sw.getGpioPin());
+            String currentStatus = hardwareClient.getStatus(sw.getGpioPin());
+            if (!"ON".equals(currentStatus) && !"OFF".equals(currentStatus)) {
+                request.setAttribute("ERROR", "Không đọc được trạng thái hiện tại của switch.");
+                return;
+            }
+
+            SwitchStatus status = "ON".equals(currentStatus) ? SwitchStatus.OFF : SwitchStatus.ON;
+            boolean commandSucceeded = status == SwitchStatus.ON
+                    ? hardwareClient.turnOn(sw.getGpioPin())
+                    : hardwareClient.turnOff(sw.getGpioPin());
+            if (!commandSucceeded) {
+                request.setAttribute("ERROR", "ESP32 không xác nhận lệnh bật/tắt switch.");
+                return;
+            }
+            if (!switchDAO.updateStatus(switchID, status)) {
+                request.setAttribute("ERROR", "Thiết bị đã đổi trạng thái nhưng không thể lưu trạng thái vào hệ thống.");
             }
 
         } catch (SQLException ex) {

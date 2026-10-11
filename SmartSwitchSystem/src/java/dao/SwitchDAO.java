@@ -139,6 +139,15 @@ public class SwitchDAO {
         }
     }
 
+    public boolean updateStatus(String switchId, SwitchStatus status) throws SQLException {
+        String sql = "UPDATE tblSwitch SET status = ? WHERE switch_id = ?";
+        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status.name());
+            ps.setString(2, switchId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
     public boolean delete(String switchId) throws SQLException {
         try ( PreparedStatement ps = connection.prepareStatement("UPDATE tblSwitch SET is_active = 0 WHERE switch_id = ?")) {
             ps.setString(1, switchId);

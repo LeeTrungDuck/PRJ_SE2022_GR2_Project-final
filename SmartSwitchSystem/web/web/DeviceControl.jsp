@@ -69,8 +69,6 @@
                                     <!-- Các input hidden để truyền dữ liệu -->
                                     <input type="hidden" name="action" value="CHANGE_SWITCH_STAGE">
                                     <input name="id" value="${relay.switchId}" type="hidden">
-                                    <input name="hostName" value="${relay.espHostName}" type="hidden">
-                                    <input name="status" value="${relay.status}" type="hidden">
 
                                     <!-- Nút bấm đồng bộ trạng thái bật/tắt theo Enum -->
                                     <button type="submit" name="uiOp" value="toggleRelay"
