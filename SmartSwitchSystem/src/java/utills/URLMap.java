@@ -19,7 +19,7 @@ public class URLMap {
 
     public URLMap() {
         urlMap.put("LOGIN", "LoginController");
-        urlMap.put("LOGOUT", "LogOutController");
+        urlMap.put("LOGOUT", "/LogOutController");
         urlMap.put("DEVICE_CONTROL", "/DeviceControlController");
         urlMap.put("USER_MANAGER", "UserManager.jsp");
         urlMap.put("PERMISSION_MANAGER", "PermissionManager.jsp");

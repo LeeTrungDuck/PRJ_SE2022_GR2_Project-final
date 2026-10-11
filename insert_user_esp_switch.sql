@@ -30,9 +30,23 @@ insert into tblDevice_Permission values('U2','SW8',0,'U1',1);
 insert into tblDevice_Permission values('U2','SW3',1,'U1',1);
 
 
+insert into tblControl_History values('U3','SW2','ON','ON',GETDATE());
+insert into tblControl_History values('U3','SW2','OFF','OFF',GETDATE());
+insert into tblControl_History values('U3','SW2','ON','ON',GETDATE());
+insert into tblControl_History values('U3','SW2','OFF','OFF',GETDATE());
+
+
+insert into tblSchedule values('SW2','U3','ON','11:00',1,1);
+insert into tblSchedule values('SW2','U3','ON','12:00',1,1);
+insert into tblSchedule values('SW2','U3','ON','13:00',1,1);
+insert into tblSchedule values('SW2','U3','ON','14:00',1,1);
+
+
 select * from tblSwitch
 select * from tblESP32_Device
 select * from tblUser
 select * from tblDevice_Permission
+select * from tblControl_History
+select * from tblSchedule
 
 

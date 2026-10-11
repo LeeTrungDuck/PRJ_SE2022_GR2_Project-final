@@ -22,7 +22,9 @@ public class ControlHistoryDTO {
 
     public ControlHistoryDTO() {
     }
-
+    public LocalDateTime getTimeNow(){
+        return LocalDateTime.now();
+    }
     public ControlHistoryDTO(int historyId, String userId, String switchId, Command command, ControlResult result, LocalDateTime controlTime) {
         this.historyId = historyId;
         this.userId = userId;

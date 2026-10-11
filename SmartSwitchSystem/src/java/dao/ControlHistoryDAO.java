@@ -84,7 +84,7 @@ public class ControlHistoryDAO {
         return list;
     }
 
-    public boolean insert(ControlHistoryDTO history) {
+    public boolean insert(ControlHistoryDTO history) throws SQLException {
         String sql = "INSERT INTO tblControl_History(user_id, switch_id, command, result, control_time) VALUES(?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, history.getUserId());
@@ -95,9 +95,6 @@ public class ControlHistoryDAO {
                     ? new Timestamp(System.currentTimeMillis())
                     : Timestamp.valueOf(history.getControlTime()));
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 }

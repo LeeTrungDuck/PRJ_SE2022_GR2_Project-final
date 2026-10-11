@@ -48,7 +48,7 @@ public class DeviceControlController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String success = "web/DeviceControl.jsp";
-        String error = URLMap.getERROR_PAGE();
+        String error = URLMap.getLOGIN_PAGE();
         String url = error;
         try {
             HttpSession session = request.getSession(false);
