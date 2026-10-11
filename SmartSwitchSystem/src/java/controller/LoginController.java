@@ -40,7 +40,7 @@ public class LoginController extends HttpServlet {
                 return; // Dừng hàm ngay lập tức, không chạy xuống dưới nữa
             } else {
                 // Đăng nhập thất bại (Sai user/pass): Forward về trang login kèm thông báo lỗi
-                request.setAttribute("ERROR", "USER DOES NOT EXIST!");
+                request.setAttribute("ERROR", "tài khoản hoặc mật khẩu sai!");
                 request.getRequestDispatcher(URLMap.getLOGIN_PAGE()).forward(request, response);
             }
 

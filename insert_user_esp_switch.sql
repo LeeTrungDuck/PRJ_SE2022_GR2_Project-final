@@ -23,11 +23,11 @@ insert into tblSwitch values ('SW8','ESP3',N'Đèn 8',19,'OFF',1);
 insert into tblDevice_Permission values('U3','SW2',1,'U1',1);
 insert into tblDevice_Permission values('U3','SW3',0,'U1',1);
 insert into tblDevice_Permission values('U3','SW4',1,'U1',1);
-insert into tblDevice_Permission values('U3','SW1',0,'U1',1);
+insert into tblDevice_Permission values('U3','SW1',1,'U1',1);
 insert into tblDevice_Permission values('U2','SW6',1,'U1',1);
 insert into tblDevice_Permission values('U2','SW7',1,'U1',1);
 insert into tblDevice_Permission values('U2','SW8',0,'U1',1);
-
+insert into tblDevice_Permission values('U2','SW3',1,'U1',1);
 
 
 select * from tblSwitch

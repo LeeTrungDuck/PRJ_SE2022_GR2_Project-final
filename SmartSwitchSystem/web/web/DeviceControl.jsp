@@ -25,7 +25,7 @@
 
             <main class="um-main dc-main" id="main-content">
 
-                <c:if test="${not empty ERROR and not ui.dialog}">
+                <c:if test="${not empty requestScope.ERROR}">
                     <p class="ui-notice ui-error" role="alert">
                         <c:out value="${ERROR}" />
                     </p>
@@ -36,6 +36,7 @@
                     <h1>Bảng Điều Khiển Công Tắc <span>(Device Control)</span>
                     </h1>
                 </header>
+                <p class="ui-notice">Trạng thái được đồng bộ từ ESP32 khi tải lại trang.</p>
                 <section class="dc-device-grid" aria-label="Danh sách công tắc">
                     <c:forEach var="relay" items="${requestScope.list}">
                         <article class="dc-relay-card" data-on="${relay.status eq 'ON'}" data-esp-active="${relay.espActive}">
@@ -82,6 +83,11 @@
                                     </button>
                                 </form>
                             </div>
+                            <c:if test="${not empty requestScope.switchSyncErrors[relay.switchId]}">
+                                <p class="dc-sync-error" role="status">
+                                    <c:out value="${requestScope.switchSyncErrors[relay.switchId]}" />
+                                </p>
+                            </c:if>
                         </article>
                     </c:forEach>
                 </section>

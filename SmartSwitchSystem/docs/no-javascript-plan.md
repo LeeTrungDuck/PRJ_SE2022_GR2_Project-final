@@ -2,16 +2,20 @@
 
 Status: complete
 
-Scope: giữ giao diện hiện có của Login, User, Permission, Account, Device Control,
-Device/Switch, Schedule và Control History. Chuyển dữ liệu minh họa và các thao tác
-đang nằm trong JavaScript sang Java; không thêm kết nối database hoặc ESP32.
+Scope ban đầu: giữ giao diện hiện có của Login, User, Permission, Account,
+Device Control, Device/Switch, Schedule và Control History. Chuyển dữ liệu minh
+họa và các thao tác đang nằm trong JavaScript sang Java; không thêm kết nối
+database hoặc ESP32. Cập nhật sau: Device Control đồng bộ trạng thái phần cứng
+thực theo mô tả bên dưới.
 
 1. Tạo state minh họa riêng cho từng HTTP session, controller nhận form, kiểm tra
    đầu vào/CSRF và chuyển dữ liệu hiển thị sang JSP. POST thành công redirect GET.
 2. Render danh sách và trạng thái bằng JSTL. Dùng form GET cho lọc/tìm kiếm,
    POST cho thay đổi. Hộp thoại mở/đóng bằng link và response server.
 3. Giữ các chức năng quản lý; thay sao chép JSON tự động bằng tải JSON/chọn và
-   Ctrl+C. Giờ chạy kế được tính khi tải trang theo Asia/Ho_Chi_Minh.
+   Ctrl+C. Giờ chạy kế được tính khi tải trang theo Asia/Ho_Chi_Minh. Trang
+   Device Control đọc trạng thái thực từ ESP32 khi tải trang; người dùng tải
+   lại thủ công để cập nhật trạng thái công tắc vật lý.
 4. Bỏ cả 8 file JS, script include và các phụ thuộc jQuery/Bootstrap JS còn lại.
 5. Kiểm tra biên dịch Java, JSP trên Tomcat, thao tác bằng HTTP session và các
    trường hợp đầu vào không hợp lệ, bảo vệ root, CSRF, escaping, cách ly session.
@@ -29,7 +33,9 @@ Implemented:
   Sidebar, màu chữ sáng và CSS hiện có được giữ. Không còn file `.js`, thẻ
   `<script>`, inline event handler hoặc URL `javascript:` trong `web`.
 - Đổi trạng thái hoặc lưu form sẽ tải lại trang. JSON có thể tải xuống;
-  lịch chạy kế tính khi tải trang. Không có đếm ngược hoặc cập nhật trực tiếp.
+  lịch chạy kế tính khi tải trang. Device Control đồng bộ trạng thái switch từ
+  ESP32 mỗi lần tải; người dùng chủ động tải lại trang để cập nhật. Lỗi đồng bộ
+  hiển thị riêng trong thẻ switch bị ảnh hưởng; switch khác vẫn tiếp tục cập nhật.
 - Mỗi session giữ dữ liệu riêng; nút “Đặt lại dữ liệu mẫu” phục hồi dữ liệu ban đầu.
   OTP `246810` chỉ minh họa; mật khẩu nhập vào không được lưu. Luồng xác thực
   hiện có không được thay đổi để bổ sung database hay kiểm tra tài khoản thật.

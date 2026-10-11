@@ -31,6 +31,8 @@ import utills.URLMap;
 @WebServlet(name = "SwitchStageController", urlPatterns = {"/SwitchStageController"})
 public class SwitchStageController extends HttpServlet {
 
+    private static final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,29 +46,31 @@ public class SwitchStageController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = new URLMap().getUrl("DEVICE_CONTROL");
+        boolean redirectAfterAction = false;
         try {
             HttpSession session = request.getSession();
             UserDTO user = (UserDTO) session.getAttribute("LOGIN_USER");
             String switchID = request.getParameter("id");
             if (switchID == null || switchID.trim().isEmpty()) {
-                request.setAttribute("ERROR", "Switch ID is missing, please try again!");
+                request.setAttribute("ERROR", "Switch ID không được để trống ,vui lòng thử lại!");
                 return;
             }
             if (user == null) {
-                request.setAttribute("ERROR", "THIS ACTION NEED TO BE LOGIN!");
+                request.setAttribute("ERROR", "bạn cần phải đăng nhập trước!");
                 url = URLMap.getLOGIN_PAGE();
                 return;
             }
+            redirectAfterAction = true;
             DevicePermissionDTO permission = new DevicePermissionDAO().getUserPermission(switchID, user.getUserId());
-            if (permission == null || !permission.isCanControl()) {
-                request.setAttribute("ERROR", "You cannot do this!, please try again!");
+            if (permission == null || !permission.isActive() || !permission.isCanControl()) {
+                request.setAttribute("ERROR", "Bạn không có quyền điều khiển công tắc này.");
                 return;
             }
 
             SwitchDAO switchDAO = new SwitchDAO();
             SwitchDTO sw = switchDAO.findById(switchID);
             if (sw == null) {
-                request.setAttribute("ERROR", "switch id is not exist!, please try again !");
+                request.setAttribute("ERROR", "switch ID không có trong danh sách có thể điều khiển, kiểm tra lại Switch id hoặc trạng thái active của esp");
                 return;
             }
 
@@ -97,9 +101,23 @@ public class SwitchStageController extends HttpServlet {
             request.setAttribute("ERROR", "Class not found, please try again!");
         } catch (HardwareException ex) {
             Logger.getLogger(SwitchStageController.class.getName()).log(Level.SEVERE, null, ex);
-            request.setAttribute("ERROR", ex.getMessage()+" Hardware Connect fail, please try again!");
+            request.setAttribute("ERROR", "Không thể kết nối hoặc giao tiếp với ESP32: "
+                    + ex.getMessage());
         } finally {
-            request.getRequestDispatcher(url).forward(request, response);
+            if (redirectAfterAction) {
+                HttpSession session = request.getSession();
+                Object error = request.getAttribute("ERROR");
+                if (error != null) {
+                    session.setAttribute(FLASH_ERROR_ATTRIBUTE, error);
+                } else {
+                    session.removeAttribute(FLASH_ERROR_ATTRIBUTE);
+                }
+                response.sendRedirect(response.encodeRedirectURL(
+                        request.getContextPath() + url
+                ));
+            } else {
+                request.getRequestDispatcher(url).forward(request, response);
+            }
         }
     }
 
