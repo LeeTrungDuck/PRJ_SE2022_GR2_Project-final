@@ -18,13 +18,17 @@ import utills.DBConnection;
  *
  * @author ADMIN
  */
-public class SwitchDAO {
+public class SwitchDAO implements AutoCloseable {
 
-    private Connection connection;
+    private final Connection connection;
 
     private static final String SELECT
             = " SELECT sw.switch_id, sw.device_id, sw.switch_name, sw.gpio_pin, sw.status, sw.is_active, esp.name as esp_name, esp.host_name as esp_host_name, esp.is_active as is_active_esp "
             + " FROM tblSwitch sw  join tblESP32_Device esp on sw.device_id = esp.device_id ";
+    private static final String INSERT = "INSERT INTO tblSwitch(switch_id, device_id, switch_name, gpio_pin, status, is_active) VALUES(?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE_DETAILS = "UPDATE tblSwitch SET device_id = ?, switch_name = ?, gpio_pin = ? WHERE switch_id = ? AND is_active = 1";
+    private static final String UPDATE_STATUS = "UPDATE tblSwitch SET status = ? WHERE switch_id = ?";
+    private static final String DELETE = "UPDATE tblSwitch SET is_active = 0 WHERE switch_id = ? AND is_active = 1";
 
     public SwitchDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
@@ -105,7 +109,7 @@ public class SwitchDAO {
 
     public List<SwitchDTO> findAll() throws SQLException {
         List<SwitchDTO> list = new ArrayList<>();
-        try ( PreparedStatement ps = connection.prepareStatement(SELECT);  ResultSet rs = ps.executeQuery()) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE sw.is_active = 1 AND esp.is_active = 1");  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(map(rs));
             }
@@ -114,8 +118,7 @@ public class SwitchDAO {
     }
 
     public boolean insert(SwitchDTO sw) throws SQLException {
-        String sql = "INSERT INTO tblSwitch(switch_id, device_id, switch_name, gpio_pin, status, is_active) VALUES(?, ?, ?, ?, ?, ?)";
-        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
+        try ( PreparedStatement ps = connection.prepareStatement(INSERT)) {
             ps.setString(1, sw.getSwitchId());
             ps.setString(2, sw.getDeviceId());
             ps.setString(3, sw.getSwitchName());
@@ -127,21 +130,17 @@ public class SwitchDAO {
     }
 
     public boolean update(SwitchDTO sw) throws SQLException {
-        String sql = "UPDATE tblSwitch SET device_id = ?, switch_name = ?, gpio_pin = ?, status = ?, is_active = ? WHERE switch_id = ?";
-        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
+        try ( PreparedStatement ps = connection.prepareStatement(UPDATE_DETAILS)) {
             ps.setString(1, sw.getDeviceId());
             ps.setString(2, sw.getSwitchName());
             ps.setInt(3, sw.getGpioPin());
-            ps.setString(4, sw.getStatus().name());
-            ps.setBoolean(5, sw.isActive());
-            ps.setString(6, sw.getSwitchId());
+            ps.setString(4, sw.getSwitchId());
             return ps.executeUpdate() > 0;
         }
     }
 
     public boolean updateStatus(String switchId, SwitchStatus status) throws SQLException {
-        String sql = "UPDATE tblSwitch SET status = ? WHERE switch_id = ?";
-        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
+        try ( PreparedStatement ps = connection.prepareStatement(UPDATE_STATUS)) {
             ps.setString(1, status.name());
             ps.setString(2, switchId);
             return ps.executeUpdate() > 0;
@@ -149,9 +148,14 @@ public class SwitchDAO {
     }
 
     public boolean delete(String switchId) throws SQLException {
-        try ( PreparedStatement ps = connection.prepareStatement("UPDATE tblSwitch SET is_active = 0 WHERE switch_id = ?")) {
+        try ( PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setString(1, switchId);
             return ps.executeUpdate() > 0;
         }
+    }
+
+    @Override
+    public void close() throws SQLException {
+        connection.close();
     }
 }

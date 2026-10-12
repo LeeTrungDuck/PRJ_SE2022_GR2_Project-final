@@ -20,10 +20,11 @@ import utills.DBConnection;
  *
  * @author ADMIN
  */
-public class ControlHistoryDAO {
-    private Connection connection;
+public class ControlHistoryDAO implements AutoCloseable {
+    private final Connection connection;
 
     private static final String SELECT = "SELECT history_id, user_id, switch_id, command, result, control_time FROM tblControl_History";
+    private static final String INSERT = "INSERT INTO tblControl_History(user_id, switch_id, command, result, control_time) VALUES(?, ?, ?, ?, ?)";
 
     public ControlHistoryDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
@@ -41,33 +42,28 @@ public class ControlHistoryDAO {
         return h;
     }
 
-    public ControlHistoryDTO findById(int id) {
+    public ControlHistoryDTO findById(int id) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE history_id = ?")) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return map(rs);
-                }
+                return rs.next() ? map(rs) : null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
-    public List<ControlHistoryDTO> findByUserId(String userId) {
+    public List<ControlHistoryDTO> findByUserId(String userId) throws SQLException {
         return query(SELECT + " WHERE user_id = ? ORDER BY control_time DESC", userId);
     }
 
-    public List<ControlHistoryDTO> findBySwitchId(String switchId) {
+    public List<ControlHistoryDTO> findBySwitchId(String switchId) throws SQLException {
         return query(SELECT + " WHERE switch_id = ? ORDER BY control_time DESC", switchId);
     }
 
-    public List<ControlHistoryDTO> findAll() {
+    public List<ControlHistoryDTO> findAll() throws SQLException {
         return query(SELECT + " ORDER BY control_time DESC", null);
     }
 
-    private List<ControlHistoryDTO> query(String sql, String param) {
+    private List<ControlHistoryDTO> query(String sql, String param) throws SQLException {
         List<ControlHistoryDTO> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             if (param != null) {
@@ -78,15 +74,12 @@ public class ControlHistoryDAO {
                     list.add(map(rs));
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return list;
     }
 
     public boolean insert(ControlHistoryDTO history) throws SQLException {
-        String sql = "INSERT INTO tblControl_History(user_id, switch_id, command, result, control_time) VALUES(?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(INSERT)) {
             ps.setString(1, history.getUserId());
             ps.setString(2, history.getSwitchId());
             ps.setString(3, history.getCommand().name());
@@ -96,5 +89,10 @@ public class ControlHistoryDAO {
                     : Timestamp.valueOf(history.getControlTime()));
             return ps.executeUpdate() > 0;
         }
+    }
+
+    @Override
+    public void close() throws SQLException {
+        connection.close();
     }
 }

@@ -141,6 +141,18 @@ public final class ManagementControllerTest {
         grant.put("canView",false);grant.put("canControl",false);SqlCapture revoke=new SqlCapture();revoke.existingPermissionId=7;new DevicePermissionDAO(revoke.connection).saveMatrix("U2",matrix,"U1");check(revoke.committed&&revoke.statements.stream().anyMatch(x->x.startsWith("UPDATE tblDevice_Permission SET is_active=0"))&&revoke.statements.stream().noneMatch(x->x.startsWith("DELETE")),"matrix revoke performs soft deletion");
         String hash=PasswordUtil.hash("Password12!");check(hash.length()<=50&&PasswordUtil.verify("Password12!",hash)&&!PasswordUtil.verify("wrong",hash)&&!PasswordUtil.verify("abc","P1$bad"),"password hash fits schema and verifies safely");
         check("/UserManagerController".equals(new URLMap().getUrl("USER_MANAGER"))&&"/PermissionManagementController".equals(new URLMap().getUrl("PERMISSION_MANAGER"))&&"/AccountManagementController".equals(new URLMap().getUrl("ACCOUNT_MANAGER")),"JSP action keys map exactly to servlet URL patterns");
+        URLMap routes=new URLMap();
+        check("/DeviceManagementController".equals(routes.getUrl("DEVICE_MANAGER"))
+                &&"/ScheduleManagementController".equals(routes.getUrl("SCHEDULE_MANAGER"))
+                &&"/ControlHistoryController".equals(routes.getUrl("CONTROL_HISTORY")),
+                "device, schedule and history actions route to their MVC controllers");
+        MainController main=new MainController();
+        r.reset("GET");main.doGet(r.request,r.response);
+        check("/web/login.jsp".equals(r.forward),"missing MainController action safely opens login");
+        r.reset("GET","action","UNKNOWN");main.doGet(r.request,r.response);
+        check("/web/login.jsp".equals(r.forward),"unknown MainController action safely opens login");
+        r.reset("GET","action","SCHEDULE_MANAGER");main.doGet(r.request,r.response);
+        check("/ScheduleManagementController".equals(r.forward),"MainController forwards schedule action to its servlet");
     }
     public static void main(String[] args) throws Exception { run();System.out.println("PASS: "+checks+" controller/JDBC/password checks. No real database writes."); }
 }

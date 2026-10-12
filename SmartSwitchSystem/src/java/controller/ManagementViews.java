@@ -7,8 +7,11 @@ import enums.Role;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
-/** DTO-to-JSP view maps. No seed/demo state and no database writes here. */
+/**
+ * DTO-to-JSP view maps. No seed/demo state and no database writes here.
+ */
 final class ManagementViews {
+
     private final ManagementSupport support = new ManagementSupport();
 
     ManagementViews() {
@@ -17,8 +20,9 @@ final class ManagementViews {
     Map<String, Map<String, Object>> permissionMatrix(String viewer, List<SwitchDTO> switches,
             List<DevicePermissionDTO> permissions) {
         Map<String, Map<String, Object>> matrix = new LinkedHashMap<>();
-        for (SwitchDTO sw : switches)
+        for (SwitchDTO sw : switches) {
             matrix.put(sw.getSwitchId(), support.row("canView", false, "canControl", false));
+        }
         for (DevicePermissionDTO permission : permissions) {
             if (viewer.equals(permission.getUserId()) && matrix.containsKey(permission.getSwitchId())) {
                 matrix.put(permission.getSwitchId(), support.row("canView", permission.isActive(), "canControl",
@@ -43,11 +47,14 @@ final class ManagementViews {
 
     Map<String, Object> bound(HttpServletRequest r, Map<String, Object> defaults) {
         Map<String, Object> value = support.copyMap(defaults);
-        if ("POST".equals(r.getMethod()))
-            for (String key : Arrays.asList("fullName", "userName", "email", "phone", "role"))
-                if (r.getParameter(key) != null)
+        if ("POST".equals(r.getMethod())) {
+            for (String key : Arrays.asList("fullName", "userName", "email", "phone", "role")) {
+                if (r.getParameter(key) != null) {
                     value.put(key, r.getParameter(key).trim().substring(0,
                             Math.min(254, r.getParameter(key).trim().length())));
+                }
+            }
+        }
         return value;
     }
 
@@ -79,8 +86,9 @@ final class ManagementViews {
             page = Math.max(1, Math.min(count, Integer.parseInt(support.param(r, "p"))));
         } catch (NumberFormatException ignored) {
         }
-        for (int i = (page - 1) * 6; i < Math.min(page * 6, users.size()); i++)
+        for (int i = (page - 1) * 6; i < Math.min(page * 6, users.size()); i++) {
             list.add(user(users.get(i), actor));
+        }
         ui.putAll(support.row("users", list, "pageNumber", page, "pageCount", count));
         String form = support.str(ui.get("form"));
         if ("add".equals(form)) {
@@ -88,9 +96,11 @@ final class ManagementViews {
                     bound(r, support.row("role", "VIEWER")), "postOperation", "addUser"));
         } else if (Arrays.asList("edit", "password", "lock", "delete").contains(form)) {
             UserDTO target = null;
-            for (UserDTO user : users)
-                if (user.getUserId().equals(support.param(r, "id")))
+            for (UserDTO user : users) {
+                if (user.getUserId().equals(support.param(r, "id"))) {
                     target = user;
+                }
+            }
             support.require(target != null, "Không tìm thấy tài khoản.");
             support.require(!target.getUserId().equals(actor.getUserId()),
                     "Sửa tài khoản của bạn tại Thông Tin Tài Khoản.");
@@ -99,8 +109,8 @@ final class ManagementViews {
             ui.putAll(support.row("dialog", true, "target", user(target, actor), "edit", bound(r, user(target, actor)),
                     "dialogTitle",
                     "edit".equals(form) ? "Chỉnh Sửa Người Dùng"
-                            : "password".equals(form) ? "Đặt Lại Mật Khẩu"
-                                    : "lock".equals(form) ? "Đổi Trạng Thái Tài Khoản?" : "Xóa Mềm Tài Khoản?",
+                    : "password".equals(form) ? "Đặt Lại Mật Khẩu"
+                    : "lock".equals(form) ? "Đổi Trạng Thái Tài Khoản?" : "Xóa Mềm Tài Khoản?",
                     "postOperation", op));
         }
         return ui;
@@ -114,32 +124,40 @@ final class ManagementViews {
         List<Map<String, Object>> people = new ArrayList<>();
         for (UserDTO viewer : viewers) {
             int count = 0;
-            for (Map<String, Object> grant : drafts.get(viewer.getUserId()).values())
-                if (support.yes(grant.get("canView")))
+            for (Map<String, Object> grant : drafts.get(viewer.getUserId()).values()) {
+                if (support.yes(grant.get("canView"))) {
                     count++;
-            if (selected.equals(viewer.getUserId()))
+                }
+            }
+            if (selected.equals(viewer.getUserId())) {
                 active = viewer;
+            }
             if (support.normalize(viewer.getFullName() + " " + viewer.getUserName() + " " + viewer.getUserId())
-                    .contains(support.normalize(ui.get("q"))))
+                    .contains(support.normalize(ui.get("q")))) {
                 people.add(support.row("id", viewer.getUserId(), "name", viewer.getFullName(), "initials",
                         support.initials(viewer.getFullName()), "grantCount", count, "selected",
                         selected.equals(viewer.getUserId())));
+            }
         }
-        if (!selected.isEmpty())
+        if (!selected.isEmpty()) {
             support.require(active != null, "Không tìm thấy Viewer đang hoạt động.");
+        }
         Map<String, Map<String, Object>> matrix = active == null ? new LinkedHashMap<String, Map<String, Object>>()
                 : drafts.get(selected);
         Map<String, Map<String, Object>> groups = new LinkedHashMap<>();
         int granted = 0;
         for (SwitchDTO sw : switches) {
-            if (!groups.containsKey(sw.getDeviceId()))
+            if (!groups.containsKey(sw.getDeviceId())) {
                 groups.put(sw.getDeviceId(), support.row("name", sw.getEspName(), "ip", sw.getEspHostName(), "location",
                         sw.getDeviceId(), "switches", new ArrayList<Object>()));
+            }
             Map<String, Object> grant = matrix.get(sw.getSwitchId());
-            if (grant == null)
+            if (grant == null) {
                 grant = support.row("canView", false, "canControl", false);
-            if (support.yes(grant.get("canView")))
+            }
+            if (support.yes(grant.get("canView"))) {
                 granted++;
+            }
             Map<String, Object> item = support.row("id", sw.getSwitchId(), "name", sw.getSwitchName(), "gpio",
                     sw.getGpioPin(), "description", "Switch ID: " + sw.getSwitchId(), "icon", "fa-plug");
             item.putAll(grant);
@@ -152,8 +170,9 @@ final class ManagementViews {
                 "permissionDevices", new ArrayList<>(groups.values()), "permissionCount", granted, "permissionTotal",
                 switches.size(), "dirty",
                 active != null && !matrix.equals(permissionMatrix(selected, switches, records))));
-        if ("revoke".equals(ui.get("form")) && active != null)
+        if ("revoke".equals(ui.get("form")) && active != null) {
             ui.putAll(support.row("dialog", true, "dialogTitle", "Hủy Toàn Bộ Quyền?"));
+        }
         return ui;
     }
 }

@@ -9,6 +9,7 @@ import dto.SwitchDTO;
 import dto.UserDTO;
 import enums.Role;
 import enums.SwitchStatus;
+import exception.HardwareException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -72,33 +73,38 @@ public class DeviceControlController extends HttpServlet {
                     request.setAttribute("ERROR","LOGIN PLS!");
                 }
             } else {
-                SwitchDAO dao = new SwitchDAO();
-                List<SwitchDTO> list = new ArrayList<>();
-                // lấy danh sách switch theo quyền (SwitchDAO) rồi đặt vào request
-                if (user.getRole() == Role.VIEWER) {
-                    list = dao.getSwitchesForViewer(user.getUserId());
-                } else {
-                    list = dao.findAll();
-                }
-                int totalSwitches = list.size();
-                int pageCount = Math.max(1, (totalSwitches + PAGE_SIZE - 1) / PAGE_SIZE);
-                int pageNumber = parsePageNumber(request.getParameter("page"));
-                pageNumber = Math.min(pageNumber, pageCount);
-                int startIndex = (pageNumber - 1) * PAGE_SIZE;
-                int endIndex = Math.min(startIndex + PAGE_SIZE, totalSwitches);
-                List<SwitchDTO> pageSwitches = list.subList(startIndex, endIndex);
-
-                if (request.getAttribute("ERROR") == null) {
-                    syncSwitchStatuses(dao, pageSwitches, request);
-                }
-
-                request.setAttribute("list", new ArrayList<>(pageSwitches));
-                request.setAttribute("pageNumber", pageNumber);
-                request.setAttribute("pageCount", pageCount);
-                request.setAttribute("totalSwitches", totalSwitches);
-                request.setAttribute("firstSwitchNumber", totalSwitches == 0 ? 0 : startIndex + 1);
-                request.setAttribute("lastSwitchNumber", endIndex);
                 url = success;
+                try (SwitchDAO dao = new SwitchDAO()) {
+                    List<SwitchDTO> list;
+                    if (user.getRole() == Role.VIEWER) {
+                        list = dao.getSwitchesForViewer(user.getUserId());
+                    } else {
+                        list = dao.findAll();
+                    }
+                    int totalSwitches = list.size();
+                    int pageCount = Math.max(1, (totalSwitches + PAGE_SIZE - 1) / PAGE_SIZE);
+                    int pageNumber = parsePageNumber(request.getParameter("page"));
+                    pageNumber = Math.min(pageNumber, pageCount);
+                    int startIndex = (pageNumber - 1) * PAGE_SIZE;
+                    int endIndex = Math.min(startIndex + PAGE_SIZE, totalSwitches);
+                    List<SwitchDTO> pageSwitches = list.subList(startIndex, endIndex);
+
+                    request.setAttribute("list", new ArrayList<>(pageSwitches));
+                    request.setAttribute("pageNumber", pageNumber);
+                    request.setAttribute("pageCount", pageCount);
+                    request.setAttribute("totalSwitches", totalSwitches);
+                    request.setAttribute("firstSwitchNumber", totalSwitches == 0 ? 0 : startIndex + 1);
+                    request.setAttribute("lastSwitchNumber", endIndex);
+                    request.setAttribute("switchSyncErrors", new LinkedHashMap<String, String>());
+                    if (request.getAttribute("ERROR") == null) {
+                        try {
+                            syncSwitchStatuses(dao, pageSwitches, request);
+                        } catch (HardwareException ex) {
+                            log("ESP32 status synchronization failed", ex);
+                            request.setAttribute("ERROR", "Không thể kết nối hoặc đọc trạng thái ESP32. Vui lòng thử lại.");
+                        }
+                    }
+                }
             }
         } catch (SQLException ex) {
             log("Error at DeviceControlController (SQL): " + ex.toString());
@@ -123,7 +129,7 @@ public class DeviceControlController extends HttpServlet {
     }
 
     private void syncSwitchStatuses(SwitchDAO dao, List<SwitchDTO> switches,
-            HttpServletRequest request) throws SQLException {
+            HttpServletRequest request) throws SQLException, HardwareException {
         Map<String, String> switchSyncErrors = new LinkedHashMap<>();
         Map<String, List<SwitchDTO>> switchesByDevice = new LinkedHashMap<>();
         for (SwitchDTO sw : switches) {
@@ -150,10 +156,7 @@ public class DeviceControlController extends HttpServlet {
                 results = executor.invokeAll(checks);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                log("Interrupted while checking ESP32 switch statuses: " + ex.getMessage());
-                markConnectionErrors(switches, switchSyncErrors);
-                request.setAttribute("switchSyncErrors", switchSyncErrors);
-                return;
+                throw new HardwareException("ESP32 status synchronization was interrupted.", ex);
             }
 
             for (int i = 0; i < deviceIds.size(); i++) {
@@ -164,22 +167,20 @@ public class DeviceControlController extends HttpServlet {
                     statuses = results.get(i).get();
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
-                    log("Interrupted while reading ESP32 status result: " + ex.getMessage());
-                    markConnectionErrors(deviceSwitches, switchSyncErrors);
-                    continue;
+                    throw new HardwareException("ESP32 status result retrieval was interrupted.", ex);
                 } catch (ExecutionException ex) {
                     Throwable cause = ex.getCause();
-                    log("Unable to sync switches for ESP32 " + deviceId + ": "
-                            + (cause == null ? ex.getMessage() : cause.getMessage()));
-                    markConnectionErrors(deviceSwitches, switchSyncErrors);
-                    continue;
+                    if (cause instanceof HardwareException) {
+                        throw (HardwareException) cause;
+                    }
+                    throw new HardwareException("Unable to sync switches for ESP32 " + deviceId + ".", cause == null ? ex : cause);
                 }
 
                 for (SwitchDTO sw : deviceSwitches) {
                     String status = statuses.get(sw.getGpioPin());
                     if (!"ON".equals(status) && !"OFF".equals(status)) {
-                        switchSyncErrors.put(sw.getSwitchId(), "Lỗi kết nối");
-                        continue;
+                        throw new HardwareException("ESP32 response did not include a valid state for GPIO "
+                                + sw.getGpioPin() + ".");
                     }
 
                     SwitchStatus actualStatus = SwitchStatus.valueOf(status);
@@ -196,13 +197,6 @@ public class DeviceControlController extends HttpServlet {
         }
 
         request.setAttribute("switchSyncErrors", switchSyncErrors);
-    }
-
-    private void markConnectionErrors(List<SwitchDTO> switches,
-            Map<String, String> switchSyncErrors) {
-        for (SwitchDTO sw : switches) {
-            switchSyncErrors.put(sw.getSwitchId(), "Lỗi kết nối");
-        }
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -5,6 +5,11 @@ import dto.UserDTO;
 import enums.Role;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.Normalizer;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.ServletException;
@@ -18,6 +23,111 @@ abstract class ManagementController extends HttpServlet {
     protected final ManagementSupport support = new ManagementSupport();
     protected final ManagementViews views = new ManagementViews();
 
+    static Map<String, Object> row(Object... pairs) {
+        if (pairs.length % 2 != 0) {
+            throw new IllegalArgumentException("Map entries must be key/value pairs.");
+        }
+        Map<String, Object> values = new LinkedHashMap<>();
+        for (int i = 0; i < pairs.length; i += 2) {
+            values.put(String.valueOf(pairs[i]), pairs[i + 1]);
+        }
+        return values;
+    }
+
+    static String str(Object value) {
+        return value == null ? "" : String.valueOf(value);
+    }
+
+    static boolean yes(Object value) {
+        return Boolean.TRUE.equals(value) || "true".equalsIgnoreCase(str(value)) || "1".equals(str(value));
+    }
+
+    static String normalize(Object value) {
+        return Normalizer.normalize(str(value), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .replace('đ', 'd')
+                .replace('Đ', 'D')
+                .toLowerCase(Locale.ROOT)
+                .replaceAll("gpio\\s*0*(\\d+)", "gpio $1")
+                .trim();
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> List<T> list(Object value) {
+        if (!(value instanceof List)) {
+            throw new IllegalArgumentException("Expected a list value.");
+        }
+        return (List<T>) value;
+    }
+
+    static String param(HttpServletRequest request, String key) {
+        String value = request.getParameter(key);
+        return value == null ? "" : value.trim();
+    }
+
+    static String input(HttpServletRequest request, String key, int max) {
+        String value = param(request, key);
+        require(value.length() <= max, "Trường " + key + " vượt quá độ dài cho phép.");
+        return value;
+    }
+
+    static void require(boolean condition, String message) {
+        if (!condition) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    static String required(HttpServletRequest request, String key, int max, String label) {
+        String value = input(request, key, max);
+        require(!value.isEmpty(), "Vui lòng nhập " + label + ".");
+        return value;
+    }
+
+    static String choice(HttpServletRequest request, String key, String... allowed) {
+        String value = param(request, key);
+        require(Arrays.asList(allowed).contains(value), "Giá trị " + key + " không hợp lệ.");
+        return value;
+    }
+
+    static void password(HttpServletRequest request, String key, int min, boolean strong) {
+        String value = request.getParameter(key);
+        require(value != null && value.length() >= min && value.length() <= 128,
+                "Mật khẩu cần từ " + min + " đến 128 ký tự.");
+        if (strong) {
+            require(value.matches("(?s).*[A-Z].*") && value.matches("(?s).*\\d.*")
+                    && value.matches("(?s).*[^\\p{L}\\p{N}\\s].*"),
+                    "Mật khẩu cần có chữ hoa, chữ số và ký tự đặc biệt.");
+        }
+    }
+
+    static String initials(Object name) {
+        String[] words = str(name).trim().split("\\s+");
+        if (words.length == 0 || words[0].isEmpty()) {
+            return "?";
+        }
+        String first = words[0].substring(0, 1);
+        String last = words.length > 1 ? words[words.length - 1].substring(0, 1) : "";
+        return (first + last).toUpperCase(Locale.ROOT);
+    }
+
+    static Map<String, Object> copyMap(Map<String, Object> value) {
+        return new LinkedHashMap<>(value);
+    }
+
+    static Map<String, Object> submittedValues(HttpServletRequest request, String... names) {
+        Map<String, Object> values = new LinkedHashMap<>();
+        if (!"POST".equals(request.getMethod())) {
+            return values;
+        }
+        for (String name : names) {
+            String value = request.getParameter(name);
+            if (value != null) {
+                values.put(name, value.substring(0, Math.min(value.length(), 512)));
+            }
+        }
+        return values;
+    }
+
     protected abstract String page();
     protected abstract String errorView();
     protected abstract String successUrl();
@@ -26,6 +136,10 @@ abstract class ManagementController extends HttpServlet {
             throws SQLException, ClassNotFoundException;
     protected abstract String change(UserDAO dao, UserDTO actor, HttpServletRequest request)
             throws SQLException, ClassNotFoundException;
+
+    protected boolean useLegacyModelWrapper() {
+        return true;
+    }
 
     protected UserDAO users() throws SQLException, ClassNotFoundException {
         return new UserDAO();
@@ -188,5 +302,19 @@ abstract class ManagementController extends HttpServlet {
                 return "Dữ liệu bị trùng hoặc tham chiếu không hợp lệ. Vui lòng kiểm tra lại.";
         }
         return "Không lưu được dữ liệu. Vui lòng thử lại sau.";
+    }
+
+    private HttpServletRequest requestWithoutSubmittedValues(HttpServletRequest request) {
+        return new HttpServletRequestWrapper(request) {
+            @Override
+            public String getParameter(String key) {
+                return null;
+            }
+
+            @Override
+            public String getMethod() {
+                return "GET";
+            }
+        };
     }
 }
