@@ -30,17 +30,18 @@ public class LoginController extends HttpServlet {
         try {
             String userName = (String) request.getParameter("userName");
             String passWord = (String) request.getParameter("passWord");
-            UserDTO dto = new UserDAO().checkLogin(userName, passWord);
+            UserDTO dto;
+            try (UserDAO dao = new UserDAO()) {
+                dto = dao.checkLogin(userName, passWord);
+            }
 
             if (dto != null) {
-                // Đăng nhập thành công: Dùng Redirect qua MainController để tránh lỗi F5 (PRG
-                // Pattern)
-                if (dto.isActive() == false) {
-                    request.setAttribute("ERROR", "Tài khoản đã bị vô hiệu hóa!");
-                    request.getRequestDispatcher(URLMap.getLOGIN_PAGE()).forward(request, response);
-                    return;
-                }
+                // Đăng nhập thành công: Dùng Redirect qua MainController để tránh lỗi F5 (PRG Pattern)
                 HttpSession session = request.getSession();
+                request.changeSessionId();
+                session.removeAttribute("PERMISSION_DRAFTS");
+                session.removeAttribute("MANAGEMENT_CSRF");
+                session.removeAttribute("MANAGEMENT_FLASH");
                 session.setAttribute("LOGIN_USER", dto);
                 response.sendRedirect("MainController?action=DEVICE_CONTROL");
                 return; // Dừng hàm ngay lập tức, không chạy xuống dưới nữa
@@ -62,15 +63,14 @@ public class LoginController extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the
-    // + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -81,10 +81,10 @@ public class LoginController extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

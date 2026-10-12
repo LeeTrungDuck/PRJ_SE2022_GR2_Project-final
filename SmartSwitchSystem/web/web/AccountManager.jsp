@@ -44,7 +44,7 @@
                                 </span>
                                 <h1>Hồ Sơ &amp; Cài Đặt Tài Khoản <span>(Profile / Account)</span>
                                 </h1>
-                                <p>Quản lý thông tin định danh và liên hệ trong phiên minh họa.</p>
+                                <p>Quản lý thông tin định danh và liên hệ của tài khoản đang đăng nhập.</p>
                             </header>
                             <div class="ac-workspace">
                                 <aside class="ac-profile-card">
@@ -57,25 +57,22 @@
                                             <p class="ac-handle">@
                                                 <c:out value="${ui.profile.userName}" />
                                             </p>
-                                            <span class="ac-role-badge">ADMINISTRATOR (TOÀN QUYỀN)</span>
+                                            <span class="ac-role-badge">${ui.profile.role}</span>
                                         </div>
                                     </div>
                                     <dl class="ac-profile-details">
                                         <div>
                                             <dt>User ID</dt>
-                                            <dd>UID-8829</dd>
+                                            <dd>${ui.profile.userId}</dd>
                                         </div>
                                         <div>
                                             <dt>Trạng Thái</dt>
                                             <dd class="ac-status">Hoạt Động</dd>
                                         </div>
-                                        <div>
-                                            <dt>Ngày Tạo</dt>
-                                            <dd>12/10/2023</dd>
-                                        </div>
+
                                         <div>
                                             <dt>Phân Quyền</dt>
-                                            <dd class="ac-root-role">SuperAdmin / Root</dd>
+                                            <dd class="ac-root-role">${ui.profile.role}</dd>
                                         </div>
                                     </dl>
                                 </aside>
@@ -100,7 +97,7 @@
                                                             </i>
                                                             <input id="ac-fullname" name="fullName"
                                                                 value="<c:out value='${ui.edit.fullName}' />"
-                                                                maxlength="100" autocomplete="name" required>
+                                                                maxlength="50" autocomplete="name" required>
                                                         </div>
                                                     </div>
                                                     <div class="ac-field">
@@ -120,7 +117,7 @@
                                                             </i>
                                                             <input id="ac-email" type="email" name="email"
                                                                 value="<c:out value='${ui.edit.email}' />"
-                                                                maxlength="254" required>
+                                                                maxlength="50" required>
                                                         </div>
                                                     </div>
                                                     <div class="ac-field">
@@ -130,14 +127,14 @@
                                                             </i>
                                                             <input id="ac-phone" name="phone" type="tel"
                                                                 value="<c:out value='${ui.edit.phone}' />"
-                                                                maxlength="30" required>
+                                                                maxlength="10" pattern="[0-9]{10}" required>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <footer class="ac-panel-footer">
                                                     <p>
                                                         <i class="fa-solid fa-circle-info" aria-hidden="true">
-                                                        </i> Thay email yêu cầu OTP minh họa 246810.
+                                                        </i> Tên đăng nhập và vai trò được giữ cố định.
                                                     </p>
                                                     <button class="um-button um-button-primary" name="uiOp"
                                                         value="saveProfile" type="submit">Lưu Thay Đổi</button>
@@ -189,7 +186,7 @@
                                                     </div>
                                                 </div>
                                                 <footer class="ac-panel-footer">
-                                                    <p>Kiểm tra điều kiện sau khi gửi form; không lưu mật khẩu minh họa.
+                                                    <p>Mật khẩu hiện tại được kiểm tra; mật khẩu mới được băm trước khi lưu.
                                                     </p>
                                                     <button class="um-button um-button-primary" name="uiOp"
                                                         value="changePassword" type="submit">Cập Nhật Mật Khẩu</button>
@@ -198,39 +195,7 @@
                                     </section>
                                 </div>
                             </div>
-                            <footer class="ui-demo-footer">
-                                
-                                <form action="${pageContext.request.contextPath}/MainController" method="post">
-                                    <%@ include file="uiPostFields.jspf" %>
-                                        <button class="um-button um-button-secondary" type="submit" name="uiOp"
-                                            value="resetPreview">Đặt lại dữ liệu mẫu</button>
-                                </form>
-                            </footer>
+
                         </main>
                 </div>
-                <c:if test="${ui.dialog}">
-                    <%@ include file="uiDialogStart.jspf" %>
-                        <p class="um-dialog-description">Email chờ xác nhận: <strong>
-                                <c:out value="${ui.pendingProfile.email}" />
-                            </strong>.</p>
-                        <p>Mã OTP minh họa: <strong>246810</strong>. Không gửi email thực tế.</p>
-                        <form action="${pageContext.request.contextPath}/MainController" method="post">
-                            <%@ include file="uiPostFields.jspf" %>
-                                <input name="formName" value="otp" type="hidden">
-                                <div class="um-field">
-                                    <label for="ac-otp-code">Mã OTP</label>
-                                    <input id="ac-otp-code" name="otp" inputmode="numeric" pattern="[0-9]{6}"
-                                        maxlength="6" required autofocus autocomplete="one-time-code">
-                                </div>
-                                <div class="um-dialog-footer">
-                                    <button name="uiOp" value="cancelOtp" type="submit" formnovalidate
-                                        class="um-button um-button-secondary">Hủy</button>
-                                    <button name="uiOp" value="confirmOtp" type="submit"
-                                        class="um-button um-button-primary">Xác Nhận</button>
-                                </div>
-                        </form>
-                        </dialog>
-                </c:if>
-            </body>
-
-            </html>
+                </body></html>
