@@ -24,7 +24,7 @@ public class SwitchDAO {
 
     private static final String SELECT
             = " SELECT sw.switch_id, sw.device_id, sw.switch_name, sw.gpio_pin, sw.status, sw.is_active, esp.name as esp_name, esp.host_name as esp_host_name, esp.is_active as is_active_esp "
-            + " FROM tblSwitch sw  join tblESP32_Device esp on sw.device_id = esp.device_id ";
+            + " FROM tblSwitch sw  join tblESP32_Device esp on sw.device_id = esp.device_id where sw.is_active = 1 and esp.is_active = 1 ";
 
     public SwitchDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
