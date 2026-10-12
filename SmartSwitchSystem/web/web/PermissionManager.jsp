@@ -45,7 +45,7 @@
                                 <p>Thiết lập quyền Xem (<code>canView</code>) và Điều Khiển (<code>canControl</code>)
                                     cho từng tài khoản Viewer trên từng Switch.</p>
                             </header>
-                            <div class="pm-workspace">
+                            <c:if test="${empty ui.activeViewer.id}"><p class="ui-notice">Chưa có tài khoản Viewer đang hoạt động. Thêm Viewer tại Quản Lý Tài Khoản.</p></c:if><div class="pm-workspace">
                                 <aside class="pm-viewers-panel">
                                     <div class="pm-viewers-heading">
                                         <h2>
@@ -71,7 +71,7 @@
                                         <c:forEach var="viewer" items="${ui.viewers}">
                                             <button class="pm-viewer-card ${viewer.selected ? 'is-selected' : ''}"
                                                 type="submit" form="pm-permission-form" name="uiOp"
-                                                value="selectViewer:${viewer.id}" aria-pressed="${viewer.selected}">
+                                                value="selectViewer:${fn:escapeXml(viewer.id)}" aria-pressed="${viewer.selected}">
                                                 <span class="pm-viewer-identity">
                                                    
                                                     <span class="pm-viewer-info">
@@ -95,7 +95,7 @@
                                     </div>
                                 </aside>
                                 <form id="pm-permission-form" class="pm-permissions"
-                                    action="${pageContext.request.contextPath}/MainController" method="post">
+                                    action="${pageContext.request.contextPath}/MainController" method="post"><fieldset style="margin:0;padding:0;border:0;min-width:0" ${empty ui.activeViewer.id ? 'disabled' : ''}>
                                     <%@ include file="uiPostFields.jspf" %>
                                         <input name="viewer" value="<c:out value='${ui.activeViewer.id}'/>"
                                             type="hidden">
@@ -156,19 +156,18 @@
                                                                     <h3>
                                                                         <c:out value="${device.name}" />
                                                                     </h3>
-                                                                    <code class="pm-device-ip">IP: <c:out value="${device.ip}"/>
+                                                                    <code class="pm-device-ip">HOST: <c:out value="${device.ip}"/>
 </code>
                                                                 </div>
                                                                 <p class="pm-device-description">
-                                                                    <c:out value="${device.location}" /> · MAC:
-                                                                    <c:out value="${device.mac}" />
+                                                                    <c:out value="${device.location}" />
                                                                 </p>
                                                             </div>
                                                         </div>
                                                         <div class="pm-device-badges">
                                                             <span class="pm-device-count">${fn:length(device.switches)}
                                                                 SWITCH</span>
-                                                            <span class="pm-device-online">● ONLINE</span>
+                                                            <span class="pm-device-online">ĐÃ KÍCH HOẠT</span>
                                                         </div>
                                                     </header>
                                                     <div class="pm-switch-list">
@@ -191,7 +190,7 @@
                                                                 </div>
                                                                 <div class="pm-switch-permissions">
                                                                     <label>
-                                                                        <input name="view_${sw.id}" value="1"
+                                                                        <input name="view_${fn:escapeXml(sw.id)}" value="1"
                                                                             type="checkbox" ${sw.canView ? 'checked'
                                                                             : '' }>
                                                                         <span>canView</span>
@@ -200,7 +199,7 @@
                                                                         </span>
                                                                     </label>
                                                                     <label>
-                                                                        <input name="control_${sw.id}" value="1"
+                                                                        <input name="control_${fn:escapeXml(sw.id)}" value="1"
                                                                             type="checkbox" ${sw.canControl ? 'checked'
                                                                             : '' }>
                                                                         <span>canControl</span>
@@ -215,17 +214,9 @@
                                                 </section>
                                             </c:forEach>
                                         </div>
-                                </form>
+                                </fieldset></form>
                             </div>
-                            <footer class="ui-demo-footer">
-                                <p>Dữ liệu minh họa được giữ trong session. Thao tác tải lại trang, chưa ghi database
-                                    hoặc gửi lệnh đến ESP32.</p>
-                                <form action="${pageContext.request.contextPath}/MainController" method="post">
-                                    <%@ include file="uiPostFields.jspf" %>
-                                        <button class="um-button um-button-secondary" type="submit" name="uiOp"
-                                            value="resetPreview">Đặt lại dữ liệu mẫu</button>
-                                </form>
-                            </footer>
+
                         </main>
                 </div>
                 <c:if test="${ui.dialog}">

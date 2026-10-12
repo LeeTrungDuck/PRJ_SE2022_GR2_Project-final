@@ -21,9 +21,9 @@ public class URLMap {
         urlMap.put("LOGIN", "LoginController");
         urlMap.put("LOGOUT", "/LogOutController");
         urlMap.put("DEVICE_CONTROL", "/DeviceControlController");
-        urlMap.put("USER_MANAGER", "UserManager.jsp");
-        urlMap.put("PERMISSION_MANAGER", "PermissionManager.jsp");
-        urlMap.put("ACCOUNT_MANAGER", "AccountManager.jsp");
+        urlMap.put("USER_MANAGER", "/UserManagerController");
+        urlMap.put("PERMISSION_MANAGER", "/PermissionManagementController");
+        urlMap.put("ACCOUNT_MANAGER", "/AccountManagementController");
         urlMap.put("DEVICE_MANAGER", "DeviceManager.jsp");
         urlMap.put("SCHEDULE_MANAGER", "ScheduleManager.jsp");
         urlMap.put("CONTROL_HISTORY", "ControlHistory.jsp");

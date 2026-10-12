@@ -1,156 +1,98 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import dto.UserDTO;
 import enums.Role;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.*;
+import java.util.*;
 import utills.DBConnection;
+import utills.PasswordUtil;
 
-/**
- *
- * @author ADMIN
- */
-public class UserDAO {
-
-    private Connection connection;
-
-    private static final String SELECT = "SELECT user_id, user_name, password, full_name, role, is_active FROM tblUser";
-
-    public UserDAO() throws SQLException, ClassNotFoundException {
-        this.connection = DBConnection.getConnection();
-    }
-
+public class UserDAO implements AutoCloseable {
+    private final Connection connection;
+    private static final String SELECT = "SELECT user_id, user_name, password, full_name, role, is_active, email, phone_number FROM tblUser";
+    public UserDAO() throws SQLException, ClassNotFoundException { this(DBConnection.getConnection()); }
+    public UserDAO(Connection connection) { this.connection = connection; }
     private UserDTO map(ResultSet rs) throws SQLException {
-        UserDTO u = new UserDTO();
-        u.setUserId(rs.getString("user_id"));
-        u.setUserName(rs.getString("user_name"));
-        u.setPassword(rs.getString("password"));
-        u.setFullName(rs.getString("full_name"));
-        u.setRole(Role.valueOf(rs.getString("role")));
-        u.setActive(rs.getBoolean("is_active"));
-        return u;
+        return new UserDTO(rs.getString("user_id"), rs.getString("user_name"), rs.getString("password"), rs.getString("full_name"), Role.valueOf(rs.getString("role")), rs.getBoolean("is_active"), rs.getString("email"), rs.getString("phone_number"));
     }
-
-    public UserDTO findById(String userId) {
-        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE user_id = ?")) {
-            ps.setString(1, userId);
-            try ( ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return map(rs);
-                }
+    private UserDTO one(String column, String value) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE " + column + " = ?")) {
+            ps.setString(1, value);
+            try (ResultSet rs = ps.executeQuery()) { return rs.next() ? map(rs) : null; }
+        }
+    }
+    public UserDTO findById(String id) throws SQLException { return one("user_id", id); }
+    public UserDTO findByUserName(String name) throws SQLException { return one("user_name", name); }
+    public List<UserDTO> findAll() throws SQLException {
+        List<UserDTO> users = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(SELECT + " ORDER BY user_id"); ResultSet rs = ps.executeQuery()) { while (rs.next()) users.add(map(rs)); }
+        return users;
+    }
+    public boolean insert(UserDTO user) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("INSERT INTO tblUser(user_id,user_name,password,full_name,role,is_active,email,phone_number) VALUES(?,?,?,?,?,?,?,?)")) {
+            ps.setString(1,user.getUserId()); ps.setString(2,user.getUserName()); ps.setString(3,user.getPassword()); ps.setString(4,user.getFullName()); ps.setString(5,user.getRole().name()); ps.setBoolean(6,user.isActive()); ps.setString(7,user.getEmail()); ps.setString(8,user.getPhone());
+            return ps.executeUpdate() == 1;
+        }
+    }
+    public boolean update(UserDTO user) throws SQLException {
+        return managedChange(user, "ALL");
+    }
+    public boolean updateDetails(UserDTO user) throws SQLException { return managedChange(user,"DETAILS"); }
+    public boolean updateRole(UserDTO user) throws SQLException { return managedChange(user,"ROLE"); }
+    public boolean updateActive(UserDTO user) throws SQLException { return managedChange(user,"ACTIVE"); }
+    public boolean resetPassword(String id,String hash) throws SQLException {
+        try(PreparedStatement ps=connection.prepareStatement("UPDATE tblUser SET password=? WHERE user_id=?")) { ps.setString(1,hash);ps.setString(2,id);return ps.executeUpdate()==1; }
+    }
+    /** Soft deletion preserves FK references/history and revokes Viewer permissions. */
+    public boolean delete(String id) throws SQLException {
+        UserDTO user = findById(id);
+        if (user == null) return false;
+        user.setActive(false);
+        return managedChange(user, "DELETE");
+    }
+    private boolean managedChange(UserDTO user, String mode) throws SQLException {
+        boolean deleting="DELETE".equals(mode),all="ALL".equals(mode),details="DETAILS".equals(mode),role="ROLE".equals(mode),active="ACTIVE".equals(mode);
+        boolean auto = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try {
+            // Serializes changes to the active Admin set, preventing deletion/demotion of the last Admin.
+            int admins = 0; boolean targetAdmin = false;
+            try (PreparedStatement ps = connection.prepareStatement("SELECT user_id FROM tblUser WITH (UPDLOCK,HOLDLOCK) WHERE role='ADMIN' AND is_active=1"); ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) { admins++; if (user.getUserId().equals(rs.getString("user_id"))) targetAdmin = true; }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public UserDTO findByUserName(String userName) {
-        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE user_name = ?")) {
-            ps.setString(1, userName);
-            try ( ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return map(rs);
-                }
+            boolean deactivating=deleting || (active||all)&&!user.isActive();
+            boolean demoting=(role||details||all)&&user.getRole()!=Role.ADMIN;
+            if (targetAdmin && admins <= 1 && (deactivating || demoting)) throw new IllegalArgumentException("Không được khóa, xóa hoặc đổi vai trò Admin cuối cùng.");
+            boolean changed;
+            String sql = deleting ? "UPDATE tblUser SET is_active=0 WHERE user_id=?" : role ? "UPDATE tblUser SET role=? WHERE user_id=?" : active ? "UPDATE tblUser SET is_active=? WHERE user_id=?" : details ? "UPDATE tblUser SET full_name=?,role=?,email=?,phone_number=? WHERE user_id=?" : "UPDATE tblUser SET user_name=?,password=?,full_name=?,role=?,is_active=?,email=?,phone_number=? WHERE user_id=?";
+            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                if (deleting) ps.setString(1,user.getUserId());
+                else if(role) { ps.setString(1,user.getRole().name());ps.setString(2,user.getUserId()); }
+                else if(active) { ps.setBoolean(1,user.isActive());ps.setString(2,user.getUserId()); }
+                else if(details) { ps.setString(1,user.getFullName());ps.setString(2,user.getRole().name());ps.setString(3,user.getEmail());ps.setString(4,user.getPhone());ps.setString(5,user.getUserId()); }
+                else { ps.setString(1,user.getUserName()); ps.setString(2,user.getPassword()); ps.setString(3,user.getFullName()); ps.setString(4,user.getRole().name()); ps.setBoolean(5,user.isActive()); ps.setString(6,user.getEmail()); ps.setString(7,user.getPhone()); ps.setString(8,user.getUserId()); }
+                changed = ps.executeUpdate() == 1;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<UserDTO> findAll() {
-        List<UserDTO> list = new ArrayList<>();
-        try ( PreparedStatement ps = connection.prepareStatement(SELECT);  ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                list.add(map(rs));
+            if (changed && (deactivating || (all||role||details)&&user.getRole()!=Role.VIEWER)) {
+                try (PreparedStatement ps = connection.prepareStatement("UPDATE tblDevice_Permission SET is_active=0 WHERE user_id=?")) { ps.setString(1,user.getUserId()); ps.executeUpdate(); }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
+            connection.commit(); return changed;
+        } catch (SQLException | RuntimeException e) { connection.rollback(); throw e; }
+        finally { connection.setAutoCommit(auto); }
     }
-
-    public boolean insert(UserDTO user) {
-        String sql = "INSERT INTO tblUser(user_id, user_name, password, full_name, role, is_active) VALUES(?, ?, ?, ?, ?, ?)";
-        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, user.getUserId());
-            ps.setString(2, user.getUserName());
-            ps.setString(3, user.getPassword());
-            ps.setString(4, user.getFullName());
-            ps.setString(5, user.getRole().name());
-            ps.setBoolean(6, user.isActive());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean updateProfile(String id, String name, String email, String phone) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("UPDATE tblUser SET full_name=?,email=?,phone_number=? WHERE user_id=? AND is_active=1")) {
+            ps.setString(1,name); ps.setString(2,email); ps.setString(3,phone); ps.setString(4,id); return ps.executeUpdate() == 1;
         }
-        return false;
     }
-
-    public boolean update(UserDTO user) {
-        String sql = "UPDATE tblUser SET user_name = ?, password = ?, full_name = ?, role = ?, is_active = ? WHERE user_id = ?";
-        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, user.getUserName());
-            ps.setString(2, user.getPassword());
-            ps.setString(3, user.getFullName());
-            ps.setString(4, user.getRole().name());
-            ps.setBoolean(5, user.isActive());
-            ps.setString(6, user.getUserId());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean updatePassword(String id, String oldHash, String newHash) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("UPDATE tblUser SET password=? WHERE user_id=? AND password=? AND is_active=1")) {
+            ps.setString(1,newHash); ps.setString(2,id); ps.setString(3,oldHash); return ps.executeUpdate() == 1;
         }
-        return false;
     }
-
-    public boolean delete(String userId) {
-        try ( PreparedStatement ps = connection.prepareStatement("DELETE FROM tblUser WHERE user_id = ?")) {
-            ps.setString(1, userId);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+    public UserDTO checkLogin(String name, String password) throws SQLException {
+        UserDTO user = findByUserName(name);
+        return user != null && user.isActive() && PasswordUtil.verify(password,user.getPassword()) ? user : null;
     }
-
-    public UserDTO checkLogin(String userName, String passWord) {
-        String sql = "SELECT user_id, user_name, password, full_name, role, is_active, email, phone_number "
-                + "FROM [SmartSwitchSystem].[dbo].[tblUser] WHERE user_name = ? AND password = ?";
-        UserDTO dto = null;
-
-        // Sử dụng try-with-resources để tự động đóng Connection và PreparedStatement
-        try ( Connection cn = DBConnection.getConnection();  PreparedStatement ps = cn.prepareStatement(sql)) {
-
-            ps.setString(1, userName);
-            ps.setString(2, passWord);
-
-            try ( ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    dto = new UserDTO(
-                            rs.getString("user_id"),
-                            rs.getString("user_name"),
-                            rs.getString("password"),
-                            rs.getString("full_name"),
-                            Role.valueOf(rs.getString("role")),
-                            rs.getBoolean("is_active"),
-                            rs.getString("email"),
-                            rs.getString("phone_number")
-                    );
-                }
-            }
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return dto;
-    }
+    @Override public void close() throws SQLException { connection.close(); }
 }

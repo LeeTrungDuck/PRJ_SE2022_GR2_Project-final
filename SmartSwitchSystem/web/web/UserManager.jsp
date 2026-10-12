@@ -42,7 +42,7 @@
                                 <h1>Quản Lý Tài Khoản Người Dùng <span>(User Management)</span>
                                 </h1>
                                 <div class="um-heading-bottom">
-                                    <p>Quản lý tài khoản, vai trò và trạng thái hoạt động trong bản xem UI.</p>
+                                    <p>Quản lý tài khoản, vai trò và trạng thái hoạt động trong hệ thống.</p>
                                     <a class="um-button um-button-primary"
                                         href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=add">
                                         <i class="fa-solid fa-user-plus" aria-hidden="true">
@@ -73,7 +73,7 @@
                                                                         <c:out value="${u.fullName}" />
                                                                     </strong>
                                                                     <c:if test="${u.superAdmin}">
-                                                                        <span class="um-mini-badge">SUPER</span>
+                                                                        <span class="um-mini-badge">BẠN</span>
                                                                     </c:if>
                                                                 </div>
                                                                 <span class="um-username">@
@@ -108,8 +108,8 @@
                                                                         ${u.superAdmin ? 'disabled' : '' }>
                                                                         <option value="ADMIN" ${u.role eq 'ADMIN'
                                                                             ? 'selected' : '' }>Admin</option>
-                                                                        <option value="OPERATION" ${u.role
-                                                                            eq 'OPERATION' ? 'selected' : '' }>Operator
+                                                                        <option value="OPERATOR" ${u.role
+                                                                            eq 'OPERATOR' ? 'selected' : '' }>Operator
                                                                         </option>
                                                                         <option value="VIEWER" ${u.role eq 'VIEWER'
                                                                             ? 'selected' : '' }>Viewer</option>
@@ -124,9 +124,9 @@
                                                             </form>
                                                             <c:choose>
                                                                 <c:when test="${u.superAdmin}">
-                                                                    <span class="um-mini-badge">ROOT</span>
+                                                                    <span class="um-mini-badge">BẠN</span>
                                                                 </c:when>
-                                                                <c:otherwise>
+                                                                <c:otherwise><a class="um-icon-button" href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=edit&amp;id=${u.id}" aria-label="Sửa tài khoản"><i class="fa-solid fa-pen" aria-hidden="true"></i></a>
                                                                     <a class="um-icon-button"
                                                                         href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=password&amp;id=${u.id}"
                                                                         aria-label="Đặt lại mật khẩu">
@@ -156,7 +156,7 @@
                                     </table>
                                 </div>
                                 <footer class="um-table-footer">
-                                    <span>SuperAdmin được bảo vệ khỏi thay đổi vai trò, khóa và xóa.</span>
+                                    <span>Tài khoản đang đăng nhập và Admin cuối cùng được bảo vệ khỏi đổi quyền, khóa và xóa.</span>
                                     <div class="ui-controls">
                                         <c:if test="${ui.pageNumber gt 1}">
                                             <a class="um-button um-button-secondary"
@@ -172,97 +172,27 @@
                                     </div>
                                 </footer>
                             </div>
-                            <footer class="ui-demo-footer">
-                                <p>Dữ liệu minh họa được giữ trong session. Thao tác tải lại trang, chưa ghi database
-                                    hoặc gửi lệnh đến ESP32.</p>
-                                <form action="${pageContext.request.contextPath}/MainController" method="post">
-                                    <%@ include file="uiPostFields.jspf" %>
-                                        <button class="um-button um-button-secondary" type="submit" name="uiOp"
-                                            value="resetPreview">Đặt lại dữ liệu mẫu</button>
-                                </form>
-                            </footer>
+
                         </main>
                 </div>
                 <c:if test="${ui.dialog}">
-                    <%@ include file="uiDialogStart.jspf" %>
-                        <form action="${pageContext.request.contextPath}/MainController" method="post">
-                            <%@ include file="uiPostFields.jspf" %>
-                                <input type="hidden" name="id" value="${ui.target.id}">
-                                <c:choose>
-                                    <c:when test="${ui.form eq 'add'}">
-                                        <div class="um-form-grid">
-                                            <div class="um-field">
-                                                <label for="um-fullname">Họ và tên</label>
-                                                <input id="um-fullname" name="fullName"
-                                                    value="<c:out value='${ui.edit.fullName}' />" maxlength="100"
-                                                    required autofocus>
-                                            </div>
-                                            <div class="um-field">
-                                                <label for="um-username">Tên đăng nhập</label>
-                                                <input id="um-username" name="userName"
-                                                    value="<c:out value='${ui.edit.userName}' />" minlength="3"
-                                                    maxlength="64" required>
-                                            </div>
-                                            <div class="um-field">
-                                                <label for="um-email">Email</label>
-                                                <input id="um-email" name="email" type="email"
-                                                    value="<c:out value='${ui.edit.email}' />" maxlength="254" required>
-                                            </div>
-                                            <div class="um-field">
-                                                <label for="um-initial-password">Mật khẩu ban đầu</label>
-                                                <input id="um-initial-password" name="password" type="password"
-                                                    minlength="8" maxlength="128" autocomplete="new-password" required>
-                                                <small>Tối thiểu 8 ký tự. Mật khẩu không được lưu trong bản minh
-                                                    họa.</small>
-                                            </div>
-                                        </div>
-                                        <fieldset class="um-role-fieldset">
-                                            <legend>Vai trò</legend>
-                                            <div class="um-role-options">
-                                                <label>
-                                                    <input name="role" type="radio" value="ADMIN" ${ui.edit.role
-                                                        eq 'ADMIN' ? 'checked' : '' }>
-                                                    <span>Admin</span>
-                                                </label>
-                                                <label>
-                                                    <input name="role" type="radio" value="OPERATION" ${ui.edit.role
-                                                        eq 'OPERATION' ? 'checked' : '' }>
-                                                    <span>Operator</span>
-                                                </label>
-                                                <label>
-                                                    <input name="role" type="radio" value="VIEWER" ${ui.edit.role
-                                                        eq 'VIEWER' ? 'checked' : '' }>
-                                                    <span>Viewer</span>
-                                                </label>
-                                            </div>
-                                        </fieldset>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <p class="um-dialog-description">Tài khoản: <strong>
-                                                <c:out value="${ui.target.fullName}" />
-                                            </strong> (@
-                                            <c:out value="${ui.target.userName}" />).
-                                        </p>
-                                        <c:if test="${ui.form eq 'password'}">
-                                            <div class="um-field">
-                                                <label for="um-password">Mật khẩu mới</label>
-                                                <input id="um-password" name="password" type="password" minlength="8"
-                                                    maxlength="128" autocomplete="new-password" required autofocus>
-                                                <small>Mật khẩu minh họa không được lưu.</small>
-                                            </div>
-                                        </c:if>
-                                    </c:otherwise>
-                                </c:choose>
-                                <div class="um-dialog-footer">
-                                    <a class="um-button um-button-secondary"
-                                        href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER">Hủy</a>
-                                    <button
-                                        class="um-button ${ui.form eq 'delete' ? 'um-button-danger' : 'um-button-primary'}"
-                                        type="submit" name="uiOp" value="${ui.postOperation}">Xác Nhận</button>
-                                </div>
-                        </form>
-                        </dialog>
-                </c:if>
-            </body>
-
-            </html>
+<%@ include file="uiDialogStart.jspf" %>
+<form action="${pageContext.request.contextPath}/MainController" method="post">
+    <%@ include file="uiPostFields.jspf" %>
+    <input name="id" value="<c:out value='${ui.target.id}'/>" type="hidden">
+    <c:choose><c:when test="${ui.form eq 'add' or ui.form eq 'edit'}">
+        <div class="um-form-grid">
+            <div class="um-field"><label for="um-fullname">Họ và tên</label><input id="um-fullname" name="fullName" value="<c:out value='${ui.edit.fullName}'/>" maxlength="50" required autofocus></div>
+            <div class="um-field"><label for="um-username">Tên đăng nhập</label><input id="um-username" name="userName" value="<c:out value='${ui.edit.userName}'/>" minlength="3" maxlength="50" required ${ui.form eq 'edit' ? 'readonly' : ''}></div>
+            <div class="um-field"><label for="um-email">Email</label><input id="um-email" name="email" type="email" value="<c:out value='${ui.edit.email}'/>" maxlength="50" required></div>
+            <div class="um-field"><label for="um-phone">Số điện thoại</label><input id="um-phone" name="phone" type="tel" value="<c:out value='${ui.edit.phone}'/>" pattern="[0-9]{10}" maxlength="10" required placeholder="10 chữ số"></div>
+            <c:if test="${ui.form eq 'add'}"><div class="um-field"><label for="um-password">Mật khẩu ban đầu</label><input id="um-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required><small>Tối thiểu 8 ký tự; mật khẩu được băm trước khi lưu.</small></div></c:if>
+            <div class="um-field"><label for="um-role">Vai trò</label><select id="um-role" name="role"><option value="ADMIN" ${ui.edit.role eq 'ADMIN' ? 'selected' : ''}>Admin</option><option value="OPERATOR" ${ui.edit.role eq 'OPERATOR' ? 'selected' : ''}>Operator</option><option value="VIEWER" ${ui.edit.role eq 'VIEWER' ? 'selected' : ''}>Viewer</option></select></div>
+        </div>
+    </c:when><c:otherwise>
+        <p class="um-dialog-description">Tài khoản: <strong><c:out value="${ui.target.fullName}"/></strong> (@<c:out value="${ui.target.userName}"/>).</p>
+        <c:if test="${ui.form eq 'delete'}"><p class="um-dialog-description">Xóa mềm sẽ đặt is_active=false và thu hồi quyền thiết bị. Lịch sử điều khiển được giữ.</p></c:if>
+        <c:if test="${ui.form eq 'password'}"><div class="um-field"><label for="um-password">Mật khẩu mới</label><input id="um-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required autofocus></div></c:if>
+    </c:otherwise></c:choose>
+    <div class="um-dialog-footer"><a class="um-button um-button-secondary" href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER">Hủy</a><button class="um-button ${ui.form eq 'delete' ? 'um-button-danger' : 'um-button-primary'}" type="submit" name="uiOp" value="${ui.postOperation}">Xác Nhận</button></div>
+</form></dialog></c:if></body></html>
