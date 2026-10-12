@@ -8,13 +8,37 @@
         <servlet-name>LoginController</servlet-name>
         <servlet-class>controller.LoginController</servlet-class>
     </servlet>
-    <servlet-mapping>
+<servlet-mapping>
         <servlet-name>MainController</servlet-name>
         <url-pattern>/MainController</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name>
         <url-pattern>/LoginController</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>UserManagerController</servlet-name>
+        <servlet-class>controller.UserManagerController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserManagerController</servlet-name>
+        <url-pattern>/UserManagerController</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>PermissionManagementController</servlet-name>
+        <servlet-class>controller.PermissionManagementController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PermissionManagementController</servlet-name>
+        <url-pattern>/PermissionManagementController</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>AccountManagementController</servlet-name>
+        <servlet-class>controller.AccountManagementController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AccountManagementController</servlet-name>
+        <url-pattern>/AccountManagementController</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

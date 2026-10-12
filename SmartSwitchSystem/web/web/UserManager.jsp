@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-            <c:if test="${empty requestScope.ui}">
+            <c:if test="${empty sessionScope.LOGIN_USER or empty requestScope.ui}">
                 <c:redirect url="/MainController">
                     <c:param name="action" value="USER_MANAGER" />
                 </c:redirect>
@@ -172,7 +172,7 @@
                                     </div>
                                 </footer>
                             </div>
-
+                            
                         </main>
                 </div>
                 <c:if test="${ui.dialog}">
