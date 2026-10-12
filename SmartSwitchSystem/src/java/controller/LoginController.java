@@ -8,8 +8,6 @@ import dao.UserDAO;
 import dto.UserDTO;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,20 +20,44 @@ import utills.URLMap;
  * @author ltrun
  */
 public class LoginController extends HttpServlet {
+    private final String ERROR = URLMap.getERROR_PAGE();
+    private final String LOGIN = URLMap.getLOGIN_PAGE();
+    private final String SUCCESS = "/MainController?action=DEVICE_CONTROL";
+
+    protected UserDAO users() throws SQLException, ClassNotFoundException {
+        return new UserDAO();
+    }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-
+        String url = ERROR;
+        boolean redirect = false;
         try {
-            String userName = (String) request.getParameter("userName");
-            String passWord = (String) request.getParameter("passWord");
-            UserDTO dto;
-            try (UserDAO dao = new UserDAO()) {
-                dto = dao.checkLogin(userName, passWord);
+            request.setCharacterEncoding("UTF-8");
+            response.setContentType("text/html;charset=UTF-8");
+            HttpSession previousSession = request.getSession(false);
+            if ("POST".equals(request.getMethod()) && previousSession != null) {
+                previousSession.removeAttribute("LOGIN_USER");
+            }
+            String submittedName = request.getParameter("userName");
+            String userName = submittedName == null ? "" : submittedName.trim();
+            // Preserve password whitespace: it is part of the credential.
+            String passWord = request.getParameter("passWord");
+            UserDTO dto = null;
+            if (!userName.isEmpty() && userName.length() <= 50
+                    && passWord != null && !passWord.isEmpty() && passWord.length() <= 128) {
+                try (UserDAO dao = users()) {
+                    dto = dao.checkLogin(userName, passWord);
+                }
             }
 
-            if (dto != null) {
+            if (dto == null) {
+                request.setAttribute("ERROR", "Tài khoản hoặc mật khẩu sai!");
+                url = LOGIN;
+            } else if (!dto.isActive()) {
+                request.setAttribute("ERROR", "Tài khoản đã bị vô hiệu hóa!");
+                url = LOGIN;
+            } else {
                 // Đăng nhập thành công: Dùng Redirect qua MainController để tránh lỗi F5 (PRG Pattern)
                 HttpSession session = request.getSession();
                 request.changeSessionId();
@@ -43,23 +65,27 @@ public class LoginController extends HttpServlet {
                 session.removeAttribute("MANAGEMENT_CSRF");
                 session.removeAttribute("MANAGEMENT_FLASH");
                 session.setAttribute("LOGIN_USER", dto);
-                response.sendRedirect("MainController?action=DEVICE_CONTROL");
-                return; // Dừng hàm ngay lập tức, không chạy xuống dưới nữa
-            } else {
-                // Đăng nhập thất bại (Sai user/pass): Forward về trang login kèm thông báo lỗi
-                request.setAttribute("ERROR", "tài khoản hoặc mật khẩu sai!");
-                request.getRequestDispatcher(URLMap.getLOGIN_PAGE()).forward(request, response);
+                url = request.getContextPath() + SUCCESS;
+                redirect = true;
             }
-
         } catch (SQLException e) {
-            log("Error at LoginController: " + e.toString());
-            request.setAttribute("ERROR", "Database connect error, please try again!");
-            request.getRequestDispatcher(URLMap.getERROR_PAGE()).forward(request, response);
-
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
-            request.setAttribute("ERROR", "Class not found, please try again!");
-            request.getRequestDispatcher(URLMap.getERROR_PAGE()).forward(request, response);
+            log("Login database error", e);
+            response.setStatus(503);
+            request.setAttribute("ERROR", "Không kết nối được database. Vui lòng thử lại sau.");
+        } catch (ClassNotFoundException e) {
+            log("Login database driver unavailable", e);
+            response.setStatus(503);
+            request.setAttribute("ERROR", "Không kết nối được database. Vui lòng liên hệ người quản trị.");
+        } catch (RuntimeException e) {
+            log("Unexpected login error", e);
+            response.setStatus(500);
+            request.setAttribute("ERROR", "Không đăng nhập được. Vui lòng thử lại sau.");
+        } finally {
+            if (redirect) {
+                response.sendRedirect(url);
+            } else {
+                request.getRequestDispatcher(url).forward(request, response);
+            }
         }
     }
 
