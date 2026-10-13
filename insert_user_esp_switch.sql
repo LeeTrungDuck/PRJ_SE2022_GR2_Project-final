@@ -9,6 +9,7 @@ insert into tblESP32_Device values ('ESP6',N'Phòng ngủ 4','esp32-switch6','ON
 insert into tblUser values('U1',N'LeeDuck','123456',N'Lê Trung Đức','ADMIN',1,'ltrungduc05@gmail.com','0123456789')
 insert into tblUser values('U2',N'VoHai','123456',N'Võ Phước Hải','OPERATOR',1,'haiVo06@gmail.com','0133456789')
 insert into tblUser values('U3',N'TagoreVan','123456',N'Vạn Tường Tagore','VIEWER',1,'Tagore10k@gmail.com','0223456789')
+insert into tblUser values('U4',N'InactiveAccount','123456',N'test','VIEWER',1,'test0k@gmail.com','0223111189')
 
 
 insert into tblSwitch values ('SW1','ESP1',N'Đèn 1',2,'OFF',1);
