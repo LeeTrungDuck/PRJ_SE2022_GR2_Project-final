@@ -122,10 +122,6 @@
                                             <div class="pm-toolbar">
                                                 <div class="pm-bulk-actions">
                                                     <button class="um-button um-button-secondary" name="uiOp"
-                                                        value="grantView" type="submit">
-                                                        <i class="fa-solid fa-eye" aria-hidden="true">
-                                                        </i> Cấp Toàn Quyền Xem</button>
-                                                    <button class="um-button um-button-secondary" name="uiOp"
                                                         value="confirmRevoke" type="submit">Hủy Toàn Bộ Quyền</button>
                                                 </div>
                                                 <div class="pm-save-actions">

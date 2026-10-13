@@ -59,7 +59,6 @@
 .pm-toolbar .um-button { min-height: 36px; padding: 8px 12px; font-size: 11px; }
 .pm-bulk-actions .um-button { border: 0; }
 .pm-bulk-actions .um-button:disabled { background: #171f33; color: #cbd5e1; }
-#pm-grant-view i { color: var(--um-green); }
 #pm-revoke-all:hover { color: var(--um-red); }
 .pm-save-actions { justify-content: flex-end; }
 .pm-save-actions .um-button-primary { font-size: 13px; }

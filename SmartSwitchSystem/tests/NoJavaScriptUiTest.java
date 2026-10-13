@@ -113,8 +113,6 @@ public final class NoJavaScriptUiTest {
         success("PERMISSION_MANAGER", "savePermissions", "viewer", "viewer_khu_a", "control_sw-01-16", "1");
         Reply permissions = page("PERMISSION_MANAGER", "&viewer=viewer_khu_a");
         check(Pattern.compile("name=\"view_sw-01-16\"[^>]+checked").matcher(permissions.body).find(), "control implies view");
-        success("PERMISSION_MANAGER", "grantView", "viewer", "viewer_khu_a", "control_sw-01-16", "1");
-        check(page("PERMISSION_MANAGER", "&viewer=viewer_khu_a").body.contains("Đã cấp: 7/7 switch"), "grant all creates draft");
         success("PERMISSION_MANAGER", "selectViewer:viewer_kho", "viewer", "viewer_khu_a", "view_sw-02-18", "1");
         check(page("PERMISSION_MANAGER", "&viewer=viewer_khu_a").body.contains("Có bản nháp chưa lưu"), "viewer change preserves draft");
         success("PERMISSION_MANAGER", "resetPermissions", "viewer", "viewer_khu_a");

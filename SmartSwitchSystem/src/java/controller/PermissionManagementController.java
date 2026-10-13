@@ -125,10 +125,6 @@ public class PermissionManagementController extends ManagementController {
             if ("savePermissions".equals(op)) {
                 permissions.saveMatrix(id, matrix, actor.getUserId());
                 message(r, "Đã lưu quyền vào cơ sở dữ liệu. Bỏ quyền xem sẽ xóa mềm permission.");
-            } else if ("grantView".equals(op)) {
-                for (Map<String, Object> grant : matrix.values()) {
-                    grant.put("canView", true);
-                }
             } else if ("resetPermissions".equals(op)) {
                 matrix = stored;
             } else if ("revokePermissions".equals(op)) {
