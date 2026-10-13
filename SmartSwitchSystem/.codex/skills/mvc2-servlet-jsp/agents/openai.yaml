@@ -1,0 +1,7 @@
+interface:
+  display_name: "MVC2 Servlet/JSP"
+  short_description: "Apply MVC2 rules to Servlet/JSP code"
+  default_prompt: "Use $mvc2-servlet-jsp to review this Java Servlet/JSP change against the project's MVC2 rules."
+
+policy:
+  allow_implicit_invocation: false
