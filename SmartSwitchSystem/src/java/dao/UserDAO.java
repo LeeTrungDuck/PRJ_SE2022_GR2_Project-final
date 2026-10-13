@@ -92,9 +92,10 @@ public class UserDAO implements AutoCloseable {
             ps.setString(1,newHash); ps.setString(2,id); ps.setString(3,oldHash); return ps.executeUpdate() == 1;
         }
     }
+    /** Verifies credentials; the controller must check isActive before creating a login session. */
     public UserDTO checkLogin(String name, String password) throws SQLException {
         UserDTO user = findByUserName(name);
-        return user != null && user.isActive() && PasswordUtil.verify(password,user.getPassword()) ? user : null;
+        return user != null && PasswordUtil.verify(password,user.getPassword()) ? user : null;
     }
     @Override public void close() throws SQLException { connection.close(); }
 }
