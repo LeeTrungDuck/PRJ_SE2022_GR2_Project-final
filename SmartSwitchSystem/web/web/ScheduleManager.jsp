@@ -14,21 +14,21 @@
 %>
 <c:set var="activePage" value="SCHEDULE_MANAGER" scope="request" />
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý lịch chạy</title>
+    <title>Schedule Management</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/userManagerCss.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/scheduleManagerCss.css?v=20261013-schedule-actions-7">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/scheduleManagerCss.css?v=20261013-schedule-header-8">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/noJsUi.css">
 </head>
 <body class="user-manager-page schedule-manager-page">
 <div class="ui-shell">
     <%@ include file="sideBar.jspf" %>
     <main class="um-main" id="main-content">
-        <h1>Lịch chạy switch</h1>
-        <p>Cơ sở dữ liệu hiện lưu lịch chạy hằng ngày theo giờ, switch, lệnh và trạng thái bật/tắt.</p>
+        <h1>Switch Schedules</h1>
+        <p>Manage daily switch schedules by time, command and enabled status.</p>
         <c:if test="${not empty uiMessage}">
             <p class="ui-notice" role="status"><c:out value="${uiMessage}"/></p>
         </c:if>
@@ -38,48 +38,48 @@
 
         <form action="${pageContext.request.contextPath}/MainController" method="get">
             <input type="hidden" name="action" value="SCHEDULE_MANAGER">
-            <label for="schedule-search">Tìm theo switch, lệnh, giờ hoặc người tạo</label>
+            <label for="schedule-search">Search by switch, command, time or creator</label>
             <input id="schedule-search" name="q" type="search" maxlength="100" value="<c:out value='${q}'/>">
-            <button type="submit">Tìm</button>
+            <button type="submit">Search</button>
         </form>
 
         <c:if test="${canManage}">
             <section class="um-table-panel" aria-labelledby="add-schedule-heading">
-                <h2 id="add-schedule-heading">Thêm lịch</h2>
+                <h2 id="add-schedule-heading">Add Schedule</h2>
                 <form action="${pageContext.request.contextPath}/MainController" method="post">
                     <input type="hidden" name="action" value="SCHEDULE_MANAGER">
                     <input type="hidden" name="uiOp" value="addSchedule">
                     <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                     <label>Switch
                         <select name="switchId" required>
-                            <option value="">Chọn switch</option>
+                            <option value="">Select a switch</option>
                             <c:forEach var="sw" items="${switches}">
                                 <option value="<c:out value='${sw.switchId}'/>" ${submittedOperation eq 'addSchedule' and submitted.switchId eq sw.switchId ? 'selected' : ''}><c:out value="${sw.switchName}"/> (<c:out value="${sw.switchId}"/>)</option>
                             </c:forEach>
                         </select>
                     </label>
-                    <label>Lệnh
+                    <label>Command
                         <select name="scheduleAction" required>
-                            <option value="ON" ${submittedOperation eq 'addSchedule' and submitted.scheduleAction eq 'ON' ? 'selected' : ''}>Bật</option>
-                            <option value="OFF" ${submittedOperation eq 'addSchedule' and submitted.scheduleAction eq 'OFF' ? 'selected' : ''}>Tắt</option>
+                            <option value="ON" ${submittedOperation eq 'addSchedule' and submitted.scheduleAction eq 'ON' ? 'selected' : ''}>ON</option>
+                            <option value="OFF" ${submittedOperation eq 'addSchedule' and submitted.scheduleAction eq 'OFF' ? 'selected' : ''}>OFF</option>
                         </select>
                     </label>
-                    <label>Giờ chạy <input name="runTime" type="time" required
+                    <label>Run time <input name="runTime" type="time" required
                         value="<c:out value='${submittedOperation eq "addSchedule" ? submitted.runTime : ""}'/>"></label>
                     <label><input name="enabled" type="checkbox" value="true"
-                        ${submittedOperation eq 'addSchedule' ? submitted.enabled eq 'true' ? 'checked' : '' : 'checked'}> Đang bật</label>
-                    <button type="submit" class="sm-add-schedule-button" <c:if test="${empty switches}">disabled</c:if>>Thêm lịch</button>
-                    <c:if test="${empty switches}"><p>Chưa có switch hoạt động để lập lịch.</p></c:if>
+                        ${submittedOperation eq 'addSchedule' ? submitted.enabled eq 'true' ? 'checked' : '' : 'checked'}> Enabled</label>
+                    <button type="submit" class="sm-add-schedule-button" <c:if test="${empty switches}">disabled</c:if>>Add Schedule</button>
+                    <c:if test="${empty switches}"><p>No active switches are available for scheduling.</p></c:if>
                 </form>
             </section>
         </c:if>
 
         <section class="um-table-panel" aria-labelledby="schedule-list-heading">
-            <h2 id="schedule-list-heading">Danh sách lịch (<c:out value="${fn:length(schedules)}"/>)</h2>
-            <div class="um-table-scroll" role="region" aria-label="Danh sách lịch" tabindex="0">
+            <h2 id="schedule-list-heading">Schedule list (<c:out value="${fn:length(schedules)}"/>)</h2>
+            <div class="um-table-scroll" role="region" aria-label="Schedule list" tabindex="0">
                 <table class="um-table">
                     <thead>
-                    <tr><th>ID</th><th>Người tạo</th><th>Switch</th><th>Lệnh</th><th>Giờ</th><th>Bật</th><th>Thao tác</th></tr>
+                    <tr><th>ID</th><th>Created by</th><th>Switch</th><th>Command</th><th>Time</th><th>Enabled</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                     <c:forEach var="schedule" items="${schedules}">
@@ -104,10 +104,10 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${rowCanManage}">
-                                        <label class="um-sr-only" for="schedule-action-${schedule.scheduleId}">Lệnh</label>
+                                        <label class="um-sr-only" for="schedule-action-${schedule.scheduleId}">Command</label>
                                         <select form="update-schedule-${schedule.scheduleId}" id="schedule-action-${schedule.scheduleId}" name="scheduleAction">
-                                            <option value="ON" ${(editingSchedule ? submitted.scheduleAction eq 'ON' : schedule.action eq 'ON') ? 'selected' : ''}>Bật</option>
-                                            <option value="OFF" ${(editingSchedule ? submitted.scheduleAction eq 'OFF' : schedule.action eq 'OFF') ? 'selected' : ''}>Tắt</option>
+                                            <option value="ON" ${(editingSchedule ? submitted.scheduleAction eq 'ON' : schedule.action eq 'ON') ? 'selected' : ''}>ON</option>
+                                            <option value="OFF" ${(editingSchedule ? submitted.scheduleAction eq 'OFF' : schedule.action eq 'OFF') ? 'selected' : ''}>OFF</option>
                                         </select>
                                     </c:when>
                                     <c:otherwise><c:out value="${schedule.action}"/></c:otherwise>
@@ -116,7 +116,7 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${rowCanManage}">
-                                        <label class="um-sr-only" for="schedule-time-${schedule.scheduleId}">Giờ chạy</label>
+                                        <label class="um-sr-only" for="schedule-time-${schedule.scheduleId}">Run time</label>
                                         <input form="update-schedule-${schedule.scheduleId}" id="schedule-time-${schedule.scheduleId}" name="runTime" type="time" required
                                                value="<c:out value='${editingSchedule ? submitted.runTime : schedule.runTime}'/>">
                                     </c:when>
@@ -126,11 +126,11 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${rowCanManage}">
-                                        <label class="um-sr-only" for="schedule-enabled-${schedule.scheduleId}">Bật lịch</label>
+                                        <label class="um-sr-only" for="schedule-enabled-${schedule.scheduleId}">Enable schedule</label>
                                         <input form="update-schedule-${schedule.scheduleId}" id="schedule-enabled-${schedule.scheduleId}" name="enabled" type="checkbox" value="true"
                                                ${editingSchedule ? submitted.enabled eq 'true' ? 'checked' : '' : schedule.enabled ? 'checked' : ''}>
                                     </c:when>
-                                    <c:otherwise><c:out value="${schedule.enabled ? 'Có' : 'Không'}"/></c:otherwise>
+                                    <c:otherwise><c:out value="${schedule.enabled ? 'Yes' : 'No'}"/></c:otherwise>
                                 </c:choose>
                             </td>
                             <td>
@@ -141,7 +141,7 @@
                                             <input type="hidden" name="uiOp" value="updateSchedule">
                                             <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                                             <input type="hidden" name="scheduleId" value="<c:out value='${schedule.scheduleId}'/>">
-                                            <button type="submit" class="sm-save-button">Lưu</button>
+                                            <button type="submit" class="sm-save-button">Save</button>
                                         </form>
                                         <form action="${pageContext.request.contextPath}/MainController" method="post">
                                             <input type="hidden" name="action" value="SCHEDULE_MANAGER">
@@ -149,12 +149,12 @@
                                             <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                                             <input type="hidden" name="scheduleId" value="<c:out value='${schedule.scheduleId}'/>">
                                             <details class="sm-deactivate-confirm">
-                                                <summary>Ngừng hoạt động</summary>
+                                                <summary>Deactivate</summary>
                                                 <div class="sm-confirm-content">
-                                                    <button type="button" class="sm-return-button">Trở về</button>
+                                                    <button type="button" class="sm-return-button">Back</button>
                                                     <div class="sm-confirm-actions">
-                                                        <label class="sm-confirm-label"><input type="checkbox" name="confirm" value="yes" required> Xác nhận</label>
-                                                        <button type="submit" class="sm-danger-button">Ngừng hoạt động</button>
+                                                        <label class="sm-confirm-label"><input type="checkbox" name="confirm" value="yes" required> Confirm</label>
+                                                        <button type="submit" class="sm-danger-button">Deactivate</button>
                                                     </div>
                                                 </div>
                                             </details>
@@ -165,7 +165,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty schedules}">
-                        <tr><td colspan="7">Không có lịch phù hợp.</td></tr>
+                        <tr><td colspan="7">No matching schedules found.</td></tr>
                     </c:if>
                     </tbody>
                 </table>

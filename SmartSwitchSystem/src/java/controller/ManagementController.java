@@ -67,7 +67,7 @@ abstract class ManagementController extends HttpServlet {
 
     static String input(HttpServletRequest request, String key, int max) {
         String value = param(request, key);
-        require(value.length() <= max, "Trường " + key + " vượt quá độ dài cho phép.");
+        require(value.length() <= max, "The " + key + " field exceeds the maximum length.");
         return value;
     }
 
@@ -79,24 +79,24 @@ abstract class ManagementController extends HttpServlet {
 
     static String required(HttpServletRequest request, String key, int max, String label) {
         String value = input(request, key, max);
-        require(!value.isEmpty(), "Vui lòng nhập " + label + ".");
+        require(!value.isEmpty(), "Please enter " + label + ".");
         return value;
     }
 
     static String choice(HttpServletRequest request, String key, String... allowed) {
         String value = param(request, key);
-        require(Arrays.asList(allowed).contains(value), "Giá trị " + key + " không hợp lệ.");
+        require(Arrays.asList(allowed).contains(value), "Invalid value for " + key + ".");
         return value;
     }
 
     static void password(HttpServletRequest request, String key, int min, boolean strong) {
         String value = request.getParameter(key);
         require(value != null && value.length() >= min && value.length() <= 128,
-                "Mật khẩu cần từ " + min + " đến 128 ký tự.");
+                "Password must contain between " + min + " and 128 characters.");
         if (strong) {
             require(value.matches("(?s).*[A-Z].*") && value.matches("(?s).*\\d.*")
                     && value.matches("(?s).*[^\\p{L}\\p{N}\\s].*"),
-                    "Mật khẩu cần có chữ hoa, chữ số và ký tự đặc biệt.");
+                    "Password must include an uppercase letter, a number and a special character.");
         }
     }
 
@@ -194,27 +194,27 @@ abstract class ManagementController extends HttpServlet {
             UserDTO login = session == null ? null : (UserDTO) session.getAttribute("LOGIN_USER");
             if (login == null) {
                 url = LOGIN;
-                message = "Vui lòng đăng nhập để sử dụng chức năng này.";
+                message = "Please sign in to use this feature.";
             } else {
                 try (UserDAO dao = users()) {
                     UserDTO actor = dao.findById(login.getUserId());
                     if (actor == null || !actor.isActive()) {
                         session.invalidate();
                         url = LOGIN;
-                        message = "Tài khoản không còn hoạt động. Vui lòng đăng nhập lại.";
+                        message = "Your account is inactive. Please sign in again.";
                     } else if (!allowed(actor.getRole())) {
                         response.setStatus(403);
-                        message = "Bạn không có quyền sử dụng chức năng này.";
+                        message = "You do not have permission to use this feature.";
                     } else {
                         session.setAttribute("LOGIN_USER", actor);
                         String operation = support.input(request, "uiOp", 100);
                         if (!operation.isEmpty() && !"POST".equals(request.getMethod())) {
                             response.setStatus(405);
-                            message = "Thay đổi dữ liệu phải được gửi bằng POST.";
+                            message = "Changes must be submitted using POST.";
                         } else if ("POST".equals(request.getMethod()) && !operation.isEmpty()
                                 && !token(request).equals(request.getParameter("csrf"))) {
                             response.setStatus(403);
-                            message = "Form không hợp lệ. Vui lòng tải lại trang và thử lại.";
+                            message = "Invalid form. Please reload this page and try again.";
                         }
                         if (message == null) {
                             if ("POST".equals(request.getMethod()) && !operation.isEmpty()) {
@@ -259,25 +259,25 @@ abstract class ManagementController extends HttpServlet {
         } catch (SQLException e) {
             log("Management database read failed", e);
             response.setStatus(503);
-            message = "Không đọc được dữ liệu. Vui lòng kiểm tra kết nối database hoặc thử lại sau.";
+            message = "Unable to load data. Please check the database connection or try again later.";
             url = ERROR;
             redirect = false;
         } catch (ClassNotFoundException e) {
             log("Management database driver unavailable", e);
             response.setStatus(503);
-            message = "Không kết nối được database. Vui lòng liên hệ người quản trị.";
+            message = "Unable to connect to the database. Please contact an administrator.";
             url = ERROR;
             redirect = false;
         } catch (IllegalArgumentException e) {
             log("Management request input rejected", e);
             response.setStatus(400);
-            message = e.getMessage() == null ? "Dữ liệu gửi lên không hợp lệ." : e.getMessage();
+            message = e.getMessage() == null ? "Invalid submitted data." : e.getMessage();
             url = ERROR;
             redirect = false;
         } catch (RuntimeException e) {
             log("Unexpected management error", e);
             response.setStatus(500);
-            message = "Không thực hiện được thao tác. Vui lòng thử lại sau.";
+            message = "Unable to complete the operation. Please try again later.";
             url = ERROR;
             redirect = false;
         } finally {
@@ -295,13 +295,13 @@ abstract class ManagementController extends HttpServlet {
     private String sqlMessage(SQLException exception) {
         for (SQLException current = exception; current != null; current = current.getNextException()) {
             if (current.getErrorCode() == 2601 || current.getErrorCode() == 2627)
-                return "Tên đăng nhập, email, số điện thoại hoặc quyền thiết bị đã tồn tại.";
+                return "The username, email, phone number or device permission already exists.";
             if (current.getErrorCode() == 547)
-                return "Dữ liệu tham chiếu không hợp lệ hoặc đã thay đổi. Vui lòng tải lại trang.";
+                return "The reference data is invalid or has changed. Please reload this page.";
             if (current.getSQLState() != null && current.getSQLState().startsWith("23"))
-                return "Dữ liệu bị trùng hoặc tham chiếu không hợp lệ. Vui lòng kiểm tra lại.";
+                return "Duplicate data or an invalid reference. Please review your input.";
         }
-        return "Không lưu được dữ liệu. Vui lòng thử lại sau.";
+        return "Unable to save data. Please try again later.";
     }
 
     private HttpServletRequest requestWithoutSubmittedValues(HttpServletRequest request) {

@@ -18,11 +18,11 @@
 %>
 <c:set var="activePage" value="DEVICE_MANAGER" scope="request" />
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quản lý thiết bị và switch</title>
+    <title>Device &amp; Switch Management</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/userManagerCss.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/deviceManagerCss.css?v=20261013-device-esp-filter">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/noJsUi.css">
@@ -31,7 +31,7 @@
 <div class="ui-shell">
     <%@ include file="sideBar.jspf" %>
     <main class="um-main dm-main" id="main-content">
-        <h1>Quản lý thiết bị ESP32 và switch</h1>
+        <h1>ESP32 Device &amp; Switch Management</h1>
         <c:if test="${not empty uiMessage}">
             <p class="ui-notice" role="status"><c:out value="${uiMessage}"/></p>
         </c:if>
@@ -41,44 +41,44 @@
 
         <form class="dm-toolbar" action="${pageContext.request.contextPath}/MainController" method="get">
             <input type="hidden" name="action" value="DEVICE_MANAGER">
-            <label for="device-search">Tìm thiết bị hoặc switch</label>
+            <label for="device-search">Search devices or switches</label>
             <input id="device-search" name="q" type="search" maxlength="100"
                    value="<c:out value='${q}'/>">
             <label for="device-esp-filter">ESP</label>
             <select id="device-esp-filter" name="esp">
-                <option value="all" ${empty espFilter or espFilter eq 'all' ? 'selected' : ''}>Tất cả ESP</option>
+                <option value="all" ${empty espFilter or espFilter eq 'all' ? 'selected' : ''}>All ESP32 Devices</option>
                 <c:forEach var="esp" items="${espFilterOptions}">
                     <option value="<c:out value='${esp.deviceId}'/>" ${espFilter eq esp.deviceId ? 'selected' : ''}>
                         <c:out value="${esp.deviceId}"/> — <c:out value="${esp.name}"/>
                     </option>
                 </c:forEach>
             </select>
-            <button type="submit">Tìm</button>
+            <button type="submit">Search</button>
         </form>
 
         <section class="dm-panel" aria-labelledby="devices-heading">
-            <h2 id="devices-heading">Thiết bị ESP32</h2>
+            <h2 id="devices-heading">ESP32 Devices</h2>
             <c:if test="${canManageDevices}">
             <form class="dm-add-device-form" action="${pageContext.request.contextPath}/MainController" method="post">
                 <input type="hidden" name="action" value="DEVICE_MANAGER">
                 <input type="hidden" name="uiOp" value="addDevice">
                 <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                 <fieldset>
-                    <legend>Thêm thiết bị</legend>
+                    <legend>Add Device</legend>
                     <label>Device ID <input name="deviceId" maxlength="20" pattern="ESP[A-Za-z0-9_-]{1,17}" required
                         value="<c:out value='${submittedOperation eq "addDevice" ? submitted.deviceId : ""}'/>"></label>
-                    <label>Tên <input name="deviceName" maxlength="50" required
+                    <label>Name <input name="deviceName" maxlength="50" required
                         value="<c:out value='${submittedOperation eq "addDevice" ? submitted.deviceName : ""}'/>"></label>
                     <label>Hostname <input name="hostName" maxlength="255" required
                         value="<c:out value='${submittedOperation eq "addDevice" ? submitted.hostName : ""}'/>"></label>
-                    <button type="submit" class="dm-add-device-button">Thêm thiết bị</button>
+                    <button type="submit" class="dm-add-device-button">Add Device</button>
                 </fieldset>
             </form>
             </c:if>
-            <div class="dm-table-scroll" role="region" aria-label="Danh sách thiết bị ESP32" tabindex="0">
+            <div class="dm-table-scroll" role="region" aria-label="ESP32 device list" tabindex="0">
                 <table class="dm-table">
                     <thead>
-                    <tr><th>Device ID</th><th>Tên</th><th>Hostname</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                    <tr><th>Device ID</th><th>Name</th><th>Hostname</th><th>Status</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                     <c:forEach var="device" items="${devices}">
@@ -87,7 +87,7 @@
                             <td>
                                 <c:if test="${not canManageDevices}"><c:out value="${device.name}"/></c:if>
                                 <c:if test="${canManageDevices}">
-                                <label class="um-sr-only" for="device-name-${device.deviceId}">Tên thiết bị</label>
+                                <label class="um-sr-only" for="device-name-${device.deviceId}">Device name</label>
                                 <input form="update-device-${device.deviceId}" id="device-name-${device.deviceId}"
                                        name="deviceName" maxlength="50" required
                                        value="<c:out value='${submittedOperation eq "updateDevice" and submitted.deviceId eq device.deviceId ? submitted.deviceName : device.name}'/>">
@@ -103,7 +103,7 @@
                                         <input type="hidden" name="uiOp" value="updateDevice">
                                         <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                                         <input type="hidden" name="deviceId" value="<c:out value='${device.deviceId}'/>">
-                                        <button type="submit">Lưu</button>
+                                        <button type="submit">Save</button>
                                     </form>
                                     <form action="${pageContext.request.contextPath}/MainController" method="post">
                                         <input type="hidden" name="action" value="DEVICE_MANAGER">
@@ -111,12 +111,12 @@
                                         <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                                         <input type="hidden" name="deviceId" value="<c:out value='${device.deviceId}'/>">
                                         <details class="dm-deactivate-confirm">
-                                            <summary>Ngừng hoạt động</summary>
+                                            <summary>Deactivate</summary>
                                             <div class="dm-confirm-content">
-                                                <button type="button" class="dm-return-button">Trở về</button>
+                                                <button type="button" class="dm-return-button">Back</button>
                                                 <div class="dm-confirm-actions">
-                                                    <label><input type="checkbox" name="confirm" value="yes" required> Xác nhận</label>
-                                                    <button type="submit" class="dm-danger-button">Ngừng hoạt động</button>
+                                                    <label><input type="checkbox" name="confirm" value="yes" required> Confirm</label>
+                                                    <button type="submit" class="dm-danger-button">Deactivate</button>
                                                 </div>
                                             </div>
                                         </details>
@@ -127,7 +127,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty devices}">
-                        <tr><td colspan="5">Không có thiết bị phù hợp.</td></tr>
+                        <tr><td colspan="5">No matching devices found.</td></tr>
                     </c:if>
                     </tbody>
                 </table>
@@ -142,29 +142,29 @@
                 <input type="hidden" name="uiOp" value="addSwitch">
                 <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                 <fieldset>
-                    <legend>Thêm switch</legend>
+                    <legend>Add Switch</legend>
                     <label>Switch ID <input name="switchId" maxlength="20" pattern="SW[A-Za-z0-9_-]{1,18}" required
                         value="<c:out value='${submittedOperation eq "addSwitch" ? submitted.switchId : ""}'/>"></label>
-                    <label>Thiết bị ESP32
+                    <label>ESP32 Device
                         <select name="switchDeviceId" required>
-                            <option value="">Chọn thiết bị</option>
+                            <option value="">Select a device</option>
                             <c:forEach var="device" items="${deviceOptions}">
                                 <option value="<c:out value='${device.deviceId}'/>" ${submittedOperation eq 'addSwitch' and submitted.switchDeviceId eq device.deviceId ? 'selected' : ''}><c:out value="${device.deviceId}"/> — <c:out value="${device.name}"/></option>
                             </c:forEach>
                         </select>
                     </label>
-                    <label>Tên switch <input name="switchName" maxlength="50" required
+                    <label>Switch name <input name="switchName" maxlength="50" required
                         value="<c:out value='${submittedOperation eq "addSwitch" ? submitted.switchName : ""}'/>"></label>
                     <label>GPIO pin <input name="gpioPin" type="number" min="0" max="255" required
                         value="<c:out value='${submittedOperation eq "addSwitch" ? submitted.gpioPin : ""}'/>"></label>
-                    <button type="submit">Thêm switch</button>
+                    <button type="submit">Add Switch</button>
                 </fieldset>
             </form>
             </c:if>
-            <div class="dm-table-scroll" role="region" aria-label="Danh sách switch" tabindex="0">
+            <div class="dm-table-scroll" role="region" aria-label="Switch list" tabindex="0">
                 <table class="dm-table">
                     <thead>
-                    <tr><th>Switch ID</th><th>Thiết bị</th><th>Tên</th><th>GPIO</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                    <tr><th>Switch ID</th><th>Device</th><th>Name</th><th>GPIO</th><th>Status</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                     <c:forEach var="sw" items="${switches}">
@@ -174,7 +174,7 @@
                             <td>
                                 <c:choose>
                                 <c:when test="${sw.active}">
-                                <label class="um-sr-only" for="switch-name-${sw.switchId}">Tên switch</label>
+                                <label class="um-sr-only" for="switch-name-${sw.switchId}">Switch name</label>
                                 <input form="update-switch-${sw.switchId}" id="switch-name-${sw.switchId}"
                                        name="switchName" maxlength="50" required
                                        value="<c:out value='${submittedOperation eq "updateSwitch" and submitted.switchId eq sw.switchId ? submitted.switchName : sw.switchName}'/>">
@@ -186,7 +186,7 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${sw.active}"><c:out value="${sw.status}"/></c:when>
-                                    <c:otherwise>Ngừng hoạt động</c:otherwise>
+                                    <c:otherwise>Inactive</c:otherwise>
                                 </c:choose>
                             </td>
                             <td>
@@ -198,7 +198,7 @@
                                         <input type="hidden" name="uiOp" value="updateSwitch">
                                         <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                                         <input type="hidden" name="switchId" value="<c:out value='${sw.switchId}'/>">
-                                        <button type="submit">Lưu</button>
+                                        <button type="submit">Save</button>
                                     </form>
                                     <form action="${pageContext.request.contextPath}/MainController" method="post">
                                         <input type="hidden" name="action" value="DEVICE_MANAGER">
@@ -206,12 +206,12 @@
                                         <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                                         <input type="hidden" name="switchId" value="<c:out value='${sw.switchId}'/>">
                                         <details class="dm-deactivate-confirm">
-                                            <summary>Ngừng hoạt động</summary>
+                                            <summary>Deactivate</summary>
                                             <div class="dm-confirm-content">
-                                                <button type="button" class="dm-return-button">Trở về</button>
+                                                <button type="button" class="dm-return-button">Back</button>
                                                 <div class="dm-confirm-actions">
-                                                    <label><input type="checkbox" name="confirm" value="yes" required> Xác nhận</label>
-                                                    <button type="submit" class="dm-danger-button">Ngừng hoạt động</button>
+                                                    <label><input type="checkbox" name="confirm" value="yes" required> Confirm</label>
+                                                    <button type="submit" class="dm-danger-button">Deactivate</button>
                                                 </div>
                                             </div>
                                         </details>
@@ -223,7 +223,7 @@
                                         <input type="hidden" name="uiOp" value="activateSwitch">
                                         <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
                                         <input type="hidden" name="switchId" value="<c:out value='${sw.switchId}'/>">
-                                        <button type="submit" <c:if test="${not sw.espActive}">disabled title="ESP32 này đang ngừng hoạt động"</c:if>>Kích hoạt</button>
+                                        <button type="submit" <c:if test="${not sw.espActive}">disabled title="This ESP32 device is inactive"</c:if>>Activate</button>
                                     </form>
                                     </c:if>
                                 </div>
@@ -232,7 +232,7 @@
                         </tr>
                     </c:forEach>
                     <c:if test="${empty switches}">
-                        <tr><td colspan="6">Không có switch phù hợp.</td></tr>
+                        <tr><td colspan="6">No matching switches found.</td></tr>
                     </c:if>
                     </tbody>
                 </table>

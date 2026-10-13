@@ -23,28 +23,28 @@ public class UserManagerController extends ManagementController {
     protected String change(UserDAO dao, UserDTO actor, HttpServletRequest r) throws SQLException {
         String op = support.param(r,"uiOp");
         if ("addUser".equals(op)) {
-            String username = support.required(r,"userName",50,"tên đăng nhập");
-            support.require(username.matches("[A-Za-z0-9_.-]{3,50}"),"Tên đăng nhập cần 3–50 ký tự chữ, số, chấm, gạch ngang hoặc gạch dưới.");
-            support.require(dao.findByUserName(username)==null,"Tên đăng nhập đã tồn tại.");
+            String username = support.required(r,"userName",50,"username");
+            support.require(username.matches("[A-Za-z0-9_.-]{3,50}"),"Username must contain 3-50 letters, numbers, periods, hyphens or underscores.");
+            support.require(dao.findByUserName(username)==null,"The username already exists.");
             support.password(r,"password",8,false);
-            UserDTO user = new UserDTO("U"+UUID.randomUUID().toString().replace("-","").substring(0,19),username,PasswordUtil.hash(r.getParameter("password")),support.required(r,"fullName",50,"họ tên"),role(r),true,views.email(r),views.phone(r));
-            support.require(dao.insert(user),"Không thêm được người dùng.");
-            message(r,"Đã thêm người dùng vào cơ sở dữ liệu."); return "&p="+Math.max(1,(dao.findAll().size()+5)/6);
+            UserDTO user = new UserDTO("U"+UUID.randomUUID().toString().replace("-","").substring(0,19),username,PasswordUtil.hash(r.getParameter("password")),support.required(r,"fullName",50,"full name"),role(r),true,views.email(r),views.phone(r));
+            support.require(dao.insert(user),"Unable to add the user.");
+            message(r,"User added."); return "&p="+Math.max(1,(dao.findAll().size()+5)/6);
         }
         UserDTO user = dao.findById(support.required(r,"id",20,"User ID"));
-        support.require(user!=null,"Không tìm thấy tài khoản.");
-        support.require(!actor.getUserId().equals(user.getUserId()),"Không được thay đổi quyền, khóa hoặc xóa chính tài khoản đang đăng nhập. Sửa hồ sơ tại Thông Tin Tài Khoản.");
+        support.require(user!=null,"Account not found.");
+        support.require(!actor.getUserId().equals(user.getUserId()),"You cannot change your own role, disable or delete your signed-in account here. Edit your profile in Account Settings.");
         boolean ok;
         if ("deleteUser".equals(op)) ok = dao.delete(user.getUserId());
         else {
             if ("changeRole".equals(op)) { user.setRole(role(r));ok=dao.updateRole(user); }
             else if ("toggleUser".equals(op)) { user.setActive(!user.isActive());ok=dao.updateActive(user); }
             else if ("resetPassword".equals(op)) { support.password(r,"password",8,false);ok=dao.resetPassword(user.getUserId(),PasswordUtil.hash(r.getParameter("password"))); }
-            else if ("updateUser".equals(op)) { user.setFullName(support.required(r,"fullName",50,"họ tên")); user.setEmail(views.email(r)); user.setPhone(views.phone(r)); user.setRole(role(r));ok=dao.updateDetails(user); }
-            else throw new IllegalArgumentException("Thao tác người dùng không hợp lệ.");
+            else if ("updateUser".equals(op)) { user.setFullName(support.required(r,"fullName",50,"full name")); user.setEmail(views.email(r)); user.setPhone(views.phone(r)); user.setRole(role(r));ok=dao.updateDetails(user); }
+            else throw new IllegalArgumentException("Invalid user operation.");
         }
-        support.require(ok,"Không cập nhật được tài khoản.");
-        message(r,"deleteUser".equals(op)?"Đã xóa mềm tài khoản (is_active=false) và thu hồi quyền thiết bị.":"Đã cập nhật tài khoản."); return "";
+        support.require(ok,"Unable to update the account.");
+        message(r,"deleteUser".equals(op)?"Account deactivated and device permissions revoked.":"Account updated."); return "";
     }
     private Role role(HttpServletRequest r) { return Role.valueOf(support.choice(r,"role","ADMIN","OPERATOR","VIEWER")); }
 }

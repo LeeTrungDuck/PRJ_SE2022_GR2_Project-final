@@ -102,7 +102,7 @@ public class PermissionManagementController extends ManagementController {
         support.require(viewer != null && viewer.isActive()
                 && (viewer.getRole() == Role.VIEWER || viewer.getRole() == Role.ADMIN
                 || viewer.getRole() == Role.OPERATOR),
-                "Chỉ được cấp quyền cho tài khoản Admin, Operator hoặc Viewer đang hoạt động.");
+                "Permissions can only be assigned to active Admin, Operator or Viewer accounts.");
         id = viewer.getUserId();
         String op = support.param(r, "uiOp");
         String target = id;
@@ -118,7 +118,7 @@ public class PermissionManagementController extends ManagementController {
             if (!Arrays.asList("resetPermissions", "revokePermissions").contains(op)) {
                 for (String key : r.getParameterMap().keySet()) {
                     if (key.startsWith("view_") || key.startsWith("control_")) {
-                        support.require(matrix.containsKey(key.substring(key.indexOf('_') + 1)), "Switch không hợp lệ.");
+                        support.require(matrix.containsKey(key.substring(key.indexOf('_') + 1)), "Invalid switch.");
                     }
                 }
                 for (String key : matrix.keySet()) {
@@ -128,7 +128,7 @@ public class PermissionManagementController extends ManagementController {
             }
             if ("savePermissions".equals(op)) {
                 permissions.saveMatrix(id, matrix, actor.getUserId());
-                message(r, "Đã lưu quyền vào cơ sở dữ liệu. Bỏ quyền xem sẽ xóa mềm permission.");
+                message(r, "Permissions saved. Removing view access deactivates the permission.");
             } else if ("resetPermissions".equals(op)) {
                 matrix = stored;
             } else if ("revokePermissions".equals(op)) {
@@ -141,10 +141,10 @@ public class PermissionManagementController extends ManagementController {
                 UserDTO next = dao.findById(target);
                 support.require(next != null && next.isActive()
                         && (next.getRole() == Role.VIEWER || next.getRole() == Role.ADMIN
-                        || next.getRole() == Role.OPERATOR), "Tài khoản không hợp lệ.");
+                        || next.getRole() == Role.OPERATOR), "Invalid account.");
                 target = next.getUserId();
             } else {
-                support.require("confirmRevoke".equals(op), "Thao tác phân quyền không hợp lệ.");
+                support.require("confirmRevoke".equals(op), "Invalid permission operation.");
             }
             synchronized (r.getSession()) {
                 if ("savePermissions".equals(op) || "resetPermissions".equals(op) || matrix.equals(stored)) {
@@ -154,7 +154,7 @@ public class PermissionManagementController extends ManagementController {
                 }
             }
             if (!"savePermissions".equals(op)) {
-                message(r, "Đã cập nhật bản nháp. Bấm Lưu Phân Quyền để ghi vào cơ sở dữ liệu.");
+                message(r, "Draft updated. Select Save Permissions to apply the changes.");
             }
         }
         try {

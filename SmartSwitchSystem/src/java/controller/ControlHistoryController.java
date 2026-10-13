@@ -62,12 +62,12 @@ public class ControlHistoryController extends HttpServlet {
         } catch (SQLException | ClassNotFoundException e) {
             log("Control history database access failed", e);
             response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            request.setAttribute("ERROR", "Không đọc được lịch sử điều khiển. Vui lòng thử lại.");
+            request.setAttribute("ERROR", "Unable to load control history. Please try again.");
             request.getRequestDispatcher("/web/errorPage.jsp").forward(request, response);
         } catch (RuntimeException e) {
             log("Unexpected control history error", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            request.setAttribute("ERROR", "Không thể xem lịch sử điều khiển. Vui lòng thử lại.");
+            request.setAttribute("ERROR", "Unable to view control history. Please try again.");
             request.getRequestDispatcher("/web/errorPage.jsp").forward(request, response);
         }
     }
@@ -75,7 +75,7 @@ public class ControlHistoryController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Lịch sử chỉ hỗ trợ tra cứu bằng GET.");
+        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Control history can only be retrieved with GET.");
     }
 
     private HttpServletRequest withoutParameters(HttpServletRequest request) {
@@ -95,10 +95,10 @@ public class ControlHistoryController extends HttpServlet {
         String resultFilter = input(request, "result", 10);
         require(commandFilter.isEmpty() || "all".equals(commandFilter)
                 || "ON".equals(commandFilter) || "OFF".equals(commandFilter),
-                "Lệnh lọc không hợp lệ.");
+                "Invalid command filter.");
         require(resultFilter.isEmpty() || "all".equals(resultFilter)
                 || "ON".equals(resultFilter) || "OFF".equals(resultFilter) || "ERROR".equals(resultFilter),
-                "Kết quả lọc không hợp lệ.");
+                "Invalid result filter.");
 
         List<ControlHistoryDTO> records;
         try (ControlHistoryDAO dao = new ControlHistoryDAO()) {

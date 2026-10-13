@@ -2,6 +2,7 @@
 .schedule-manager-page .sidebar { font-family: inherit; }
 .schedule-manager-page .sidebar .sidebar-menu .menu-group > .menu-title { color: #ffffff; font-size: 11px; padding-left: 8px; }
 .schedule-manager-page .um-table-panel { margin-bottom: 16px; padding: 16px; border-radius: 8px; background: var(--um-surface); }
+.schedule-manager-page .um-table th { font-size: 13px; }
 .schedule-manager-page .um-main input:not([type="hidden"]):not([type="checkbox"]), .schedule-manager-page .um-main select { min-height: 40px; padding: 9px 12px; border: 1px solid transparent; border-radius: 4px; background: var(--um-inset); color: var(--um-text); font-size: 12px; }
 .schedule-manager-page .um-main input:not([type="hidden"]):not([type="checkbox"]):focus, .schedule-manager-page .um-main select:focus { border-color: var(--um-primary); }
 .schedule-manager-page .um-main input::placeholder { color: var(--um-muted); }

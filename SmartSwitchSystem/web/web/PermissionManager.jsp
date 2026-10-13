@@ -9,12 +9,12 @@
             </c:if>
             <c:set var="activePage" value="PERMISSION_MANAGER" scope="request" />
             <!DOCTYPE html>
-            <html lang="vi">
+            <html lang="en">
 
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
-                <title>Phân Quyền Thiết Bị | ESP32 IoT Hub</title>
+                <title>Device Permissions | ESP32 IoT Hub</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                 <link
@@ -41,29 +41,29 @@
                                 </p>
                             </c:if>
                             <header class="pm-page-heading">
-                                <h1>Quản Lý Phân Quyền Thiết Bị <span>(Permission Management)</span>
+                                <h1>Device Permissions <span>(Permission Management)</span>
                                 </h1>
-                                <p>Thiết lập quyền Xem (<code>canView</code>) và Điều Khiển (<code>canControl</code>)
-                                    cho từng tài khoản Admin, Operator hoặc Viewer trên từng Switch.</p>
+                                <p>Configure view access (<code>canView</code>) and control access (<code>canControl</code>)
+                                    for each Admin, Operator or Viewer account on individual switches.</p>
                             </header>
-                            <c:if test="${empty ui.activeViewer.id}"><p class="ui-notice">Chưa có tài khoản đang hoạt động để phân quyền.</p></c:if><div class="pm-workspace">
+                            <c:if test="${empty ui.activeViewer.id}"><p class="ui-notice">No active accounts are available for permission management.</p></c:if><div class="pm-workspace">
                                 <aside class="pm-viewers-panel">
                                     <div class="pm-viewers-heading">
                                         <h2>
                                             <i class="fa-solid fa-id-card-clip" aria-hidden="true">
-                                            </i> Tài Khoản
+                                            </i> Accounts
                                         </h2>
-                                        <span class="pm-account-count">${ui.viewerTotal} TÀI KHOẢN</span>
+                                        <span class="pm-account-count">${ui.viewerTotal} ACCOUNTS</span>
                                     </div>
                                     <form class="pm-search-wrap"
                                         action="${pageContext.request.contextPath}/MainController" method="get">
                                         <input name="action" value="PERMISSION_MANAGER" type="hidden">
                                         <input name="viewer" value="<c:out value='${ui.activeViewer.id}'/>"
                                             type="hidden">
-                                        <label class="um-sr-only" for="pm-search">Tìm tài khoản</label>
+                                        <label class="um-sr-only" for="pm-search">Search accounts</label>
                                         <input id="pm-search" type="search" name="q" value="<c:out value='${ui.q}'/>"
-                                            placeholder="Tìm tên đăng nhập, họ tên...">
-                                        <button class="ui-get-button" type="submit" aria-label="Tìm tài khoản">
+                                            placeholder="Search by username or full name...">
+                                        <button class="ui-get-button" type="submit" aria-label="Search accounts">
                                             <i class="fa-solid fa-magnifying-glass" aria-hidden="true">
                                             </i>
                                         </button>
@@ -91,7 +91,7 @@
                                             </button>
                                         </c:forEach>
                                         <c:if test="${empty ui.viewers}">
-                                            <p class="ui-empty">Không tìm thấy tài khoản.</p>
+                                            <p class="ui-empty">No accounts found.</p>
                                         </c:if>
                                     </div>
                                 </aside>
@@ -107,7 +107,7 @@
                                                     </i>
                                                 </span>
                                                 <div>
-                                                    <span class="pm-target-label">ĐANG CẤU HÌNH QUYỀN CHO TÀI KHOẢN:</span>
+                                                    <span class="pm-target-label">CONFIGURING PERMISSIONS FOR:</span>
                                                     <span class="pm-target-handle">
                                                         <c:out value="${ui.activeViewer.id}" />
                                                     </span>
@@ -122,24 +122,24 @@
                                             <div class="pm-toolbar">
                                                 <div class="pm-bulk-actions">
                                                     <button class="um-button um-button-secondary" name="uiOp"
-                                                        value="confirmRevoke" type="submit">Hủy Toàn Bộ Quyền</button>
+                                                        value="confirmRevoke" type="submit">Revoke All Permissions</button>
                                                 </div>
                                                 <div class="pm-save-actions">
-                                                    <span class="pm-save-state">${ui.dirty ? 'Có bản nháp chưa lưu' :
-                                                        'Không có thay đổi chưa lưu'}</span>
+                                                    <span class="pm-save-state">${ui.dirty ? 'Unsaved draft' :
+                                                        'No unsaved changes'}</span>
                                                     <button type="submit" class="pm-reset-button" name="uiOp"
-                                                        value="resetPermissions">Hoàn tác</button>
+                                                        value="resetPermissions">Reset Changes</button>
                                                     <button class="um-button um-button-primary" type="submit"
                                                         name="uiOp" value="savePermissions">
                                                         <i class="fa-solid fa-floppy-disk" aria-hidden="true">
-                                                        </i> Lưu Phân Quyền</button>
+                                                        </i> Save Permissions</button>
                                                 </div>
                                             </div>
                                         </section>
                                         <p class="pm-rule-note">
                                             <i class="fa-solid fa-circle-info" aria-hidden="true">
-                                            </i> Khi lưu, quyền điều khiển sẽ bao gồm quyền xem. Bản nháp được giữ khi
-                                            chuyển tài khoản.
+                                            </i> When saved, control access includes view access. Drafts are kept when
+                                            switching accounts.
                                         </p>
                                         <div class="pm-device-groups">
                                             <c:forEach var="device" items="${ui.permissionDevices}">
@@ -164,7 +164,7 @@
                                                         <div class="pm-device-badges">
                                                             <span class="pm-device-count">${fn:length(device.switches)}
                                                                 SWITCH</span>
-                                                            <span class="pm-device-online">ĐÃ KÍCH HOẠT</span>
+                                                            <span class="pm-device-online">ACTIVE</span>
                                                         </div>
                                                     </header>
                                                     <div class="pm-switch-list">
@@ -210,18 +210,17 @@
                 </div>
                 <c:if test="${ui.dialog}">
                     <%@ include file="uiDialogStart.jspf" %>
-                        <p class="um-dialog-description">Hủy quyền xem và điều khiển của <strong>
+                        <p class="um-dialog-description">Revoke view and control access for <strong>
                                 <c:out value="${ui.activeViewer.name}" />
-                            </strong> trên tất cả switch? Thay đổi được giữ trong bản nháp cho đến khi bấm Lưu Phân
-                            Quyền.</p>
+                            </strong> on all switches? Changes remain in the draft until you select Save Permissions.</p>
                         <form action="${pageContext.request.contextPath}/MainController" method="post">
                             <%@ include file="uiPostFields.jspf" %>
                                 <input name="viewer" value="<c:out value='${ui.activeViewer.id}'/>" type="hidden">
                                 <div class="um-dialog-footer">
                                     <a class="um-button um-button-secondary"
-                                        href="${pageContext.request.contextPath}/MainController?action=PERMISSION_MANAGER&amp;viewer=${ui.activeViewer.id}">Hủy</a>
+                                        href="${pageContext.request.contextPath}/MainController?action=PERMISSION_MANAGER&amp;viewer=${ui.activeViewer.id}">Cancel</a>
                                     <button class="um-button um-button-danger" name="uiOp" value="revokePermissions"
-                                        type="submit">Hủy Toàn Bộ Quyền</button>
+                                        type="submit">Revoke All Permissions</button>
                                 </div>
                         </form>
                         </dialog>

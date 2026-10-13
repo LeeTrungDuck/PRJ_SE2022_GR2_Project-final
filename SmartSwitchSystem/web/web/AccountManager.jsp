@@ -8,12 +8,12 @@
             </c:if>
             <c:set var="activePage" value="ACCOUNT_MANAGER" scope="request" />
             <!DOCTYPE html>
-            <html lang="vi">
+            <html lang="en">
 
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
-                <title>Hồ Sơ Tài Khoản | ESP32 IoT Hub</title>
+                <title>Account Settings | ESP32 IoT Hub</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                 <link
@@ -42,9 +42,9 @@
                             <header class="ac-page-heading">
                                 <span class="ac-heading-dot" aria-hidden="true">
                                 </span>
-                                <h1>Hồ Sơ &amp; Cài Đặt Tài Khoản <span>(Profile / Account)</span>
+                                <h1>Profile &amp; Account Settings <span>(Profile / Account)</span>
                                 </h1>
-                                <p>Quản lý thông tin định danh và liên hệ của tài khoản đang đăng nhập.</p>
+                                <p>Manage your account identity and contact details.</p>
                             </header>
                             <div class="ac-workspace">
                                 <aside class="ac-profile-card">
@@ -66,12 +66,12 @@
                                             <dd>${ui.profile.userId}</dd>
                                         </div>
                                         <div>
-                                            <dt>Trạng Thái</dt>
-                                            <dd class="ac-status">Hoạt Động</dd>
+                                            <dt>Status</dt>
+                                            <dd class="ac-status">Active</dd>
                                         </div>
                                         
                                         <div>
-                                            <dt>Phân Quyền</dt>
+                                            <dt>Role</dt>
                                             <dd class="ac-root-role">${ui.profile.role}</dd>
                                         </div>
                                     </dl>
@@ -82,8 +82,8 @@
                                             <i class="fa-solid fa-id-card-clip" aria-hidden="true">
                                             </i>
                                             <div>
-                                                <h2>Chỉnh Sửa Thông Tin Cá Nhân</h2>
-                                                <p>Cập nhật họ tên, email và số điện thoại.</p>
+                                                <h2>Edit Personal Information</h2>
+                                                <p>Update your full name, email address and phone number.</p>
                                             </div>
                                             <span class="ac-form-number">FORM 01/02</span>
                                         </header>
@@ -91,7 +91,7 @@
                                             <%@ include file="uiPostFields.jspf" %>
                                                 <div class="ac-personal-grid">
                                                     <div class="ac-field">
-                                                        <label for="ac-fullname">Họ và Tên</label>
+                                                        <label for="ac-fullname">Full Name</label>
                                                         <div class="ac-input-wrap">
                                                             <i class="fa-regular fa-user" aria-hidden="true">
                                                             </i>
@@ -101,7 +101,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="ac-field">
-                                                        <label for="ac-username">Tên Đăng Nhập (Cố định)</label>
+                                                        <label for="ac-username">Username (Read-only)</label>
                                                         <div class="ac-input-wrap ac-readonly">
                                                             <i class="fa-solid fa-at" aria-hidden="true">
                                                             </i>
@@ -111,7 +111,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="ac-field">
-                                                        <label for="ac-email">Email Nhận Thông Báo Khẩn</label>
+                                                        <label for="ac-email">Alert Email Address</label>
                                                         <div class="ac-input-wrap">
                                                             <i class="fa-regular fa-envelope" aria-hidden="true">
                                                             </i>
@@ -121,7 +121,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="ac-field">
-                                                        <label for="ac-phone">Số Điện Thoại Hỗ Trợ</label>
+                                                        <label for="ac-phone">Support Phone Number</label>
                                                         <div class="ac-input-wrap">
                                                             <i class="fa-solid fa-phone" aria-hidden="true">
                                                             </i>
@@ -134,10 +134,10 @@
                                                 <footer class="ac-panel-footer">
                                                     <p>
                                                         <i class="fa-solid fa-circle-info" aria-hidden="true">
-                                                        </i> Tên đăng nhập và vai trò được giữ cố định.
+                                                        </i> Your username and role cannot be changed here.
                                                     </p>
                                                     <button class="um-button um-button-primary" name="uiOp"
-                                                        value="saveProfile" type="submit">Lưu Thay Đổi</button>
+                                                        value="saveProfile" type="submit">Save Changes</button>
                                                 </footer>
                                         </form>
                                     </section>
@@ -146,8 +146,8 @@
                                             <i class="fa-solid fa-clock-rotate-left" aria-hidden="true">
                                             </i>
                                             <div>
-                                                <h2>Đổi Mật Khẩu Truy Cập</h2>
-                                                <p>Tối thiểu 10 ký tự, có chữ hoa, số và ký tự đặc biệt.</p>
+                                                <h2>Change Password</h2>
+                                                <p>At least 10 characters, including an uppercase letter, a number and a special character.</p>
                                             </div>
                                             <span class="ac-form-number">FORM 02/02</span>
                                         </header>
@@ -155,7 +155,7 @@
                                             <%@ include file="uiPostFields.jspf" %>
                                                 <div class="ac-password-grid">
                                                     <div class="ac-field">
-                                                        <label for="ac-current-password">Mật Khẩu Hiện Tại</label>
+                                                        <label for="ac-current-password">Current Password</label>
                                                         <div class="ac-input-wrap">
                                                             <i class="fa-solid fa-key" aria-hidden="true">
                                                             </i>
@@ -165,7 +165,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="ac-field">
-                                                        <label for="ac-new-password">Mật Khẩu Mới</label>
+                                                        <label for="ac-new-password">New Password</label>
                                                         <div class="ac-input-wrap">
                                                             <i class="fa-solid fa-lock" aria-hidden="true">
                                                             </i>
@@ -175,7 +175,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="ac-field">
-                                                        <label for="ac-confirm-password">Nhập Lại Mật Khẩu</label>
+                                                        <label for="ac-confirm-password">Confirm Password</label>
                                                         <div class="ac-input-wrap">
                                                             <i class="fa-solid fa-check" aria-hidden="true">
                                                             </i>
@@ -186,10 +186,10 @@
                                                     </div>
                                                 </div>
                                                 <footer class="ac-panel-footer">
-                                                    <p>Mật khẩu hiện tại được kiểm tra; mật khẩu mới được băm trước khi lưu.
+                                                    <p>Your current password is verified. The new password is hashed before storage.
                                                     </p>
                                                     <button class="um-button um-button-primary" name="uiOp"
-                                                        value="changePassword" type="submit">Cập Nhật Mật Khẩu</button>
+                                                        value="changePassword" type="submit">Update Password</button>
                                                 </footer>
                                         </form>
                                     </section>

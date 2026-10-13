@@ -66,12 +66,12 @@ public class ScheduleManagementController extends HttpServlet {
             session.setAttribute("LOGIN_USER", actor);
             String operation = input(request, "uiOp", 100);
             if (!operation.isEmpty() && !"POST".equals(request.getMethod())) {
-                response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Thay đổi dữ liệu phải dùng POST.");
+                response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Changes must be submitted using POST.");
                 return;
             }
             if ("POST".equals(request.getMethod()) && !operation.isEmpty()
                     && !token(request).equals(request.getParameter("csrf"))) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Form không hợp lệ. Vui lòng tải lại trang.");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid form. Please reload this page.");
                 return;
             }
             if ("POST".equals(request.getMethod()) && !operation.isEmpty()) {
@@ -111,7 +111,7 @@ public class ScheduleManagementController extends HttpServlet {
         } catch (SQLException | ClassNotFoundException e) {
             log("Schedule management database access failed", e);
             response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            request.setAttribute("uiError", "Không đọc được dữ liệu lịch. Vui lòng thử lại.");
+            request.setAttribute("uiError", "Unable to load schedules. Please try again.");
             request.getRequestDispatcher(JSP).forward(request, response);
         } catch (IllegalArgumentException e) {
             log("Schedule management request rejected", e);
@@ -121,7 +121,7 @@ public class ScheduleManagementController extends HttpServlet {
         } catch (RuntimeException e) {
             log("Unexpected schedule management error", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            request.setAttribute("uiError", "Không thực hiện được thao tác. Vui lòng thử lại.");
+            request.setAttribute("uiError", "Unable to complete the operation. Please try again.");
             request.getRequestDispatcher(JSP).forward(request, response);
         }
     }
@@ -157,14 +157,14 @@ public class ScheduleManagementController extends HttpServlet {
     private String sqlMessage(SQLException exception) {
         for (SQLException current = exception; current != null; current = current.getNextException()) {
             if (current.getErrorCode() == 2601 || current.getErrorCode() == 2627) {
-                return "Dữ liệu lịch bị trùng hoặc không hợp lệ.";
+                return "Duplicate or invalid schedule data.";
             }
             if (current.getErrorCode() == 547
                     || (current.getSQLState() != null && current.getSQLState().startsWith("23"))) {
-                return "Switch không hợp lệ hoặc dữ liệu lịch đã thay đổi. Vui lòng tải lại trang.";
+                return "The switch is invalid or the schedule has changed. Please reload this page.";
             }
         }
-        return "Không lưu được lịch. Vui lòng thử lại sau.";
+        return "Unable to save the schedule. Please try again later.";
     }
 
     protected Map<String, Object> view(UserDAO users, UserDTO actor, HttpServletRequest request)
@@ -209,12 +209,12 @@ public class ScheduleManagementController extends HttpServlet {
         String operation = param(request, "uiOp");
         boolean canManageAll = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
         require(canManageAll || actor.getRole() == Role.VIEWER,
-                "Bạn không có quyền thay đổi lịch.");
+                "You do not have permission to manage schedules.");
         try ( ScheduleDAO scheduleDao = new ScheduleDAO();  SwitchDAO switchDao = new SwitchDAO();
                 DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
             if ("addSchedule".equals(operation)) {
                 String switchId = required(request, "switchId", 20, "switch");
-                require(switchDao.findById(switchId) != null, "Switch không tồn tại hoặc đã ngừng hoạt động.");
+                require(switchDao.findById(switchId) != null, "The switch does not exist or is inactive.");
                 requireSwitchAccess(permissionDao, actor, canManageAll, switchId);
                 ScheduleDTO schedule = new ScheduleDTO();
                 schedule.setSwitchId(switchId);
@@ -223,31 +223,31 @@ public class ScheduleManagementController extends HttpServlet {
                 schedule.setRunTime(runTime(request));
                 schedule.setEnabled(checked(request));
                 schedule.setActive(true);
-                require(scheduleDao.insert(schedule), "Không thêm được lịch.");
-                message(request, "Đã thêm lịch hằng ngày.");
+                require(scheduleDao.insert(schedule), "Unable to add the schedule.");
+                message(request, "Daily schedule added.");
                 return "";
             }
 
             int id = integer(required(request, "scheduleId", 10, "Schedule ID"));
             ScheduleDTO schedule = scheduleDao.findById(id);
-            require(schedule != null, "Không tìm thấy lịch đang hoạt động.");
+            require(schedule != null, "No active schedule was found.");
             requireSwitchAccess(permissionDao, actor, canManageAll, schedule.getSwitchId());
             if ("updateSchedule".equals(operation)) {
                 String switchId = required(request, "switchId", 20, "switch");
-                require(switchDao.findById(switchId) != null, "Switch không tồn tại hoặc đã ngừng hoạt động.");
+                require(switchDao.findById(switchId) != null, "The switch does not exist or is inactive.");
                 requireSwitchAccess(permissionDao, actor, canManageAll, switchId);
                 schedule.setSwitchId(switchId);
                 schedule.setAction(action(request));
                 schedule.setRunTime(runTime(request));
                 schedule.setEnabled(checked(request));
-                require(scheduleDao.update(schedule), "Không cập nhật được lịch.");
-                message(request, "Đã cập nhật lịch.");
+                require(scheduleDao.update(schedule), "Unable to update the schedule.");
+                message(request, "Schedule updated.");
             } else if ("deleteSchedule".equals(operation)) {
-                require("yes".equals(param(request, "confirm")), "Vui lòng xác nhận ngừng hoạt động lịch.");
-                require(scheduleDao.delete(id), "Không xóa được lịch.");
-                message(request, "Đã ngừng hoạt động lịch.");
+                require("yes".equals(param(request, "confirm")), "Please confirm schedule deactivation.");
+                require(scheduleDao.delete(id), "Unable to deactivate the schedule.");
+                message(request, "Schedule deactivated.");
             } else {
-                throw new IllegalArgumentException("Thao tác lịch không hợp lệ.");
+                throw new IllegalArgumentException("Invalid schedule operation.");
             }
         }
         return "";
@@ -260,7 +260,7 @@ public class ScheduleManagementController extends HttpServlet {
         }
         dto.DevicePermissionDTO permission = permissions.getUserPermission(switchId, actor.getUserId());
         require(permission != null && permission.isActive(),
-                "Switch này chưa được cấp quyền xem/sửa cho tài khoản của bạn.");
+                "Your account does not have permission to view or edit this switch.");
     }
 
     private static ScheduleAction action(HttpServletRequest request) {
@@ -268,11 +268,11 @@ public class ScheduleManagementController extends HttpServlet {
     }
 
     private static LocalTime runTime(HttpServletRequest request) {
-        String value = required(request, "runTime", 8, "giờ chạy");
+        String value = required(request, "runTime", 8, "run time");
         try {
             return LocalTime.parse(value);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Giờ chạy không hợp lệ. Vui lòng nhập theo dạng HH:mm.");
+            throw new IllegalArgumentException("Invalid run time. Please enter a time in HH:mm format.");
         }
     }
 
@@ -284,10 +284,10 @@ public class ScheduleManagementController extends HttpServlet {
     private static int integer(String value) {
         try {
             int id = Integer.parseInt(value);
-            require(id > 0, "Schedule ID không hợp lệ.");
+            require(id > 0, "Invalid schedule ID.");
             return id;
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Schedule ID phải là số nguyên.");
+            throw new IllegalArgumentException("Schedule ID must be an integer.");
         }
     }
 }

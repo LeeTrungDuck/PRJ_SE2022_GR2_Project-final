@@ -133,7 +133,7 @@ public class DevicePermissionDAO implements AutoCloseable {
                 ps.setString(1, viewer);
                 try ( ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
-                        throw new IllegalArgumentException("Tài khoản không còn hoạt động hoặc không thuộc vai trò được phân quyền.");
+                        throw new IllegalArgumentException("The account is inactive or its role is not eligible for permissions.");
                     }
                 }
             }
@@ -145,7 +145,7 @@ public class DevicePermissionDAO implements AutoCloseable {
                     ps.setString(1, switchId);
                     try ( ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
-                            throw new IllegalArgumentException("Switch hoặc ESP32 không còn hoạt động. Tải lại trang.");
+                            throw new IllegalArgumentException("The switch or ESP32 device is inactive. Please reload this page.");
                         }
                     }
                 }

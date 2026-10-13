@@ -65,18 +65,18 @@ public class DeviceManagementController extends HttpServlet {
             }
             if (actor.getRole() != Role.ADMIN && actor.getRole() != Role.OPERATOR
                     && actor.getRole() != Role.VIEWER) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền sử dụng chức năng này.");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to use this feature.");
                 return;
             }
             session.setAttribute("LOGIN_USER", actor);
             String operation = input(request, "uiOp", 100);
             if (!operation.isEmpty() && !"POST".equals(request.getMethod())) {
-                response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Thay đổi dữ liệu phải dùng POST.");
+                response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Changes must be submitted using POST.");
                 return;
             }
             if ("POST".equals(request.getMethod()) && !operation.isEmpty()
                     && !token(request).equals(request.getParameter("csrf"))) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Form không hợp lệ. Vui lòng tải lại trang.");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid form. Please reload this page.");
                 return;
             }
             if ("POST".equals(request.getMethod()) && !operation.isEmpty()) {
@@ -116,7 +116,7 @@ public class DeviceManagementController extends HttpServlet {
         } catch (SQLException | ClassNotFoundException e) {
             log("Device management database access failed", e);
             response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-            request.setAttribute("uiError", "Không đọc được dữ liệu thiết bị. Vui lòng thử lại.");
+            request.setAttribute("uiError", "Unable to load device data. Please try again.");
             request.getRequestDispatcher(JSP).forward(request, response);
         } catch (IllegalArgumentException e) {
             log("Device management request rejected", e);
@@ -126,7 +126,7 @@ public class DeviceManagementController extends HttpServlet {
         } catch (RuntimeException e) {
             log("Unexpected device management error", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            request.setAttribute("uiError", "Không thực hiện được thao tác. Vui lòng thử lại.");
+            request.setAttribute("uiError", "Unable to complete the operation. Please try again.");
             request.getRequestDispatcher(JSP).forward(request, response);
         }
     }
@@ -162,14 +162,14 @@ public class DeviceManagementController extends HttpServlet {
     private String sqlMessage(SQLException exception) {
         for (SQLException current = exception; current != null; current = current.getNextException()) {
             if (current.getErrorCode() == 2601 || current.getErrorCode() == 2627) {
-                return "Mã thiết bị, switch hoặc hostname đã tồn tại.";
+                return "The device ID, switch ID or hostname already exists.";
             }
             if (current.getErrorCode() == 547
                     || (current.getSQLState() != null && current.getSQLState().startsWith("23"))) {
-                return "Dữ liệu tham chiếu không hợp lệ. Vui lòng tải lại trang.";
+                return "Invalid reference data. Please reload this page.";
             }
         }
-        return "Không lưu được dữ liệu. Vui lòng thử lại sau.";
+        return "Unable to save data. Please try again later.";
     }
 
     protected Map<String, Object> view(UserDAO users, UserDTO actor, HttpServletRequest request)
@@ -238,36 +238,36 @@ public class DeviceManagementController extends HttpServlet {
         String operation = param(request, "uiOp");
         boolean canManageDevices = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
         require(canManageDevices || (actor.getRole() == Role.VIEWER && "updateSwitch".equals(operation)),
-                "Bạn không có quyền thực hiện thao tác này.");
+                "You do not have permission to perform this operation.");
         if (operation.endsWith("Device")) {
-            require(canManageDevices, "Bạn không có quyền thay đổi thiết bị ESP32.");
+            require(canManageDevices, "You do not have permission to manage ESP32 devices.");
             try ( ESP32DeviceDAO dao = new ESP32DeviceDAO()) {
                 if ("addDevice".equals(operation)) {
                     String id = required(request, "deviceId", 20, "Device ID");
-                    require(id.matches("ESP[A-Za-z0-9_-]{1,17}"), "Device ID phải bắt đầu bằng ESP.");
+                    require(id.matches("ESP[A-Za-z0-9_-]{1,17}"), "Device ID must start with ESP.");
                     ESP32DeviceDTO device = new ESP32DeviceDTO();
                     device.setDeviceId(id);
-                    device.setName(required(request, "deviceName", 50, "tên thiết bị"));
+                    device.setName(required(request, "deviceName", 50, "device name"));
                     device.setHostName(required(request, "hostName", 255, "hostname"));
                     device.setStatus(DeviceStatus.OFFLINE);
                     device.setActive(true);
-                    require(dao.insert(device), "Không thêm được thiết bị.");
-                    message(request, "Đã thêm thiết bị.");
+                    require(dao.insert(device), "Unable to add the device.");
+                    message(request, "Device added.");
                     return "";
                 }
                 String id = required(request, "deviceId", 20, "Device ID");
                 ESP32DeviceDTO current = dao.findById(id);
-                require(current != null, "Không tìm thấy thiết bị đang hoạt động.");
+                require(current != null, "No active device was found.");
                 if ("updateDevice".equals(operation)) {
-                    current.setName(required(request, "deviceName", 50, "tên thiết bị"));
-                    require(dao.update(current), "Không cập nhật được thiết bị.");
-                    message(request, "Đã cập nhật thông tin thiết bị.");
+                    current.setName(required(request, "deviceName", 50, "device name"));
+                    require(dao.update(current), "Unable to update the device.");
+                    message(request, "Device updated.");
                 } else if ("deleteDevice".equals(operation)) {
-                    require("yes".equals(param(request, "confirm")), "Vui lòng xác nhận ngừng hoạt động thiết bị.");
-                    require(dao.delete(id), "Không xóa được thiết bị.");
-                    message(request, "Đã ngừng hoạt động thiết bị.");
+                    require("yes".equals(param(request, "confirm")), "Please confirm device deactivation.");
+                    require(dao.delete(id), "Unable to deactivate the device.");
+                    message(request, "Device deactivated.");
                 } else {
-                    throw new IllegalArgumentException("Thao tác thiết bị không hợp lệ.");
+                    throw new IllegalArgumentException("Invalid device operation.");
                 }
             }
             return "";
@@ -280,55 +280,55 @@ public class DeviceManagementController extends HttpServlet {
                     try (DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
                         dto.DevicePermissionDTO permission = permissionDao.getUserPermission(id, actor.getUserId());
                         require(permission != null && permission.isActive(),
-                                "Switch này chưa được cấp quyền xem/sửa cho tài khoản của bạn.");
+                                "Your account does not have permission to view or edit this switch.");
                     }
                 }
                 if ("addSwitch".equals(operation)) {
-                    require(canManageDevices, "Bạn không có quyền thêm switch.");
+                    require(canManageDevices, "You do not have permission to add switches.");
                     String id = required(request, "switchId", 20, "Switch ID");
-                    require(id.matches("SW[A-Za-z0-9_-]{1,18}"), "Switch ID phải bắt đầu bằng SW.");
-                    String deviceId = required(request, "switchDeviceId", 20, "thiết bị ESP32");
-                    require(deviceDao.findById(deviceId) != null, "Thiết bị ESP32 không tồn tại hoặc đã ngừng hoạt động.");
+                    require(id.matches("SW[A-Za-z0-9_-]{1,18}"), "Switch ID must start with SW.");
+                    String deviceId = required(request, "switchDeviceId", 20, "ESP32 device");
+                    require(deviceDao.findById(deviceId) != null, "The ESP32 device does not exist or is inactive.");
                     int gpio = number(request, "gpioPin");
                     SwitchDTO sw = new SwitchDTO();
                     sw.setSwitchId(id);
                     sw.setDeviceId(deviceId);
-                    sw.setSwitchName(required(request, "switchName", 50, "tên switch"));
+                    sw.setSwitchName(required(request, "switchName", 50, "switch name"));
                     sw.setGpioPin(gpio);
                     sw.setStatus(SwitchStatus.OFF);
                     sw.setActive(true);
-                    require(switchDao.insert(sw), "Không thêm được switch.");
-                    message(request, "Đã thêm switch.");
+                    require(switchDao.insert(sw), "Unable to add the switch.");
+                    message(request, "Switch added.");
                     return "";
                 }
                 String id = required(request, "switchId", 20, "Switch ID");
                 if ("activateSwitch".equals(operation)) {
-                    require(canManageDevices, "Bạn không có quyền kích hoạt switch.");
+                    require(canManageDevices, "You do not have permission to activate switches.");
                     SwitchDTO inactive = switchDao.findByIdForManagement(id);
-                    require(inactive != null && !inactive.isActive(), "Không tìm thấy switch đang ngừng hoạt động.");
-                    require(inactive.isEspActive(), "Không thể kích hoạt switch vì thiết bị ESP32 đang ngừng hoạt động.");
-                    require(switchDao.activate(id), "Không kích hoạt được switch. Vui lòng tải lại trang.");
-                    message(request, "Đã kích hoạt switch.");
+                    require(inactive != null && !inactive.isActive(), "No inactive switch was found.");
+                    require(inactive.isEspActive(), "The switch cannot be activated while its ESP32 device is inactive.");
+                    require(switchDao.activate(id), "Unable to activate the switch. Please reload this page.");
+                    message(request, "Switch activated.");
                     return "";
                 }
                 SwitchDTO current = switchDao.findById(id);
-                require(current != null, "Không tìm thấy switch đang hoạt động.");
+                require(current != null, "No active switch was found.");
                 if ("updateSwitch".equals(operation)) {
-                    current.setSwitchName(required(request, "switchName", 50, "tên switch"));
-                    require(switchDao.update(current), "Không cập nhật được switch.");
-                    message(request, "Đã cập nhật thông tin switch.");
+                    current.setSwitchName(required(request, "switchName", 50, "switch name"));
+                    require(switchDao.update(current), "Unable to update the switch.");
+                    message(request, "Switch updated.");
                 } else if ("deleteSwitch".equals(operation)) {
-                    require(canManageDevices, "Bạn không có quyền ngừng hoạt động switch.");
-                    require("yes".equals(param(request, "confirm")), "Vui lòng xác nhận ngừng hoạt động switch.");
-                    require(switchDao.delete(id), "Không xóa được switch.");
-                    message(request, "Đã ngừng hoạt động switch.");
+                    require(canManageDevices, "You do not have permission to deactivate switches.");
+                    require("yes".equals(param(request, "confirm")), "Please confirm switch deactivation.");
+                    require(switchDao.delete(id), "Unable to deactivate the switch.");
+                    message(request, "Switch deactivated.");
                 } else {
-                    throw new IllegalArgumentException("Thao tác switch không hợp lệ.");
+                    throw new IllegalArgumentException("Invalid switch operation.");
                 }
             }
             return "";
         }
-        throw new IllegalArgumentException("Thao tác thiết bị không hợp lệ.");
+        throw new IllegalArgumentException("Invalid device operation.");
     }
 
     private static boolean contains(String query, String... values) {
@@ -347,10 +347,10 @@ public class DeviceManagementController extends HttpServlet {
         String value = required(request, key, 3, "GPIO pin");
         try {
             int gpio = Integer.parseInt(value);
-            require(gpio >= 0 && gpio <= 255, "GPIO pin phải từ 0 đến 255.");
+            require(gpio >= 0 && gpio <= 255, "GPIO pin must be between 0 and 255.");
             return gpio;
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("GPIO pin phải là số nguyên.");
+            throw new IllegalArgumentException("GPIO pin must be an integer.");
         }
     }
 }

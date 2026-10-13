@@ -8,12 +8,12 @@
             </c:if>
             <c:set var="activePage" value="USER_MANAGER" scope="request" />
             <!DOCTYPE html>
-            <html lang="vi">
+            <html lang="en">
 
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
-                <title>Quản Lý Tài Khoản | ESP32 IoT Hub</title>
+                <title>User Management | ESP32 IoT Hub</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                 <link
@@ -39,26 +39,26 @@
                                 </p>
                             </c:if>
                             <header class="um-page-heading">
-                                <h1>Quản Lý Tài Khoản Người Dùng <span>(User Management)</span>
+                                <h1>User Accounts <span>(User Management)</span>
                                 </h1>
                                 <div class="um-heading-bottom">
-                                    <p>Quản lý tài khoản, vai trò và trạng thái hoạt động trong hệ thống.</p>
+                                    <p>Manage user accounts, roles and account status.</p>
                                     <a class="um-button um-button-primary"
                                         href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=add">
                                         <i class="fa-solid fa-user-plus" aria-hidden="true">
-                                        </i> Thêm Người Dùng Mới</a>
+                                        </i> Add User</a>
                                 </div>
                             </header>
                             <div class="um-table-panel">
                                 <div class="um-table-scroll" tabindex="0" role="region"
-                                    aria-label="Danh sách người dùng">
+                                    aria-label="User list">
                                     <table class="um-table">
                                         <thead>
                                             <tr>
-                                                <th scope="col">NGƯỜI DÙNG</th>
-                                                <th scope="col">VAI TRÒ</th>
-                                                <th scope="col">TRẠNG THÁI</th>
-                                                <th scope="col" style="text-align: center;">THAO TÁC HỆ THỐNG</th>
+                                                <th scope="col">USER</th>
+                                                <th scope="col">ROLE</th>
+                                                <th scope="col">STATUS</th>
+                                                <th scope="col" style="text-align: center;">ACTIONS</th>
                                             </tr>
                                         </thead>
                                         <tbody id="um-user-list">
@@ -73,7 +73,7 @@
                                                                         <c:out value="${u.fullName}" />
                                                                     </strong>
                                                                     <c:if test="${u.superAdmin}">
-                                                                        <span class="um-mini-badge">BẠN</span>
+                                                                        <span class="um-mini-badge">YOU</span>
                                                                     </c:if>
                                                                 </div>
                                                                 <span class="um-username">@
@@ -93,7 +93,7 @@
                                                     <td>
                                                         <span
                                                             class="um-status-badge ${u.active ? '' : 'um-status-locked'}">${u.active
-                                                            ? 'HOẠT ĐỘNG' : 'ĐÃ KHÓA'}</span>
+                                                            ? 'ACTIVE' : 'DISABLED'}</span>
                                                     </td>
                                                    
                                                     <td>
@@ -104,7 +104,7 @@
                                                                 <%@ include file="uiPostFields.jspf" %>
                                                                     <input type="hidden" name="id" value="${u.id}">
                                                                     <select name="role" class="um-role-select"
-                                                                        aria-label="Vai trò của ${fn:escapeXml(u.fullName)}"
+                                                                        aria-label="Role for ${fn:escapeXml(u.fullName)}"
                                                                         ${u.superAdmin ? 'disabled' : '' }>
                                                                         <option value="ADMIN" ${u.role eq 'ADMIN'
                                                                             ? 'selected' : '' }>Admin</option>
@@ -116,7 +116,7 @@
                                                                     </select>
                                                                     <button class="um-icon-button" name="uiOp"
                                                                         value="changeRole" type="submit"
-                                                                        aria-label="Lưu vai trò" ${u.superAdmin
+                                                                        aria-label="Save role" ${u.superAdmin
                                                                         ? 'disabled' : '' }>
                                                                         <i class="fa-solid fa-check" aria-hidden="true">
                                                                         </i>
@@ -124,24 +124,24 @@
                                                             </form>
                                                             <c:choose>
                                                                 <c:when test="${u.superAdmin}">
-                                                                    <span class="um-mini-badge">BẠN</span>
+                                                                    <span class="um-mini-badge">YOU</span>
                                                                 </c:when>
-                                                                <c:otherwise><a class="um-icon-button" href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=edit&amp;id=${u.id}" aria-label="Sửa tài khoản"><i class="fa-solid fa-pen" aria-hidden="true"></i></a>
+                                                                <c:otherwise><a class="um-icon-button" href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=edit&amp;id=${u.id}" aria-label="Edit account"><i class="fa-solid fa-pen" aria-hidden="true"></i></a>
                                                                     <a class="um-icon-button"
                                                                         href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=password&amp;id=${u.id}"
-                                                                        aria-label="Đặt lại mật khẩu">
+                                                                        aria-label="Reset password">
                                                                         <i class="fa-solid fa-key" aria-hidden="true">
                                                                         </i>
                                                                     </a>
                                                                     <a class="um-icon-button"
                                                                         href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=lock&amp;id=${u.id}"
-                                                                        aria-label="Đổi trạng thái">
+                                                                        aria-label="Change status">
                                                                         <i class="fa-solid fa-lock" aria-hidden="true">
                                                                         </i>
                                                                     </a>
                                                                     <a class="um-icon-button"
                                                                         href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;form=delete&amp;id=${u.id}"
-                                                                        aria-label="Xóa tài khoản">
+                                                                        aria-label="Delete account">
                                                                         <i class="fa-solid fa-trash-can"
                                                                             aria-hidden="true">
                                                                         </i>
@@ -156,18 +156,16 @@
                                     </table>
                                 </div>
                                 <footer class="um-table-footer">
-                                    <span>Tài khoản đang đăng nhập và Admin cuối cùng được bảo vệ khỏi đổi quyền, khóa và xóa.</span>
+                                    <span>Your signed-in account and the last active Admin are protected from role changes, deactivation and deletion.</span>
                                     <div class="ui-controls">
                                         <c:if test="${ui.pageNumber gt 1}">
                                             <a class="um-button um-button-secondary"
-                                                href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;p=${ui.pageNumber-1}">Trang
-                                                trước</a>
+                                                href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;p=${ui.pageNumber-1}">Previous</a>
                                         </c:if>
                                         <span>${ui.pageNumber} / ${ui.pageCount}</span>
                                         <c:if test="${ui.pageNumber lt ui.pageCount}">
                                             <a class="um-button um-button-secondary"
-                                                href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;p=${ui.pageNumber+1}">Trang
-                                                kế</a>
+                                                href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER&amp;p=${ui.pageNumber+1}">Next</a>
                                         </c:if>
                                     </div>
                                 </footer>
@@ -182,17 +180,17 @@
     <input name="id" value="<c:out value='${ui.target.id}'/>" type="hidden">
     <c:choose><c:when test="${ui.form eq 'add' or ui.form eq 'edit'}">
         <div class="um-form-grid">
-            <div class="um-field"><label for="um-fullname">Họ và tên</label><input id="um-fullname" name="fullName" value="<c:out value='${ui.edit.fullName}'/>" maxlength="50" required autofocus></div>
-            <div class="um-field"><label for="um-username">Tên đăng nhập</label><input id="um-username" name="userName" value="<c:out value='${ui.edit.userName}'/>" minlength="3" maxlength="50" required ${ui.form eq 'edit' ? 'readonly' : ''}></div>
+            <div class="um-field"><label for="um-fullname">Full name</label><input id="um-fullname" name="fullName" value="<c:out value='${ui.edit.fullName}'/>" maxlength="50" required autofocus></div>
+            <div class="um-field"><label for="um-username">Username</label><input id="um-username" name="userName" value="<c:out value='${ui.edit.userName}'/>" minlength="3" maxlength="50" required ${ui.form eq 'edit' ? 'readonly' : ''}></div>
             <div class="um-field"><label for="um-email">Email</label><input id="um-email" name="email" type="email" value="<c:out value='${ui.edit.email}'/>" maxlength="50" required></div>
-            <div class="um-field"><label for="um-phone">Số điện thoại</label><input id="um-phone" name="phone" type="tel" value="<c:out value='${ui.edit.phone}'/>" pattern="[0-9]{10}" maxlength="10" required placeholder="10 chữ số"></div>
-            <c:if test="${ui.form eq 'add'}"><div class="um-field"><label for="um-password">Mật khẩu ban đầu</label><input id="um-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required><small>Tối thiểu 8 ký tự; mật khẩu được băm trước khi lưu.</small></div></c:if>
-            <div class="um-field"><label for="um-role">Vai trò</label><select id="um-role" name="role"><option value="ADMIN" ${ui.edit.role eq 'ADMIN' ? 'selected' : ''}>Admin</option><option value="OPERATOR" ${ui.edit.role eq 'OPERATOR' ? 'selected' : ''}>Operator</option><option value="VIEWER" ${ui.edit.role eq 'VIEWER' ? 'selected' : ''}>Viewer</option></select></div>
+            <div class="um-field"><label for="um-phone">Phone number</label><input id="um-phone" name="phone" type="tel" value="<c:out value='${ui.edit.phone}'/>" pattern="[0-9]{10}" maxlength="10" required placeholder="10 digits"></div>
+            <c:if test="${ui.form eq 'add'}"><div class="um-field"><label for="um-password">Initial password</label><input id="um-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required><small>At least 8 characters. Passwords are hashed before storage.</small></div></c:if>
+            <div class="um-field"><label for="um-role">Role</label><select id="um-role" name="role"><option value="ADMIN" ${ui.edit.role eq 'ADMIN' ? 'selected' : ''}>Admin</option><option value="OPERATOR" ${ui.edit.role eq 'OPERATOR' ? 'selected' : ''}>Operator</option><option value="VIEWER" ${ui.edit.role eq 'VIEWER' ? 'selected' : ''}>Viewer</option></select></div>
         </div>
     </c:when><c:otherwise>
-        <p class="um-dialog-description">Tài khoản: <strong><c:out value="${ui.target.fullName}"/></strong> (@<c:out value="${ui.target.userName}"/>).</p>
-        <c:if test="${ui.form eq 'delete'}"><p class="um-dialog-description">Xóa mềm sẽ đặt is_active=false và thu hồi quyền thiết bị. Lịch sử điều khiển được giữ.</p></c:if>
-        <c:if test="${ui.form eq 'password'}"><div class="um-field"><label for="um-password">Mật khẩu mới</label><input id="um-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required autofocus></div></c:if>
+        <p class="um-dialog-description">Account: <strong><c:out value="${ui.target.fullName}"/></strong> (@<c:out value="${ui.target.userName}"/>).</p>
+        <c:if test="${ui.form eq 'delete'}"><p class="um-dialog-description">The account will be deactivated and device permissions revoked. Control history will be kept.</p></c:if>
+        <c:if test="${ui.form eq 'password'}"><div class="um-field"><label for="um-password">New password</label><input id="um-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required autofocus></div></c:if>
     </c:otherwise></c:choose>
-    <div class="um-dialog-footer"><a class="um-button um-button-secondary" href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER">Hủy</a><button class="um-button ${ui.form eq 'delete' ? 'um-button-danger' : 'um-button-primary'}" type="submit" name="uiOp" value="${ui.postOperation}">Xác Nhận</button></div>
+    <div class="um-dialog-footer"><a class="um-button um-button-secondary" href="${pageContext.request.contextPath}/MainController?action=USER_MANAGER">Cancel</a><button class="um-button ${ui.form eq 'delete' ? 'um-button-danger' : 'um-button-primary'}" type="submit" name="uiOp" value="${ui.postOperation}">Confirm</button></div>
 </form></dialog></c:if></body></html>

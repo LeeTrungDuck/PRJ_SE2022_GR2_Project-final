@@ -3,12 +3,12 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="activePage" value="DEVICE_CONTROL" scope="request" />
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Điều Khiển Switch | ESP32 IoT Hub</title>
+        <title>Device Control | ESP32 IoT Hub</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link
@@ -33,30 +33,30 @@
                 <header class="dc-page-heading">
                     <span class="dc-heading-dot" aria-hidden="true">
                     </span>
-                    <h1>Bảng Điều Khiển Công Tắc <span>(Device Control)</span>
+                    <h1>Switch Dashboard <span>(Device Control)</span>
                     </h1>
                 </header>
-                <p class="ui-notice">Trạng thái được đồng bộ từ ESP32 khi tải lại trang.</p>
+                <p class="ui-notice">Device status is synchronized with ESP32 when you reload this page.</p>
                 <form class="dc-filter-form" action="${pageContext.request.contextPath}/DeviceControlController" method="get">
                     <label for="dc-esp-filter">ESP</label>
                     <select id="dc-esp-filter" name="esp">
-                        <option value="all" ${empty espFilter or espFilter eq 'all' ? 'selected' : ''}>Tất cả ESP</option>
+                        <option value="all" ${empty espFilter or espFilter eq 'all' ? 'selected' : ''}>All ESP32 Devices</option>
                         <c:forEach var="espId" items="${espOptions}">
                             <option value="<c:out value='${espId}'/>" ${espFilter eq espId ? 'selected' : ''}>
                                 <c:out value="${espId}"/>
                             </option>
                         </c:forEach>
                     </select>
-                    <label for="dc-status-filter">Trạng thái</label>
+                    <label for="dc-status-filter">Status</label>
                     <select id="dc-status-filter" name="status">
-                        <option value="all" ${empty statusFilter or statusFilter eq 'all' ? 'selected' : ''}>Tất cả</option>
+                        <option value="all" ${empty statusFilter or statusFilter eq 'all' ? 'selected' : ''}>All</option>
                         <option value="ON" ${statusFilter eq 'ON' ? 'selected' : ''}>ON</option>
                         <option value="OFF" ${statusFilter eq 'OFF' ? 'selected' : ''}>OFF</option>
                     </select>
-                    <button type="submit">Lọc</button>
-                    <a href="${pageContext.request.contextPath}/DeviceControlController">Xóa lọc</a>
+                    <button type="submit">Filter</button>
+                    <a href="${pageContext.request.contextPath}/DeviceControlController">Clear filters</a>
                 </form>
-                <section class="dc-device-grid" aria-label="Danh sách công tắc">
+                <section class="dc-device-grid" aria-label="Switch list">
                     <c:forEach var="relay" items="${requestScope.list}">
                         <article class="dc-relay-card" data-on="${relay.status eq 'ON'}" data-esp-active="${relay.espActive}">
                             <div class="dc-card-heading">
@@ -80,7 +80,7 @@
                             </div>
                             <div class="dc-card-footer">
                                 <div class="dc-status-box">
-                                    <span class="dc-status-label">TRẠNG THÁI</span>
+                                    <span class="dc-status-label">STATUS</span>
                                     <!-- So sánh trực tiếp với tên của Enum -->
                                     <span class="dc-relay-state">${relay.status eq 'ON' ? 'ON' : 'OFF'}</span>
                                 </div>
@@ -98,7 +98,7 @@
                                             class="dc-switch ${relay.status eq 'ON' ? 'is-checked' : ''}" 
                                             role="switch" 
                                             aria-checked="${relay.status eq 'ON'}"
-                                            aria-label="Đổi trạng thái ${fn:escapeXml(relay.espName)}"
+                                            aria-label="Change status ${fn:escapeXml(relay.espName)}"
                                             >
                                         <span class="dc-switch-track" aria-hidden="true">
                                             <span></span>
@@ -117,14 +117,14 @@
                 <c:if test="${requestScope.totalSwitches gt 0}">
                     <div class="dc-pagination-row">
                         <p class="dc-pagination-summary">
-                            Hiển thị ${requestScope.firstSwitchNumber}–${requestScope.lastSwitchNumber}
-                            trên ${requestScope.totalSwitches} switch
+                            Showing ${requestScope.firstSwitchNumber}–${requestScope.lastSwitchNumber}
+                            of ${requestScope.totalSwitches} switch
                         </p>
                         <c:if test="${requestScope.pageCount gt 1}">
-                            <nav class="dc-pagination" aria-label="Phân trang danh sách switch">
+                            <nav class="dc-pagination" aria-label="Switch list pagination">
                                 <c:if test="${requestScope.pageNumber gt 1}">
                                     <a href="${pageContext.request.contextPath}/DeviceControlController?page=${requestScope.pageNumber - 1}&amp;esp=${espFilter}&amp;status=${statusFilter}">
-                                        Trước
+                                        Previous
                                     </a>
                                 </c:if>
                                 <c:forEach var="page" begin="1" end="${requestScope.pageCount}">
@@ -141,7 +141,7 @@
                                 </c:forEach>
                                 <c:if test="${requestScope.pageNumber lt requestScope.pageCount}">
                                     <a href="${pageContext.request.contextPath}/DeviceControlController?page=${requestScope.pageNumber + 1}&amp;esp=${espFilter}&amp;status=${statusFilter}">
-                                        Sau
+                                        Next
                                     </a>
                                 </c:if>
                             </nav>

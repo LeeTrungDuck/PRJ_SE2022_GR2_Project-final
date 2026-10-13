@@ -88,7 +88,7 @@ public class DeviceControlController extends HttpServlet {
                     statusFilter = statusFilter == null ? "" : statusFilter.trim().toUpperCase(java.util.Locale.ROOT);
                     if (!statusFilter.isEmpty() && !"all".equalsIgnoreCase(statusFilter)
                             && !"ON".equals(statusFilter) && !"OFF".equals(statusFilter)) {
-                        request.setAttribute("ERROR", "Trạng thái lọc không hợp lệ.");
+                        request.setAttribute("ERROR", "Invalid status filter.");
                         statusFilter = "";
                     }
                     LinkedHashSet<String> espIds = new LinkedHashSet<>();
@@ -130,7 +130,7 @@ public class DeviceControlController extends HttpServlet {
                         } catch (HardwareException ex) {
                             log("ESP32 status synchronization failed", ex);
                             request.setAttribute("ERROR",
-                                    "Không thể kết nối hoặc đọc trạng thái ESP32. Vui lòng thử lại.");
+                                    "Unable to connect to ESP32 or read its status. Please try again.");
                         }
                     }
                 }
@@ -218,7 +218,7 @@ public class DeviceControlController extends HttpServlet {
                     sw.setStatus(actualStatus);
                     if (actualStatus != previousStatus
                             && !dao.updateStatus(sw.getSwitchId(), actualStatus)) {
-                        switchSyncErrors.put(sw.getSwitchId(), "Không lưu được trạng thái");
+                        switchSyncErrors.put(sw.getSwitchId(), "Unable to save status");
                     }
                 }
             }

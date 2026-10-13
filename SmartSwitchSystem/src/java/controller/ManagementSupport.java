@@ -24,27 +24,27 @@ final class ManagementSupport {
     }
     String input(HttpServletRequest request, String key, int maximum) {
         String value = param(request, key);
-        require(value.length() <= maximum, "Trường " + key + " vượt quá độ dài cho phép.");
+        require(value.length() <= maximum, "The " + key + " field exceeds the maximum length.");
         return value;
     }
     String required(HttpServletRequest request, String key, int maximum, String label) {
         String value = input(request, key, maximum);
-        require(!value.isEmpty(), "Vui lòng nhập " + label + ".");
+        require(!value.isEmpty(), "Please enter " + label + ".");
         return value;
     }
     String choice(HttpServletRequest request, String key, String... allowed) {
         String value = param(request, key);
-        require(Arrays.asList(allowed).contains(value), "Giá trị " + key + " không hợp lệ.");
+        require(Arrays.asList(allowed).contains(value), "Invalid value for " + key + ".");
         return value;
     }
     void password(HttpServletRequest request, String key, int minimum, boolean strong) {
         // Preserve the exact password; trimming would change the authentication secret.
         String value = request.getParameter(key);
         require(value != null && value.length() >= minimum && value.length() <= 128,
-                "Mật khẩu cần từ " + minimum + " đến 128 ký tự.");
+                "Password must contain between " + minimum + " and 128 characters.");
         if (strong) require(value.matches("(?s).*[A-Z].*") && value.matches("(?s).*\\d.*")
                 && value.matches("(?s).*[^\\p{L}\\p{N}\\s].*"),
-                "Mật khẩu cần có chữ hoa, chữ số và ký tự đặc biệt.");
+                "Password must include an uppercase letter, a number and a special character.");
     }
     String normalize(Object value) {
         return Normalizer.normalize(str(value), Normalizer.Form.NFD).replaceAll("\\p{M}", "")

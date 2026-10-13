@@ -43,7 +43,7 @@ public final class ManagementErrorTest {
         addRequest(request, csrf);
         manager.doPost(request.request, request.response);
         assertForm(request);
-        check(request.attrs.get("uiError").toString().contains("đã tồn tại") && users.writes == 0,
+        check(request.attrs.get("uiError").toString().contains("already exists") && users.writes == 0,
                 "UNIQUE failure becomes a friendly message without mutation");
         check(!request.attrs.toString().contains("internal UNIQUE detail"), "raw SQL error stays out of UI");
 
@@ -51,26 +51,26 @@ public final class ManagementErrorTest {
         addRequest(request, csrf);
         manager.doPost(request.request, request.response);
         assertForm(request);
-        check(request.attrs.get("uiError").toString().contains("tham chiếu"), "FK failure is explained safely");
+        check(request.attrs.get("uiError").toString().contains("reference data"), "FK failure is explained safely");
 
         SQLException wrapped = new SQLException("internal wrapper");
         wrapped.setNextException(new SQLException("internal duplicate", "23000", 2601));
         users.writeFailure = wrapped;
         addRequest(request, csrf);
         manager.doPost(request.request, request.response);
-        check(request.attrs.get("uiError").toString().contains("đã tồn tại"), "chained SQL errors are classified");
+        check(request.attrs.get("uiError").toString().contains("already exists"), "chained SQL errors are classified");
 
         users.writeFailure = new SQLException("internal connection detail", "08006");
         addRequest(request, csrf);
         manager.doPost(request.request, request.response);
         assertForm(request);
-        check(request.attrs.get("uiError").toString().contains("Không lưu được"), "generic write error is safe");
+        check(request.attrs.get("uiError").toString().contains("Unable to save"), "generic write error is safe");
 
         users.writeFailure = null;
         addRequest(request, csrf);
         request.params.put("email", new String[]{"invalid-email"});
         manager.doPost(request.request, request.response);
-        check(request.forwards == 1 && request.attrs.get("uiError").toString().contains("Email"),
+        check(request.forwards == 1 && request.attrs.get("uiError").toString().contains("email"),
                 "validation failure is caught by controller and rendered");
 
         users.readFailure = new SQLException("internal JDBC detail", "08006");

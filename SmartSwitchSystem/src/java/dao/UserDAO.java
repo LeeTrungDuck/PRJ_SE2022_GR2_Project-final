@@ -131,7 +131,7 @@ public class UserDAO implements AutoCloseable {
             boolean deactivating = deleting || (active || all) && !user.isActive();
             boolean demoting = (role || details || all) && user.getRole() != Role.ADMIN;
             if (targetAdmin && admins <= 1 && (deactivating || demoting))
-                throw new IllegalArgumentException("Không được khóa, xóa hoặc đổi vai trò Admin cuối cùng.");
+                throw new IllegalArgumentException("The last active Admin cannot be disabled, deleted or assigned another role.");
             boolean changed;
             String sql = deleting ? "UPDATE tblUser SET is_active=0 WHERE user_id=?"
                     : role ? "UPDATE tblUser SET role=? WHERE user_id=?"

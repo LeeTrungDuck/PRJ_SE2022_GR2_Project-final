@@ -6,7 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
@@ -20,9 +20,9 @@
                                     <div class="card-header-row">
                                         <span class="badge-gpio">ID: ${i.id}</span>
                                         <details>
-                                            <summary class="btn-delete" title="Xóa thiết bị"><i class="fa-solid fa-trash-can"></i> Xóa</summary>
-                                            <p>Bạn có chắc chắn muốn xóa thiết bị này?</p>
-                                            <a href="${pageContext.request.contextPath}/DeleteTypeController?id=${i.id}" class="btn-delete">Xác nhận xóa</a>
+                                            <summary class="btn-delete" title="Delete device"><i class="fa-solid fa-trash-can"></i> Delete</summary>
+                                            <p>Are you sure you want to delete this device?</p>
+                                            <a href="${pageContext.request.contextPath}/DeleteTypeController?id=${i.id}" class="btn-delete">Confirm deletion</a>
                                         </details>
                                     </div>
 
@@ -40,7 +40,7 @@
                                     <!-- Footer Card: Trạng thái & Thao tác -->
                                     <div class="card-footer-row">
                                         <div class="status-box">
-                                            <span class="status-label">TRẠNG THÁI</span>
+                                            <span class="status-label">STATUS</span>
                                             <span class="status-text text-on">ACTIVE</span>
                                         </div>
                                         <label class="switch-toggle">

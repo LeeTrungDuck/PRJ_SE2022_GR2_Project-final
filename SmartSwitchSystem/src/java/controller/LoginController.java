@@ -52,10 +52,10 @@ public class LoginController extends HttpServlet {
             }
 
             if (dto == null) {
-                request.setAttribute("ERROR", "Tài khoản hoặc mật khẩu sai!");
+                request.setAttribute("ERROR", "Incorrect username or password.");
                 url = LOGIN;
             } else if (!dto.isActive()) {
-                request.setAttribute("ERROR", "Tài khoản đã bị vô hiệu hóa!");
+                request.setAttribute("ERROR", "Your account has been deactivated.");
                 url = LOGIN;
             } else {
                 // Đăng nhập thành công: Dùng Redirect qua MainController để tránh lỗi F5 (PRG Pattern)
@@ -71,15 +71,15 @@ public class LoginController extends HttpServlet {
         } catch (SQLException e) {
             log("Login database error", e);
             response.setStatus(503);
-            request.setAttribute("ERROR", "Không kết nối được database. Vui lòng thử lại sau.");
+            request.setAttribute("ERROR", "Unable to connect to the database. Please try again later.");
         } catch (ClassNotFoundException e) {
             log("Login database driver unavailable", e);
             response.setStatus(503);
-            request.setAttribute("ERROR", "Không kết nối được database. Vui lòng liên hệ người quản trị.");
+            request.setAttribute("ERROR", "Unable to connect to the database. Please contact an administrator.");
         } catch (RuntimeException e) {
             log("Unexpected login error", e);
             response.setStatus(500);
-            request.setAttribute("ERROR", "Không đăng nhập được. Vui lòng thử lại sau.");
+            request.setAttribute("ERROR", "Unable to sign in. Please try again later.");
         }
         finally {
             if (redirect) {

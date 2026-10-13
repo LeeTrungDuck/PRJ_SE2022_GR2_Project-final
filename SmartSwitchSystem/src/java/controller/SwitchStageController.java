@@ -57,11 +57,11 @@ public class SwitchStageController extends HttpServlet {
                 UserDTO user = (UserDTO) session.getAttribute("LOGIN_USER");
                 String switchID = request.getParameter("id");
                 if (switchID == null || switchID.trim().isEmpty()) {
-                    request.setAttribute("ERROR", "Switch ID không được để trống ,vui lòng thử lại!");
+                    request.setAttribute("ERROR", "Switch ID is required. Please try again.");
                     return;
                 }
                 if (user == null) {
-                    request.setAttribute("ERROR", "bạn cần phải đăng nhập trước!");
+                    request.setAttribute("ERROR", "Please sign in first.");
                     url = URLMap.getLOGIN_PAGE();
                     return;
                 }
@@ -71,7 +71,7 @@ public class SwitchStageController extends HttpServlet {
                     permission = permissionDao.getUserPermission(switchID, user.getUserId());
                 }
                 if (permission == null || !permission.isActive() || !permission.isCanControl()) {
-                    request.setAttribute("ERROR", "Bạn không có quyền điều khiển công tắc này.");
+                    request.setAttribute("ERROR", "You do not have permission to control this switch.");
                     return;
                 }
 
@@ -79,7 +79,7 @@ public class SwitchStageController extends HttpServlet {
                      ControlHistoryDAO hisDao = new ControlHistoryDAO()) {
                     SwitchDTO sw = switchDAO.findById(switchID);
                     if (sw == null) {
-                        request.setAttribute("ERROR", "Switch không hoạt động hoặc không tồn tại.");
+                        request.setAttribute("ERROR", "The switch is inactive or does not exist.");
                         return;
                     }
 
@@ -99,11 +99,11 @@ public class SwitchStageController extends HttpServlet {
                     hisDto.setControlTime(hisDto.getTimeNow());
                     hisDto.setResult(status == SwitchStatus.ON ? ControlResult.ON : ControlResult.OFF);
                     if (!switchDAO.updateStatus(switchID, status)) {
-                        request.setAttribute("ERROR", "Thiết bị đã đổi trạng thái nhưng không thể lưu trạng thái vào hệ thống.");
+                        request.setAttribute("ERROR", "The device state changed, but the new state could not be saved.");
                     }
                     if (!hisDao.insert(hisDto)) {
                         log("Error at SwitchStageController: History control cannot insert into database");
-                        request.setAttribute("ERROR", "Không thể lưu lịch sử điều khiển.");
+                        request.setAttribute("ERROR", "Unable to save control history.");
                     }
                 }
             } catch (SQLException ex) {
@@ -114,7 +114,7 @@ public class SwitchStageController extends HttpServlet {
                 request.setAttribute("ERROR", "Class not found, please try again!");
             } catch (HardwareException ex) {
                 log("ESP32 hardware operation failed", ex);
-                request.setAttribute("ERROR", "Không thể kết nối hoặc giao tiếp với ESP32. Vui lòng thử lại.");
+                request.setAttribute("ERROR", "Unable to connect to or communicate with ESP32. Please try again.");
         } finally {
             if (redirectAfterAction) {
                 HttpSession session = request.getSession();

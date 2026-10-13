@@ -6,14 +6,14 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>error Page</title>
+        <title>Error | ESP32 IoT Hub</title>
         <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     </head>
     <body>
-        <h1>Hello Error</h1>
+        <h1>Unable to Complete the Request</h1>
         <c:if test="${not empty requestScope.ERROR}">
             <div class="login-error" role="alert">
                 <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>

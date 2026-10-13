@@ -7,11 +7,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Đăng nhập | ESP32 IoT Hub</title>
+        <title>Sign In | ESP32 IoT Hub</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -28,39 +28,39 @@
                 </div>
                 <div class="login-intro-copy">
                     <h1 id="login-system-name">Smart Switch System</h1>
-                    <p>Điều khiển và giám sát thiết bị ESP32 trong cùng một hệ thống.</p>
+                    <p>Control and monitor your ESP32 devices in one place.</p>
                 </div>
                 <figure class="login-visual">
-                    <img src="${pageContext.request.contextPath}/img/loginLogo.png" alt="Bộ điều khiển ESP32 kết nối với các relay trên bàn thử nghiệm" width="1376" height="768">
-                    <figcaption><span>Control &amp; Monitor Center</span><span>Nhóm 2</span></figcaption>
+                    <img src="${pageContext.request.contextPath}/img/loginLogo.png" alt="ESP32 controller connected to relays on a test bench" width="1376" height="768">
+                    <figcaption><span>Control &amp; Monitor Center</span><span>Group 2</span></figcaption>
                 </figure>
             </section>
 
             <section class="login-access" aria-labelledby="login-title">
                 <div class="login-form-content">
                     <header class="login-form-heading">
-                        <h2 id="login-title">Đăng Nhập</h2>
-                        <p>Nhập tài khoản của bạn để truy cập hệ thống.</p>
+                        <h2 id="login-title">Sign In</h2>
+                        <p>Enter your credentials to access the system.</p>
                     </header>
                     <c:if test="${not empty requestScope.ERROR}">
                         <div class="login-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><p><c:out value="${requestScope.ERROR}" /></p></div>
                     </c:if>
                     <form id="login-form" action="${pageContext.request.contextPath}/MainController?action=LOGIN" method="post">
                         <div class="login-field">
-                            <label for="userName">Tên Đăng Nhập</label>
+                            <label for="userName">Username</label>
                             <div class="login-input-wrap">
                                 <i class="fa-regular fa-user" aria-hidden="true"></i>
-                                <input id="userName" name="userName" type="text" value="<c:out value='${param.userName}' />" placeholder="Nhập tên đăng nhập" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+                                <input id="userName" name="userName" type="text" value="<c:out value='${param.userName}' />" placeholder="Enter your username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
                             </div>
                         </div>
                         <div class="login-field">
-                            <label for="passWord">Mật Khẩu</label>
+                            <label for="passWord">Password</label>
                             <div class="login-input-wrap login-password-wrap">
                                 <i class="fa-solid fa-lock" aria-hidden="true"></i>
-                                <input id="passWord" name="passWord" type="password" placeholder="Nhập mật khẩu" autocomplete="current-password" required>
+                                <input id="passWord" name="passWord" type="password" placeholder="Enter your password" autocomplete="current-password" required>
                             </div>
                         </div>
-                        <button type="submit" class="um-button um-button-primary login-submit"><span>Đăng Nhập Vào Hệ Thống</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+                        <button type="submit" class="um-button um-button-primary login-submit"><span>Sign In</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
                     </form>
                     <p class="login-form-footer">ESP32 IoT Hub <span aria-hidden="true">·</span> Smart Switch System</p>
                 </div>

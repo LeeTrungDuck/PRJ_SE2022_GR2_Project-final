@@ -88,22 +88,22 @@ public final class LoginControllerTest {
         Fixture inactive = new Fixture(user(false, hashed));
         inactive.request.session.put("LOGIN_USER", user(true, password));
         inactive.submit("account", password);
-        inactive.rejected("Tài khoản đã bị vô hiệu hóa!");
+        inactive.rejected("Your account has been deactivated.");
         check(inactive.users.closed, "inactive login closes DAO");
         check(!inactive.request.attrs.toString().contains(password), "password excluded from error attributes");
 
         Fixture wrongInactive = new Fixture(user(false, hashed));
         wrongInactive.submit("account", "wrong");
-        wrongInactive.rejected("Tài khoản hoặc mật khẩu sai!");
+        wrongInactive.rejected("Incorrect username or password.");
 
         Fixture missing = new Fixture(null);
         missing.submit("unknown", password);
-        missing.rejected("Tài khoản hoặc mật khẩu sai!");
+        missing.rejected("Incorrect username or password.");
         check(missing.users.closed, "unknown account closes DAO without a null dereference");
 
         Fixture wrongActive = new Fixture(user(true, password));
         wrongActive.submit("account", "wrong");
-        wrongActive.rejected("Tài khoản hoặc mật khẩu sai!");
+        wrongActive.rejected("Incorrect username or password.");
 
         Fixture active = new Fixture(user(true, hashed));
         active.request.session.put("PERMISSION_DRAFTS", "old-draft");
@@ -128,7 +128,7 @@ public final class LoginControllerTest {
 
         Fixture empty = new Fixture(user(true, password));
         empty.submit("", "");
-        empty.rejected("Tài khoản hoặc mật khẩu sai!");
+        empty.rejected("Incorrect username or password.");
         check(empty.users.lookups == 0, "empty credentials rejected before querying database");
 
         Fixture database = new Fixture(user(true, password));

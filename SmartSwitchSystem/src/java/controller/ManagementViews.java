@@ -60,13 +60,13 @@ final class ManagementViews {
 
     String email(HttpServletRequest r) {
         String email = support.required(r, "email", 50, "email");
-        support.require(email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+"), "Email không hợp lệ.");
+        support.require(email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+"), "Invalid email address.");
         return email;
     }
 
     String phone(HttpServletRequest r) {
-        String phone = support.required(r, "phone", 10, "số điện thoại");
-        support.require(phone.matches("[0-9]{10}"), "Số điện thoại cần đúng 10 chữ số theo cấu trúc CSDL hiện tại.");
+        String phone = support.required(r, "phone", 10, "phone number");
+        support.require(phone.matches("[0-9]{10}"), "Phone number must contain exactly 10 digits.");
         return phone;
     }
 
@@ -92,7 +92,7 @@ final class ManagementViews {
         ui.putAll(support.row("users", list, "pageNumber", page, "pageCount", count));
         String form = support.str(ui.get("form"));
         if ("add".equals(form)) {
-            ui.putAll(support.row("dialog", true, "dialogTitle", "Thêm Người Dùng Mới", "target", support.row(), "edit",
+            ui.putAll(support.row("dialog", true, "dialogTitle", "Add User", "target", support.row(), "edit",
                     bound(r, support.row("role", "VIEWER")), "postOperation", "addUser"));
         } else if (Arrays.asList("edit", "password", "lock", "delete").contains(form)) {
             UserDTO target = null;
@@ -101,16 +101,16 @@ final class ManagementViews {
                     target = user;
                 }
             }
-            support.require(target != null, "Không tìm thấy tài khoản.");
+            support.require(target != null, "Account not found.");
             support.require(!target.getUserId().equals(actor.getUserId()),
-                    "Sửa tài khoản của bạn tại Thông Tin Tài Khoản.");
+                    "Edit your own account in Account Settings.");
             String op = "edit".equals(form) ? "updateUser"
                     : "password".equals(form) ? "resetPassword" : "lock".equals(form) ? "toggleUser" : "deleteUser";
             ui.putAll(support.row("dialog", true, "target", user(target, actor), "edit", bound(r, user(target, actor)),
                     "dialogTitle",
-                    "edit".equals(form) ? "Chỉnh Sửa Người Dùng"
-                    : "password".equals(form) ? "Đặt Lại Mật Khẩu"
-                    : "lock".equals(form) ? "Đổi Trạng Thái Tài Khoản?" : "Xóa Mềm Tài Khoản?",
+                    "edit".equals(form) ? "Edit User"
+                    : "password".equals(form) ? "Reset Password"
+                    : "lock".equals(form) ? "Change Account Status?" : "Deactivate Account?",
                     "postOperation", op));
         }
         return ui;
@@ -140,7 +140,7 @@ final class ManagementViews {
             }
         }
         if (!selected.isEmpty()) {
-            support.require(active != null, "Không tìm thấy tài khoản đang hoạt động.");
+            support.require(active != null, "No active account was found.");
         }
         Map<String, Map<String, Object>> matrix = active == null ? new LinkedHashMap<String, Map<String, Object>>()
                 : drafts.get(selected);
@@ -171,7 +171,7 @@ final class ManagementViews {
                 switches.size(), "dirty",
                 active != null && !matrix.equals(permissionMatrix(selected, switches, records))));
         if ("revoke".equals(ui.get("form")) && active != null) {
-            ui.putAll(support.row("dialog", true, "dialogTitle", "Hủy Toàn Bộ Quyền?"));
+            ui.putAll(support.row("dialog", true, "dialogTitle", "Revoke All Permissions?"));
         }
         return ui;
     }
