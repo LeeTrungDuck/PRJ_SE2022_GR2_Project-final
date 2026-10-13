@@ -12,17 +12,23 @@ import java.sql.SQLException;
 import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import static ui.UiSupport.*;
 
 @WebServlet(name = "PermissionManagementController", urlPatterns = {"/PermissionManagementController"})
 public class PermissionManagementController extends ManagementController {
+
+    private final String ERROR = "/web/PermissionManager.jsp";
+    private final String SUCCESS = "/MainController?action=PERMISSION_MANAGER";
 
     protected String page() {
         return "PERMISSION_MANAGER";
     }
 
-    protected String jsp() {
-        return "PermissionManager";
+    protected String errorView() {
+        return ERROR;
+    }
+
+    protected String successUrl() {
+        return SUCCESS;
     }
 
     protected boolean allowed(Role role) {
@@ -42,7 +48,7 @@ public class PermissionManagementController extends ManagementController {
         return (Map<String, Map<String, Map<String, Object>>>) session.getAttribute("PERMISSION_DRAFTS");
     }
 
-    static List<UserDTO> viewers(UserDAO dao) throws SQLException {
+    List<UserDTO> viewers(UserDAO dao) throws SQLException {
         List<UserDTO> viewers = new ArrayList<>();
         for (UserDTO user : dao.findAll()) {
             if (user.isActive() && user.getRole() == Role.VIEWER) {
@@ -52,17 +58,8 @@ public class PermissionManagementController extends ManagementController {
         return viewers;
     }
 
-    static Map<String, Map<String, Object>> saved(String viewer, List<SwitchDTO> switches, List<DevicePermissionDTO> permissions) {
-        Map<String, Map<String, Object>> matrix = new LinkedHashMap<>();
-        for (SwitchDTO sw : switches) {
-            matrix.put(sw.getSwitchId(), row("canView", false, "canControl", false));
-        }
-        for (DevicePermissionDTO p : permissions) {
-            if (viewer.equals(p.getUserId()) && matrix.containsKey(p.getSwitchId())) {
-                matrix.put(p.getSwitchId(), row("canView", p.isActive(), "canControl", p.isActive() && p.isCanControl()));
-            }
-        }
-        return matrix;
+    Map<String, Map<String, Object>> saved(String viewer, List<SwitchDTO> switches, List<DevicePermissionDTO> permissions) {
+        return views.permissionMatrix(viewer, switches, permissions);
     }
 
     private Map<String, Map<String, Object>> current(String viewer, Map<String, Map<String, Object>> saved, HttpServletRequest r) {
@@ -73,7 +70,7 @@ public class PermissionManagementController extends ManagementController {
         draft.keySet().retainAll(saved.keySet());
         for (String key : saved.keySet()) {
             if (!draft.containsKey(key)) {
-                draft.put(key, copyMap(saved.get(key)));
+                draft.put(key, support.copyMap(saved.get(key)));
             }
         }
         return draft;
@@ -84,7 +81,7 @@ public class PermissionManagementController extends ManagementController {
             List<UserDTO> viewers = viewers(dao);
             List<SwitchDTO> switches = permissions.activeSwitches();
             List<DevicePermissionDTO> records = permissions.findAll();
-            String id = param(r, "viewer");
+            String id = support.param(r, "viewer");
             if (id.isEmpty() && !viewers.isEmpty()) {
                 id = viewers.get(0).getUserId();
             }
@@ -94,16 +91,16 @@ public class PermissionManagementController extends ManagementController {
                     snapshots.put(user.getUserId(), new LinkedHashMap<>(current(user.getUserId(), saved(user.getUserId(), switches, records), r)));
                 }
             }
-            return ManagementViews.permissions(actor, r, viewers, switches, records, snapshots, id);
+            return views.permissions(actor, r, viewers, switches, records, snapshots, id);
         }
     }
 
     protected String change(UserDAO dao, UserDTO actor, HttpServletRequest r) throws SQLException, ClassNotFoundException {
-        String id = required(r, "viewer", 20, "Viewer ID");
+        String id = support.required(r, "viewer", 20, "Viewer ID");
         UserDTO viewer = dao.findById(id);
-        require(viewer != null && viewer.isActive() && viewer.getRole() == Role.VIEWER, "Chỉ được cấp quyền cho tài khoản Viewer đang hoạt động.");
+        support.require(viewer != null && viewer.isActive() && viewer.getRole() == Role.VIEWER, "Chỉ được cấp quyền cho tài khoản Viewer đang hoạt động.");
         id = viewer.getUserId();
-        String op = param(r, "uiOp");
+        String op = support.param(r, "uiOp");
         String target = id;
         try ( DevicePermissionDAO permissions = permissions()) {
             List<SwitchDTO> switches = permissions.activeSwitches();
@@ -111,18 +108,18 @@ public class PermissionManagementController extends ManagementController {
             Map<String, Map<String, Object>> matrix = new LinkedHashMap<>();
             synchronized (r.getSession()) {
                 for (Map.Entry<String, Map<String, Object>> entry : current(id, stored, r).entrySet()) {
-                    matrix.put(entry.getKey(), copyMap(entry.getValue()));
+                    matrix.put(entry.getKey(), support.copyMap(entry.getValue()));
                 }
             }
             if (!Arrays.asList("resetPermissions", "revokePermissions").contains(op)) {
                 for (String key : r.getParameterMap().keySet()) {
                     if (key.startsWith("view_") || key.startsWith("control_")) {
-                        require(matrix.containsKey(key.substring(key.indexOf('_') + 1)), "Switch không hợp lệ.");
+                        support.require(matrix.containsKey(key.substring(key.indexOf('_') + 1)), "Switch không hợp lệ.");
                     }
                 }
                 for (String key : matrix.keySet()) {
                     boolean control = r.getParameter("control_" + key) != null;
-                    matrix.put(key, row("canView", control || r.getParameter("view_" + key) != null, "canControl", control));
+                    matrix.put(key, support.row("canView", control || r.getParameter("view_" + key) != null, "canControl", control));
                 }
             }
             if ("savePermissions".equals(op)) {
@@ -142,10 +139,10 @@ public class PermissionManagementController extends ManagementController {
             } else if (op.startsWith("selectViewer:")) {
                 target = op.substring(13);
                 UserDTO next = dao.findById(target);
-                require(next != null && next.isActive() && next.getRole() == Role.VIEWER, "Viewer không hợp lệ.");
+                support.require(next != null && next.isActive() && next.getRole() == Role.VIEWER, "Viewer không hợp lệ.");
                 target = next.getUserId();
             } else {
-                require("confirmRevoke".equals(op), "Thao tác phân quyền không hợp lệ.");
+                support.require("confirmRevoke".equals(op), "Thao tác phân quyền không hợp lệ.");
             }
             synchronized (r.getSession()) {
                 if ("savePermissions".equals(op) || "resetPermissions".equals(op) || matrix.equals(stored)) {

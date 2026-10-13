@@ -19,10 +19,13 @@ import utills.DBConnection;
  *
  * @author ADMIN
  */
-public class ScheduleDAO {
-    private Connection connection;
+public class ScheduleDAO implements AutoCloseable {
+    private final Connection connection;
 
     private static final String SELECT = "SELECT schedul_id, switch_id, user_id, action, run_time, is_enabled, is_active FROM tblSchedule";
+    private static final String INSERT = "INSERT INTO tblSchedule(switch_id, user_id, action, run_time, is_enabled, is_active) VALUES(?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE = "UPDATE tblSchedule SET switch_id = ?, user_id = ?, action = ?, run_time = ?, is_enabled = ?, is_active = ? WHERE schedul_id = ? AND is_active = 1";
+    private static final String DELETE = "UPDATE tblSchedule SET is_active = 0 WHERE schedul_id = ? AND is_active = 1";
 
     public ScheduleDAO() throws SQLException, ClassNotFoundException {
         this.connection = DBConnection.getConnection();
@@ -41,33 +44,28 @@ public class ScheduleDAO {
         return s;
     }
 
-    public ScheduleDTO findById(int id) {
+    public ScheduleDTO findById(int id) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE schedul_id = ? AND is_active = 1")) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return map(rs);
-                }
+                return rs.next() ? map(rs) : null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
-    public List<ScheduleDTO> findByUserId(String userId) {
+    public List<ScheduleDTO> findByUserId(String userId) throws SQLException {
         return query(SELECT + " WHERE user_id = ? AND is_active = 1", userId);
     }
 
-    public List<ScheduleDTO> findBySwitchId(String switchId) {
+    public List<ScheduleDTO> findBySwitchId(String switchId) throws SQLException {
         return query(SELECT + " WHERE switch_id = ? AND is_active = 1", switchId);
     }
 
-    public List<ScheduleDTO> findAll() {
+    public List<ScheduleDTO> findAll() throws SQLException {
         return query(SELECT + " WHERE is_active = 1", null);
     }
 
-    private List<ScheduleDTO> query(String sql, String param) {
+    private List<ScheduleDTO> query(String sql, String param) throws SQLException {
         List<ScheduleDTO> list = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             if (param != null) {
@@ -78,15 +76,12 @@ public class ScheduleDAO {
                     list.add(map(rs));
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return list;
     }
 
-    public boolean insert(ScheduleDTO schedule) {
-        String sql = "INSERT INTO tblSchedule(switch_id, user_id, action, run_time, is_enabled, is_active) VALUES(?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+    public boolean insert(ScheduleDTO schedule) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(INSERT)) {
             ps.setString(1, schedule.getSwitchId());
             ps.setString(2, schedule.getUserId());
             ps.setString(3, schedule.getAction().name());
@@ -94,15 +89,11 @@ public class ScheduleDAO {
             ps.setBoolean(5, schedule.isEnabled());
             ps.setBoolean(6, schedule.isActive());
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
-    public boolean update(ScheduleDTO schedule) {
-        String sql = "UPDATE tblSchedule SET switch_id = ?, user_id = ?, action = ?, run_time = ?, is_enabled = ?, is_active = ? WHERE schedul_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+    public boolean update(ScheduleDTO schedule) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setString(1, schedule.getSwitchId());
             ps.setString(2, schedule.getUserId());
             ps.setString(3, schedule.getAction().name());
@@ -111,19 +102,18 @@ public class ScheduleDAO {
             ps.setBoolean(6, schedule.isActive());
             ps.setInt(7, schedule.getScheduleId());
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
-    public boolean delete(int id) {
-        try (PreparedStatement ps = connection.prepareStatement("UPDATE tblSchedule SET is_active = 0 WHERE schedul_id = ?")) {
+    public boolean delete(int id) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
+    }
+
+    @Override
+    public void close() throws SQLException {
+        connection.close();
     }
 }

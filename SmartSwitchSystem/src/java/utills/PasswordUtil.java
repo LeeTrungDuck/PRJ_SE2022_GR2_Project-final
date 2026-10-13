@@ -11,12 +11,12 @@ import javax.crypto.spec.PBEKeySpec;
 
 /** P1 fixes PBKDF2-SHA256/600000, 128-bit salt and 128-bit verifier; fits varchar(50). */
 public final class PasswordUtil {
-    private static final SecureRandom RANDOM = new SecureRandom();
+
     private PasswordUtil() { }
     public static String hash(String password) {
         byte[] bytes = new byte[32];
         byte[] salt = new byte[16];
-        RANDOM.nextBytes(salt);
+        new SecureRandom().nextBytes(salt);
         System.arraycopy(salt, 0, bytes, 0, 16);
         System.arraycopy(derive(password, salt), 0, bytes, 16, 16);
         return "P1$" + Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);

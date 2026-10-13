@@ -48,13 +48,11 @@ public class SwitchStageController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        String url = new URLMap().getUrl("DEVICE_CONTROL");
+        boolean redirectAfterAction = false;
+        int pageNumber = parsePageNumber(request.getParameter("page"));
         try {
-            response.setContentType("text/html;charset=UTF-8");
-            String url = new URLMap().getUrl("DEVICE_CONTROL");
-            boolean redirectAfterAction = false;
-            int pageNumber = parsePageNumber(request.getParameter("page"));
-            ControlHistoryDAO hisDao = new ControlHistoryDAO();
-            try {
                 HttpSession session = request.getSession();
                 UserDTO user = (UserDTO) session.getAttribute("LOGIN_USER");
                 String switchID = request.getParameter("id");
@@ -68,50 +66,45 @@ public class SwitchStageController extends HttpServlet {
                     return;
                 }
                 redirectAfterAction = true;
-                DevicePermissionDTO permission = new DevicePermissionDAO().getUserPermission(switchID, user.getUserId());
+                DevicePermissionDTO permission;
+                try (DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
+                    permission = permissionDao.getUserPermission(switchID, user.getUserId());
+                }
                 if (permission == null || !permission.isActive() || !permission.isCanControl()) {
                     request.setAttribute("ERROR", "Bạn không có quyền điều khiển công tắc này.");
                     return;
                 }
-                
-                SwitchDAO switchDAO = new SwitchDAO();
-                SwitchDTO sw = switchDAO.findById(switchID);
-                if (sw == null) {
-                    request.setAttribute("ERROR", "switch ID không có trong danh sách có thể điều khiển, kiểm tra lại Switch id hoặc trạng thái active của esp");
-                    return;
-                }
-                
-                HardwareClient hardwareClient = new HardwareClient(sw.getEspHostName());
-                String currentStatus = hardwareClient.getStatus(sw.getGpioPin());
-                if (!"ON".equals(currentStatus) && !"OFF".equals(currentStatus)) {
-                    request.setAttribute("ERROR", "Không đọc được trạng thái hiện tại của switch.");
-                    return;
-                }
-                
-                SwitchStatus status = "ON".equals(currentStatus) ? SwitchStatus.OFF : SwitchStatus.ON;
-                boolean commandSucceeded = status == SwitchStatus.ON
-                        ? hardwareClient.turnOn(sw.getGpioPin())
-                        : hardwareClient.turnOff(sw.getGpioPin());
-                ControlHistoryDTO hisDto = new ControlHistoryDTO();
-                
-                hisDto.setSwitchId(switchID);
-                hisDto.setUserId(user.getUserId());
-                hisDto.setCommand(status == SwitchStatus.ON ? Command.ON : Command.OFF);
-                hisDto.setControlTime(hisDto.getTimeNow());
-                if (!commandSucceeded) {
-                    request.setAttribute("ERROR", "ESP32 không xác nhận lệnh bật/tắt switch.");
-                    hisDto.setResult(ControlResult.ERROR);
-                    hisDao.insert(hisDto);
-                    return;
-                } else {
+
+                try (SwitchDAO switchDAO = new SwitchDAO();
+                     ControlHistoryDAO hisDao = new ControlHistoryDAO()) {
+                    SwitchDTO sw = switchDAO.findById(switchID);
+                    if (sw == null) {
+                        request.setAttribute("ERROR", "Switch không hoạt động hoặc không tồn tại.");
+                        return;
+                    }
+
+                    HardwareClient hardwareClient = new HardwareClient(sw.getEspHostName());
+                    String currentStatus = hardwareClient.getStatus(sw.getGpioPin());
+                    SwitchStatus status = "ON".equals(currentStatus) ? SwitchStatus.OFF : SwitchStatus.ON;
+                    if (status == SwitchStatus.ON) {
+                        hardwareClient.turnOn(sw.getGpioPin());
+                    } else {
+                        hardwareClient.turnOff(sw.getGpioPin());
+                    }
+                    ControlHistoryDTO hisDto = new ControlHistoryDTO();
+
+                    hisDto.setSwitchId(switchID);
+                    hisDto.setUserId(user.getUserId());
+                    hisDto.setCommand(status == SwitchStatus.ON ? Command.ON : Command.OFF);
+                    hisDto.setControlTime(hisDto.getTimeNow());
                     hisDto.setResult(status == SwitchStatus.ON ? ControlResult.ON : ControlResult.OFF);
-                }
-                if (!switchDAO.updateStatus(switchID, status)) {
-                    request.setAttribute("ERROR", "Thiết bị đã đổi trạng thái nhưng không thể lưu trạng thái vào hệ thống.");
-                }
-                if (!hisDao.insert(hisDto)) {
-                    log("Error at SwitchStageController: History control cannot insert into database");
-                    request.setAttribute("ERROR", "save fail, try again!");
+                    if (!switchDAO.updateStatus(switchID, status)) {
+                        request.setAttribute("ERROR", "Thiết bị đã đổi trạng thái nhưng không thể lưu trạng thái vào hệ thống.");
+                    }
+                    if (!hisDao.insert(hisDto)) {
+                        log("Error at SwitchStageController: History control cannot insert into database");
+                        request.setAttribute("ERROR", "Không thể lưu lịch sử điều khiển.");
+                    }
                 }
             } catch (SQLException ex) {
                 log("Error at LoginController: " + ex.toString());
@@ -120,30 +113,23 @@ public class SwitchStageController extends HttpServlet {
                 Logger.getLogger(SwitchStageController.class.getName()).log(Level.SEVERE, null, ex);
                 request.setAttribute("ERROR", "Class not found, please try again!");
             } catch (HardwareException ex) {
-                Logger.getLogger(SwitchStageController.class.getName()).log(Level.SEVERE, null, ex);
-                request.setAttribute("ERROR", "Không thể kết nối hoặc giao tiếp với ESP32: "
-                        + ex.getMessage());
-            } finally {
-                if (redirectAfterAction) {
-                    HttpSession session = request.getSession();
-                    Object error = request.getAttribute("ERROR");
-                    if (error != null) {
-                        session.setAttribute(FLASH_ERROR_ATTRIBUTE, error);
-                    } else {
-                        session.removeAttribute(FLASH_ERROR_ATTRIBUTE);
-                    }
-                    response.sendRedirect(response.encodeRedirectURL(
-                            request.getContextPath() + url + "?page=" + pageNumber
-                    ));
+                log("ESP32 hardware operation failed", ex);
+                request.setAttribute("ERROR", "Không thể kết nối hoặc giao tiếp với ESP32. Vui lòng thử lại.");
+        } finally {
+            if (redirectAfterAction) {
+                HttpSession session = request.getSession();
+                Object error = request.getAttribute("ERROR");
+                if (error != null) {
+                    session.setAttribute(FLASH_ERROR_ATTRIBUTE, error);
                 } else {
-                    request.getRequestDispatcher(url).forward(request, response);
+                    session.removeAttribute(FLASH_ERROR_ATTRIBUTE);
                 }
-                
+                response.sendRedirect(response.encodeRedirectURL(
+                        request.getContextPath() + "/MainController?action=DEVICE_CONTROL&page=" + pageNumber
+                ));
+            } else {
+                request.getRequestDispatcher(url).forward(request, response);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(SwitchStageController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SwitchStageController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

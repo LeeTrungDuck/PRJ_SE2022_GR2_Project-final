@@ -27,23 +27,14 @@ map de luu hanh dong, key la hanh dong - cai sau la ten cua controller trong web
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         String url = URLMap.getLOGIN_PAGE();
-        try{
-            String action = request.getParameter("action");
-            if (action == null || action.trim().isEmpty()) {
-                url = URLMap.getLOGIN_PAGE();
-            }else{
-                url = new URLMap().getUrl(action);
-                if (url == null || url.trim().isEmpty()) {
-                    url = URLMap.getERROR_PAGE();
-                }
+        String action = request.getParameter("action");
+        if (action != null && !action.trim().isEmpty()) {
+            String mappedUrl = new URLMap().getUrl(action.trim());
+            if (mappedUrl != null && !mappedUrl.trim().isEmpty()) {
+                url = mappedUrl;
             }
-        }catch(Exception e){
-            log("Error at MainController: " + e.toString());
-            request.setAttribute("ERROR", "System error, please try again later");
-            url = URLMap.getERROR_PAGE();
-        }finally{
-            request.getRequestDispatcher(url).forward(request, response);
         }
+        request.getRequestDispatcher(url).forward(request, response);
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

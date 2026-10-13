@@ -84,8 +84,6 @@
 .dm-empty-cell { text-align: center; }
 .dm-empty-cell p { margin: 12px 0; color: var(--um-secondary); font-size: 13px; }
 .dm-empty-cell button { margin-bottom: 12px; font-size: 12px; }
-.dm-preview-note { display: flex; align-items: baseline; gap: 7px; max-width: 90ch; margin: -8px 0 0; color: var(--um-muted); font-size: 11px; line-height: 1.7; }
-.dm-preview-note i { color: var(--um-primary); }
 .device-manager-page .um-field select { width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid var(--um-line); border-radius: 4px; background: var(--um-inset); color: var(--um-text); font-size: 13px; }
 .device-manager-page .um-field input[readonly] { color: var(--um-secondary); background: #171f33; }
 .dm-dialog-note { margin: 16px 0 0; color: var(--um-muted); font-size: 12px; line-height: 1.7; }
@@ -111,7 +109,6 @@
     .device-manager-page .dm-icon-button { width: 36px; height: 44px; }
     .device-manager-page .dm-copy-button { width: 28px; height: 44px; }
     .device-manager-page .dm-toggle { min-height: 44px; }
-    .dm-preview-note { margin-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
     .dm-toggle-track, .dm-toggle-track > span { transition: none; }

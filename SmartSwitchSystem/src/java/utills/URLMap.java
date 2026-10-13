@@ -13,23 +13,21 @@ import java.util.Map;
  */
 public class URLMap {
 
-    private static final String LOGIN_PAGE = "web/login.jsp";
-    private static final String ERROR_PAGE = "web/errorPage.jsp";
+    private static final String LOGIN_PAGE = "/web/login.jsp";
+    private static final String ERROR_PAGE = "/web/errorPage.jsp";
     private final Map<String, String> urlMap = new HashMap<>();
 
     public URLMap() {
-        urlMap.put("LOGIN", "LoginController");
+        urlMap.put("LOGIN", "/LoginController");
         urlMap.put("LOGOUT", "/LogOutController");
         urlMap.put("DEVICE_CONTROL", "/DeviceControlController");
         urlMap.put("USER_MANAGER", "/UserManagerController");
         urlMap.put("PERMISSION_MANAGER", "/PermissionManagementController");
         urlMap.put("ACCOUNT_MANAGER", "/AccountManagementController");
-        urlMap.put("DEVICE_MANAGER", "DeviceManager.jsp");
-        urlMap.put("SCHEDULE_MANAGER", "ScheduleManager.jsp");
-        urlMap.put("CONTROL_HISTORY", "ControlHistory.jsp");
+        urlMap.put("DEVICE_MANAGER", "/DeviceManagementController");
+        urlMap.put("SCHEDULE_MANAGER", "/ScheduleManagementController");
+        urlMap.put("CONTROL_HISTORY", "/ControlHistoryController");
         urlMap.put("CHANGE_SWITCH_STAGE", "/SwitchStageController");
-        
-        
 
     }
 

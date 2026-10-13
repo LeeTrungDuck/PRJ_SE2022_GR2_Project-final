@@ -37,7 +37,8 @@ public class LogOutController extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        response.sendRedirect(URLMap.getLOGIN_PAGE());
+        response.sendRedirect(response.encodeRedirectURL(
+                request.getContextPath() + URLMap.getLOGIN_PAGE()));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

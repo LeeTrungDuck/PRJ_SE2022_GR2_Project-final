@@ -41,6 +41,14 @@ Implementation:
    UserDAO includes email/phone and rejects inactive login accounts. Login closes
    its DAO and rotates the session ID. Removed the obsolete servlet mapping for
    the missing `DashboardController` so Tomcat can load the current sources.
+6. Shared non-preview request validation/map helpers now live in
+   `controller.ManagementSupport`; no controller depends on the deleted `ui`
+   package.
+7. Device/switch, schedule, and history actions follow the same authenticated
+   controller flow. Their SQL remains in DAOs, their forms post through
+   `MainController`, and their JSPs receive direct request attributes rather
+   than the legacy `ui` map. Schedule writes enforce session-user ownership;
+   history reads are scoped to the logged-in Viewer.
 
 Database compatibility:
 
@@ -66,7 +74,8 @@ Validation:
 - Twelve JSP/page/dialog variants compile and return HTTP 200 on isolated
   Tomcat at 127.0.0.1:18081 with test DTO models; three MainController action
   routes correctly redirect anonymous requests to Login.
-- Three requested JSPs have no script tags, inline JavaScript or JS dependency.
+- The database-backed management JSPs have no script tags, inline JavaScript or
+  JS dependency.
 - SQL Server integration against the user's running database and visual browser
   screenshots remain unverified. The test servlet exists only in the temporary
   test deployment and is not delivered into the application.
@@ -78,6 +87,6 @@ No create/drop/migration SQL script needs to be run for this change.
 To rerun the standalone checks, compile application Java into a temporary classes
 directory, compile `tests/controller/ManagementControllerTest.java` with those
 classes and the Tomcat Servlet API on the classpath, then run
-`controller.ManagementControllerTest`. The older `NoJavaScriptUiTest` targets
-the previous unauthenticated demo and is not the acceptance suite for these
-database-backed management modules.
+`controller.ManagementControllerTest`. The obsolete in-session preview test has
+been removed; it asserted behavior that the database-backed application no
+longer provides.

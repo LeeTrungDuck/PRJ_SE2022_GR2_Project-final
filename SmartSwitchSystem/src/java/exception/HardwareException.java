@@ -26,4 +26,8 @@ public class HardwareException extends Exception{
     public HardwareException(String msg) {
         super(msg);
     }
+
+    public HardwareException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

@@ -54,7 +54,6 @@
 .ui-repeat .sm-date-field { margin-top: 12px; }
 .ui-repeat #sm-once:checked ~ .sm-weekly-days { display: none; }
 .ui-repeat #sm-weekly:checked ~ .sm-date-field { display: none; }
-.ch-result.is-demo { color: var(--um-amber); }
 .ui-permission-checkboxes { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; background: var(--um-inset); padding: 10px 12px; border-radius: 4px; font: 500 11px/1.6 var(--um-mono); }
 .ui-permission-checkboxes label { display: inline-flex; gap: 6px; align-items: center; }
 .ui-permission-checkboxes input { width: 16px; height: 16px; accent-color: var(--um-green); }

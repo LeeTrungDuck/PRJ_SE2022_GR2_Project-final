@@ -9,11 +9,13 @@ import utills.PasswordUtil;
 
 public class UserDAO implements AutoCloseable {
     private final Connection connection;
-    private static final String SELECT = "SELECT user_id, user_name, password, full_name, role, is_active, email, phone_number FROM tblUser";
+    private final String SELECT = "SELECT user_id, user_name, password, full_name, role, is_active, email, phone_number FROM tblUser";
     public UserDAO() throws SQLException, ClassNotFoundException { this(DBConnection.getConnection()); }
     public UserDAO(Connection connection) { this.connection = connection; }
-    private UserDTO map(ResultSet rs) throws SQLException {
-        return new UserDTO(rs.getString("user_id"), rs.getString("user_name"), rs.getString("password"), rs.getString("full_name"), Role.valueOf(rs.getString("role")), rs.getBoolean("is_active"), rs.getString("email"), rs.getString("phone_number"));
+    private final String SELECT_PROFILE = "SELECT user_id, user_name, full_name, role, is_active, email, phone_number FROM tblUser";
+    private UserDTO map(ResultSet rs) throws SQLException { return map(rs, true); }
+    private UserDTO map(ResultSet rs, boolean includePassword) throws SQLException {
+        return new UserDTO(rs.getString("user_id"), rs.getString("user_name"), includePassword ? rs.getString("password") : null, rs.getString("full_name"), Role.valueOf(rs.getString("role")), rs.getBoolean("is_active"), rs.getString("email"), rs.getString("phone_number"));
     }
     private UserDTO one(String column, String value) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE " + column + " = ?")) {
@@ -25,7 +27,7 @@ public class UserDAO implements AutoCloseable {
     public UserDTO findByUserName(String name) throws SQLException { return one("user_name", name); }
     public List<UserDTO> findAll() throws SQLException {
         List<UserDTO> users = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " ORDER BY user_id"); ResultSet rs = ps.executeQuery()) { while (rs.next()) users.add(map(rs)); }
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_PROFILE + " ORDER BY user_id"); ResultSet rs = ps.executeQuery()) { while (rs.next()) users.add(map(rs, false)); }
         return users;
     }
     public boolean insert(UserDTO user) throws SQLException {

@@ -36,6 +36,10 @@ public class HardwareClient {
 
     private final String baseUrl;
     private static final int TIMEOUT_MS = 3000;
+    private static final Pattern DEVICE_ONLINE_PATTERN = Pattern.compile(
+            "\"status\"\\s*:\\s*\"online\"",
+            Pattern.CASE_INSENSITIVE
+    );
     private static final Pattern SWITCH_STATUS_PATTERN = Pattern.compile(
             "\\{\\s*\"gpio\"\\s*:\\s*(\\d+)\\s*,\\s*\"status\"\\s*:\\s*\"(on|off)\"\\s*\\}",
             Pattern.CASE_INSENSITIVE
@@ -95,7 +99,7 @@ public class HardwareClient {
      * switch/on?gpio=2
      */
     public boolean turnOn(int gpio) throws HardwareException{
-
+        validateGpio(gpio);
         return callAndCheckOk(
                 "/switch/on?gpio=" + gpio
         );
@@ -110,7 +114,7 @@ public class HardwareClient {
      * Tắt switch tại GPIO.
      */
     public boolean turnOff(int gpio) throws HardwareException{
-
+        validateGpio(gpio);
         return callAndCheckOk(
                 "/switch/off?gpio=" + gpio
         );
@@ -135,36 +139,24 @@ public class HardwareClient {
      * Java trả:
      *
      * "ON"
-     * "OFF"
-     *
-     * hoặc null nếu không lấy được.
+     * "OFF". Invalid or unavailable responses throw HardwareException.
      */
     public String getStatus(int gpio) throws HardwareException {
-
+        validateGpio(gpio);
         String body = callAndGetBody(
                 "/switch/status?gpio=" + gpio
         );
-
-
-        if (body == null) {
-            return null;
+        Matcher matcher = SWITCH_STATUS_PATTERN.matcher(body);
+        while (matcher.find()) {
+            try {
+                if (Integer.parseInt(matcher.group(1)) == gpio) {
+                    return matcher.group(2).toUpperCase();
+                }
+            } catch (NumberFormatException e) {
+                throw new HardwareException("ESP32 returned an invalid GPIO value.", e);
+            }
         }
-
-
-        body = body.toLowerCase().replaceAll("\\s+", "");
-
-
-        if (body.contains("\"status\":\"on\"")) {
-            return "ON";
-        }
-
-
-        if (body.contains("\"status\":\"off\"")) {
-            return "OFF";
-        }
-
-
-        return null;
+        throw new HardwareException("ESP32 returned no valid status for GPIO " + gpio + ".");
     }
 
 
@@ -189,10 +181,11 @@ public class HardwareClient {
      * @return true nếu ESP32 trả HTTP 200
      */
     public boolean isOnline() throws HardwareException {
-
-        return callAndCheckOk(
-                "/device/status"
-        );
+        String body = callAndGetBody("/device/status");
+        if (!DEVICE_ONLINE_PATTERN.matcher(body).find()) {
+            throw new HardwareException("ESP32 returned an invalid or offline device status.");
+        }
+        return true;
     }
 
 
@@ -223,10 +216,11 @@ public class HardwareClient {
      * Method này trả nguyên JSON dưới dạng String.
      */
     public String getDeviceInfo() throws HardwareException {
-
-        return callAndGetBody(
-                "/device/info"
-        );
+        String body = callAndGetBody("/device/info");
+        if (!SWITCH_STATUS_PATTERN.matcher(body).find()) {
+            throw new HardwareException("ESP32 returned invalid device information.");
+        }
+        return body;
     }
 
     /**
@@ -235,15 +229,24 @@ public class HardwareClient {
     public Map<Integer, String> getSwitchStatuses() throws HardwareException {
         Map<Integer, String> statuses = new LinkedHashMap<>();
         String body = getDeviceInfo();
-        if (body == null) {
-            return statuses;
-        }
-
         Matcher matcher = SWITCH_STATUS_PATTERN.matcher(body);
         while (matcher.find()) {
-            statuses.put(Integer.valueOf(matcher.group(1)), matcher.group(2).toUpperCase());
+            try {
+                statuses.put(Integer.valueOf(matcher.group(1)), matcher.group(2).toUpperCase());
+            } catch (NumberFormatException e) {
+                throw new HardwareException("ESP32 returned an invalid GPIO value.", e);
+            }
+        }
+        if (statuses.isEmpty()) {
+            throw new HardwareException("ESP32 returned no valid switch status data.");
         }
         return statuses;
+    }
+
+    private void validateGpio(int gpio) throws HardwareException {
+        if (gpio < 0 || gpio > 255) {
+            throw new HardwareException("GPIO must be between 0 and 255.");
+        }
     }
 
 
@@ -294,12 +297,14 @@ public class HardwareClient {
                     conn.getResponseCode();
 
 
-            return code ==
-                    HttpURLConnection.HTTP_OK;
+            if (code != HttpURLConnection.HTTP_OK) {
+                throw new HardwareException("ESP32 returned HTTP " + code + " for " + path + ".");
+            }
+            return true;
 
 
         } catch (IOException e) {
-            throw new HardwareException(e.getMessage());
+            throw new HardwareException("Could not communicate with ESP32 for " + path + ".", e);
         } finally {
 
             if (conn != null) {
@@ -357,8 +362,7 @@ public class HardwareClient {
 
             // ESP32 không trả 200
             if (code != HttpURLConnection.HTTP_OK) {
-
-                return null;
+                throw new HardwareException("ESP32 returned HTTP " + code + " for " + path + ".");
             }
 
 
@@ -388,11 +392,15 @@ public class HardwareClient {
             }
 
 
-            return response.toString();
+            String body = response.toString().trim();
+            if (body.isEmpty()) {
+                throw new HardwareException("ESP32 returned an empty response for " + path + ".");
+            }
+            return body;
 
 
         } catch (IOException e) {
-            throw new HardwareException(e.getMessage());
+            throw new HardwareException("Could not communicate with ESP32 for " + path + ".", e);
         } finally {
 
             if (conn != null) {

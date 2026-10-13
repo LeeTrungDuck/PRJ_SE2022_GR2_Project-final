@@ -69,8 +69,6 @@
 .ch-empty-cell { text-align: center; }
 .ch-empty { margin: 0; padding: 24px 16px; color: var(--um-secondary); font-size: 13px; line-height: 1.7; }
 .ch-empty-cell .um-button { margin-bottom: 20px; font-size: 12px; }
-.ch-preview-note { display: flex; align-items: baseline; gap: 6px; max-width: 90ch; margin: 16px 0 0; color: var(--um-muted); font-size: 11px; line-height: 1.7; }
-.ch-preview-note > i { color: var(--um-primary); }
 .ch-trace-dialog .um-dialog-heading h2 { display: flex; align-items: center; gap: 10px; }
 .ch-trace-dialog .um-dialog-heading h2 > i { color: var(--um-primary); font-size: 18px; }
 .ch-trace-summary { display: flex; flex-wrap: wrap; gap: 16px; margin: 20px 0; padding: 12px; border-radius: 3px; background: var(--um-inset); }
@@ -95,7 +93,7 @@
     .ch-toolbar select { flex-basis: 100%; min-width: 0; width: 100%; }
     .control-history-page .ch-refresh { width: 44px; }
     .ch-table { min-width: 1160px; }
-    .ch-version-tag, .ch-record-count, .ch-refresh-group > span, .ch-search input, .ch-toolbar select, .control-history-page .ch-clear-filters, .ch-table th, .control-history-page .ch-log-id, .ch-timestamp, .ch-avatar, .ch-actor-name, .ch-device-name, .ch-switch-name, .ch-actor-role, .ch-device-ip, .ch-gpio, .ch-command, .ch-result-label, .ch-rtt, .ch-panel-footer, .ch-preview-note, .ch-trace-summary dt, .ch-trace-summary dd, .ch-payload-title, .ch-payload-title span, .ch-payload, .ch-trace-note { font-size: 14px; }
+    .ch-version-tag, .ch-record-count, .ch-refresh-group > span, .ch-search input, .ch-toolbar select, .control-history-page .ch-clear-filters, .ch-table th, .control-history-page .ch-log-id, .ch-timestamp, .ch-avatar, .ch-actor-name, .ch-device-name, .ch-switch-name, .ch-actor-role, .ch-device-ip, .ch-gpio, .ch-command, .ch-result-label, .ch-rtt, .ch-panel-footer, .ch-trace-summary dt, .ch-trace-summary dd, .ch-payload-title, .ch-payload-title span, .ch-payload, .ch-trace-note { font-size: 14px; }
     .ch-avatar { width: 32px; height: 32px; flex-basis: 32px; }
     .ch-panel-footer { gap: 10px; }
 }
