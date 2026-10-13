@@ -5,10 +5,9 @@
 package controller;
 
 import dao.SwitchDAO;
-import dao.DevicePermissionDAO;
-import dto.DevicePermissionDTO;
 import dto.SwitchDTO;
 import dto.UserDTO;
+import enums.Role;
 import enums.SwitchStatus;
 import exception.HardwareException;
 
@@ -37,21 +36,21 @@ import utills.URLMap;
  *
  * @author ltrun
  */
-@WebServlet(name = "DeviceControlController", urlPatterns = {"/DeviceControlController"})
+@WebServlet(name = "DeviceControlController", urlPatterns = { "/DeviceControlController" })
 public class DeviceControlController extends HttpServlet {
 
-    private static final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
-    private static final int PAGE_SIZE = 20;
-    private static final int MAX_CONCURRENT_ESP_CHECKS = 5;
+    private final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
+    private final int PAGE_SIZE = 20;
+    private final int MAX_CONCURRENT_ESP_CHECKS = 5;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -72,23 +71,17 @@ public class DeviceControlController extends HttpServlet {
             if (user == null) {
                 url = error;
                 if (request.getAttribute("ERROR") == null) {
-                    request.setAttribute("ERROR","LOGIN PLS!");
+                    request.setAttribute("ERROR", "LOGIN PLS!");
                 }
             } else {
                 url = success;
                 try (SwitchDAO dao = new SwitchDAO()) {
-                    List<SwitchDTO> list = dao.getPermittedSwitchesForUser(user.getUserId());
-                    java.util.Set<String> controlSwitchIds = new java.util.HashSet<>();
-                    try (DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
-                        for (DevicePermissionDTO permission : permissionDao.findByUserId(user.getUserId())) {
-                            if (permission.isActive() && permission.isCanControl()) {
-                                controlSwitchIds.add(permission.getSwitchId());
-                            }
-                        }
-                    }
-                    for (SwitchDTO sw : list) {
-                        sw.setCanControl(controlSwitchIds.contains(sw.getSwitchId()));
-                    }
+                    // Admin/operator can view all active switches on active ESP32
+                    // devices. Viewer can only view switches granted to the user.
+                    List<SwitchDTO> list = user.getRole() != Role.VIEWER
+                            ? dao.findAll()
+                            : dao.getPermittedSwitchesForUser(user.getUserId());
+
                     String espFilter = request.getParameter("esp");
                     String statusFilter = request.getParameter("status");
                     espFilter = espFilter == null ? "" : espFilter.trim();
@@ -107,7 +100,7 @@ public class DeviceControlController extends HttpServlet {
                     for (SwitchDTO sw : list) {
                         if ((!espFilter.isEmpty() && !"all".equals(espFilter) && !espFilter.equals(sw.getDeviceId()))
                                 || (!statusFilter.isEmpty() && !"all".equalsIgnoreCase(statusFilter)
-                                && !statusFilter.equals(sw.getStatus().name()))) {
+                                        && !statusFilter.equals(sw.getStatus().name()))) {
                             continue;
                         }
                         filteredSwitches.add(sw);
@@ -136,7 +129,8 @@ public class DeviceControlController extends HttpServlet {
                             syncSwitchStatuses(dao, pageSwitches, request);
                         } catch (HardwareException ex) {
                             log("ESP32 status synchronization failed", ex);
-                            request.setAttribute("ERROR", "Không thể kết nối hoặc đọc trạng thái ESP32. Vui lòng thử lại.");
+                            request.setAttribute("ERROR",
+                                    "Không thể kết nối hoặc đọc trạng thái ESP32. Vui lòng thử lại.");
                         }
                     }
                 }
@@ -147,10 +141,10 @@ public class DeviceControlController extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             log("Error at DeviceControlController (class): " + ex.toString());
             request.setAttribute("ERROR", "Device Controller has an error(Class), please try again!");
-        }finally {
+        } finally {
             request.getRequestDispatcher(url).forward(request, response);
+        }
     }
-}
 
     private int parsePageNumber(String pageParameter) {
         if (pageParameter == null) {
@@ -208,7 +202,8 @@ public class DeviceControlController extends HttpServlet {
                     if (cause instanceof HardwareException) {
                         throw (HardwareException) cause;
                     }
-                    throw new HardwareException("Unable to sync switches for ESP32 " + deviceId + ".", cause == null ? ex : cause);
+                    throw new HardwareException("Unable to sync switches for ESP32 " + deviceId + ".",
+                            cause == null ? ex : cause);
                 }
 
                 for (SwitchDTO sw : deviceSwitches) {
@@ -234,17 +229,18 @@ public class DeviceControlController extends HttpServlet {
         request.setAttribute("switchSyncErrors", switchSyncErrors);
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-/**
- * Handles the HTTP <code>GET</code> method.
- *
- * @param request servlet request
- * @param response servlet response
- * @throws ServletException if a servlet-specific error occurs
- * @throws IOException if an I/O error occurs
- */
-@Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the
+    // + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -252,13 +248,13 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -269,7 +265,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
      * @return a String containing servlet description
      */
     @Override
-public String getServletInfo() {
+    public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 

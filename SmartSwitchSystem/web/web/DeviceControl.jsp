@@ -85,7 +85,7 @@
                                     <span class="dc-relay-state">${relay.status eq 'ON' ? 'ON' : 'OFF'}</span>
                                 </div>
 
-                                <form action="MainController" method="POST">
+                                <form action="${pageContext.request.contextPath}/MainController" method="POST">
                                     <!-- Các input hidden để truyền dữ liệu -->
                                     <input type="hidden" name="action" value="CHANGE_SWITCH_STAGE">
                                     <input name="id" value="${relay.switchId}" type="hidden">
@@ -99,7 +99,7 @@
                                             role="switch" 
                                             aria-checked="${relay.status eq 'ON'}"
                                             aria-label="Đổi trạng thái ${fn:escapeXml(relay.espName)}"
-                                            <c:if test="${not relay.canControl}">disabled="disabled" title="Tài khoản chưa được cấp quyền điều khiển switch này"</c:if>>
+                                            >
                                         <span class="dc-switch-track" aria-hidden="true">
                                             <span></span>
                                         </span>
