@@ -94,7 +94,7 @@ public class UserDAO implements AutoCloseable {
     }
     public UserDTO checkLogin(String name, String password) throws SQLException {
         UserDTO user = findByUserName(name);
-        return user != null && user.isActive() && PasswordUtil.verify(password,user.getPassword()) ? user : null;
+        return user != null && PasswordUtil.verify(password,user.getPassword()) ? user : null;
     }
     @Override public void close() throws SQLException { connection.close(); }
 }
