@@ -20,9 +20,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quản lý lịch chạy</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/userManagerCss.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/scheduleManagerCss.css?v=20261013-schedule-actions-7">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/noJsUi.css">
 </head>
-<body class="user-manager-page">
+<body class="user-manager-page schedule-manager-page">
 <div class="ui-shell">
     <%@ include file="sideBar.jspf" %>
     <main class="um-main" id="main-content">
@@ -67,7 +68,7 @@
                         value="<c:out value='${submittedOperation eq "addSchedule" ? submitted.runTime : ""}'/>"></label>
                     <label><input name="enabled" type="checkbox" value="true"
                         ${submittedOperation eq 'addSchedule' ? submitted.enabled eq 'true' ? 'checked' : '' : 'checked'}> Đang bật</label>
-                    <button type="submit" <c:if test="${empty switches}">disabled</c:if>>Thêm lịch</button>
+                    <button type="submit" class="sm-add-schedule-button" <c:if test="${empty switches}">disabled</c:if>>Thêm lịch</button>
                     <c:if test="${empty switches}"><p>Chưa có switch hoạt động để lập lịch.</p></c:if>
                 </form>
             </section>
@@ -82,7 +83,7 @@
                     </thead>
                     <tbody>
                     <c:forEach var="schedule" items="${schedules}">
-                        <c:set var="rowCanManage" value="${canManage and actorId eq schedule.userId}"/>
+                        <c:set var="rowCanManage" value="${canManage}"/>
                         <c:set var="editingSchedule" value="${submittedOperation eq 'updateSchedule' and submittedScheduleId eq schedule.scheduleId}"/>
                         <tr>
                             <td><c:out value="${schedule.scheduleId}"/></td>
@@ -134,21 +135,31 @@
                             </td>
                             <td>
                                 <c:if test="${rowCanManage}">
-                                    <form id="update-schedule-${schedule.scheduleId}" action="${pageContext.request.contextPath}/MainController" method="post">
-                                        <input type="hidden" name="action" value="SCHEDULE_MANAGER">
-                                        <input type="hidden" name="uiOp" value="updateSchedule">
-                                        <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
-                                        <input type="hidden" name="scheduleId" value="<c:out value='${schedule.scheduleId}'/>">
-                                        <button type="submit">Lưu</button>
-                                    </form>
-                                    <form action="${pageContext.request.contextPath}/MainController" method="post">
-                                        <input type="hidden" name="action" value="SCHEDULE_MANAGER">
-                                        <input type="hidden" name="uiOp" value="deleteSchedule">
-                                        <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
-                                        <input type="hidden" name="scheduleId" value="<c:out value='${schedule.scheduleId}'/>">
-                                        <label><input type="checkbox" name="confirm" value="yes" required> Xác nhận</label>
-                                        <button type="submit">Ngừng hoạt động</button>
-                                    </form>
+                                    <div class="sm-row-actions">
+                                        <form id="update-schedule-${schedule.scheduleId}" action="${pageContext.request.contextPath}/MainController" method="post">
+                                            <input type="hidden" name="action" value="SCHEDULE_MANAGER">
+                                            <input type="hidden" name="uiOp" value="updateSchedule">
+                                            <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
+                                            <input type="hidden" name="scheduleId" value="<c:out value='${schedule.scheduleId}'/>">
+                                            <button type="submit" class="sm-save-button">Lưu</button>
+                                        </form>
+                                        <form action="${pageContext.request.contextPath}/MainController" method="post">
+                                            <input type="hidden" name="action" value="SCHEDULE_MANAGER">
+                                            <input type="hidden" name="uiOp" value="deleteSchedule">
+                                            <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
+                                            <input type="hidden" name="scheduleId" value="<c:out value='${schedule.scheduleId}'/>">
+                                            <details class="sm-deactivate-confirm">
+                                                <summary>Ngừng hoạt động</summary>
+                                                <div class="sm-confirm-content">
+                                                    <button type="button" class="sm-return-button">Trở về</button>
+                                                    <div class="sm-confirm-actions">
+                                                        <label class="sm-confirm-label"><input type="checkbox" name="confirm" value="yes" required> Xác nhận</label>
+                                                        <button type="submit" class="sm-danger-button">Ngừng hoạt động</button>
+                                                    </div>
+                                                </div>
+                                            </details>
+                                        </form>
+                                    </div>
                                 </c:if>
                             </td>
                         </tr>
@@ -162,5 +173,16 @@
         </section>
     </main>
 </div>
+<script>
+    document.querySelectorAll('.sm-deactivate-confirm').forEach(function (details) {
+        var actionCell = details.closest('td');
+        details.addEventListener('toggle', function () {
+            actionCell.classList.toggle('sm-deactivation-pending', details.open);
+        });
+        details.closest('form').querySelector('.sm-return-button').addEventListener('click', function () {
+            details.open = false;
+        });
+    });
+</script>
 </body>
 </html>

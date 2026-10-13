@@ -20,7 +20,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lịch sử điều khiển</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/userManagerCss.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/controlHistoryCss.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/controlHistoryCss.css?v=20261013-filter-colors">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/noJsUi.css">
 </head>
 <body class="user-manager-page control-history-page">
@@ -52,11 +52,11 @@
                 <option value="ERROR" ${result eq 'ERROR' ? 'selected' : ''}>ERROR</option>
             </select>
             <button type="submit">Lọc</button>
-            <a href="${pageContext.request.contextPath}/MainController?action=CONTROL_HISTORY">Xóa bộ lọc</a>
+            <a class="ch-clear-filters" href="${pageContext.request.contextPath}/MainController?action=CONTROL_HISTORY">Xóa bộ lọc</a>
         </form>
 
         <section class="ch-log-panel" aria-labelledby="history-heading">
-            <h2 id="history-heading">Bản ghi (<c:out value="${fn:length(history)}"/>)</h2>
+            <h2 id="history-heading">50 bản ghi gần nhất (<c:out value="${fn:length(history)}"/>)</h2>
             <div class="ch-table-scroll" role="region" aria-label="Danh sách lịch sử điều khiển" tabindex="0">
                 <table class="ch-table">
                     <thead>

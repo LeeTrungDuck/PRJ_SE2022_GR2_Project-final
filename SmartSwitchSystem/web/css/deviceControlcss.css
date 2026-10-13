@@ -11,6 +11,12 @@
 .dc-heading-dot { display: block; width: 6px; height: 6px; margin-bottom: 5px; border-radius: 50%; background: var(--um-green); }
 .dc-page-heading h1 { margin: 0 0 6px; color: var(--um-text); font-size: 30px; line-height: 1.3; font-weight: 700; letter-spacing: -.035em; text-wrap: balance; }
 .dc-page-heading h1 > span { display: inline-block; color: var(--um-primary); font: 600 14px/1.5 var(--um-mono); letter-spacing: -.02em; }
+.dc-filter-form { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 20px; padding: 12px; border-radius: 6px; background: var(--um-surface); }
+.dc-filter-form label { color: var(--um-secondary); font-size: 12px; font-weight: 600; }
+.dc-filter-form select { min-width: 150px; min-height: 38px; padding: 8px 10px; border: 1px solid transparent; border-radius: 4px; background: var(--um-inset); color: var(--um-text); }
+.dc-filter-form button { min-height: 38px; padding: 8px 14px; border: 0; border-radius: 4px; background: var(--um-blue); color: #ffffff; font-weight: 600; cursor: pointer; }
+.dc-filter-form a { color: var(--um-primary); font-size: 12px; text-decoration: none; }
+.dc-filter-form a:hover { text-decoration: underline; }
 .dc-empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; padding: 40px 24px; border-radius: 8px; background: var(--um-surface); text-align: center; }
 .dc-empty-icon { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 18px; border-radius: 12px; background: var(--um-inset); color: var(--um-primary); font-size: 26px; }
 .dc-empty-state h2 { margin: 0 0 8px; color: var(--um-text); font-size: 20px; line-height: 1.4; font-weight: 600; text-wrap: balance; }
@@ -77,6 +83,8 @@
     .dc-main { padding-top: 72px; }
     .dc-page-heading h1 { font-size: 23px; }
     .dc-page-heading h1 > span { display: block; margin-top: 4px; font-size: 13px; }
+    .dc-filter-form { align-items: stretch; }
+    .dc-filter-form select, .dc-filter-form button { min-height: 44px; }
     .dc-empty-state { min-height: 260px; padding: 32px 16px; }
     .dc-device-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 224px), 1fr)); }
     .dc-topbar-role { gap: 5px; font-size: 10px; }

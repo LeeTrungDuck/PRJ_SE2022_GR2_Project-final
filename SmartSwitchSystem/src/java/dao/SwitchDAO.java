@@ -48,7 +48,7 @@ public class SwitchDAO implements AutoCloseable {
         return s;
     }
 
-    public List<SwitchDTO> getSwitchesForViewer(String userId) throws SQLException, ClassNotFoundException {
+    public List<SwitchDTO> getPermittedSwitchesForUser(String userId) throws SQLException, ClassNotFoundException {
         List<SwitchDTO> list = new ArrayList<>();
         String sql = "SELECT sw.switch_id, sw.device_id, sw.switch_name, sw.gpio_pin, sw.status, sw.is_active, "
                 + "esp.name AS esp_name, esp.host_name AS esp_host_name,esp.is_active as is_active_esp "
@@ -80,6 +80,10 @@ public class SwitchDAO implements AutoCloseable {
             }
         }
         return list;
+    }
+
+    public List<SwitchDTO> getSwitchesForViewer(String userId) throws SQLException, ClassNotFoundException {
+        return getPermittedSwitchesForUser(userId);
     }
 
     public SwitchDTO findById(String switchId) throws SQLException {
@@ -117,6 +121,26 @@ public class SwitchDAO implements AutoCloseable {
         return list;
     }
 
+    public List<SwitchDTO> findAllForManagement() throws SQLException {
+        List<SwitchDTO> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(SELECT + " ORDER BY sw.device_id, sw.switch_id");
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        }
+        return list;
+    }
+
+    public SwitchDTO findByIdForManagement(String switchId) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE sw.switch_id = ?")) {
+            ps.setString(1, switchId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? map(rs) : null;
+            }
+        }
+    }
+
     public boolean insert(SwitchDTO sw) throws SQLException {
         try ( PreparedStatement ps = connection.prepareStatement(INSERT)) {
             ps.setString(1, sw.getSwitchId());
@@ -151,6 +175,16 @@ public class SwitchDAO implements AutoCloseable {
         try ( PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setString(1, switchId);
             return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean activate(String switchId) throws SQLException {
+        String sql = "UPDATE sw SET is_active = 1 FROM tblSwitch sw "
+                + "JOIN tblESP32_Device esp ON esp.device_id = sw.device_id "
+                + "WHERE sw.switch_id = ? AND sw.is_active = 0 AND esp.is_active = 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, switchId);
+            return ps.executeUpdate() == 1;
         }
     }
 

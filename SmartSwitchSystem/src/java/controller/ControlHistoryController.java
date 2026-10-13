@@ -102,8 +102,11 @@ public class ControlHistoryController extends HttpServlet {
 
         List<ControlHistoryDTO> records;
         try (ControlHistoryDAO dao = new ControlHistoryDAO()) {
-            records = actor.getRole() == Role.VIEWER
-                    ? dao.findByUserId(actor.getUserId()) : dao.findAll();
+            if (actor.getRole() == Role.VIEWER) {
+                records = dao.findLatest50ByPermittedUserId(actor.getUserId());
+            } else {
+                records = dao.findLatest50();
+            }
         }
         List<ControlHistoryDTO> filtered = new ArrayList<>();
         for (ControlHistoryDTO record : records) {

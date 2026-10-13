@@ -5,15 +5,17 @@
 package controller;
 
 import dao.SwitchDAO;
+import dao.DevicePermissionDAO;
+import dto.DevicePermissionDTO;
 import dto.SwitchDTO;
 import dto.UserDTO;
-import enums.Role;
 import enums.SwitchStatus;
 import exception.HardwareException;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,12 +77,42 @@ public class DeviceControlController extends HttpServlet {
             } else {
                 url = success;
                 try (SwitchDAO dao = new SwitchDAO()) {
-                    List<SwitchDTO> list;
-                    if (user.getRole() == Role.VIEWER) {
-                        list = dao.getSwitchesForViewer(user.getUserId());
-                    } else {
-                        list = dao.findAll();
+                    List<SwitchDTO> list = dao.getPermittedSwitchesForUser(user.getUserId());
+                    java.util.Set<String> controlSwitchIds = new java.util.HashSet<>();
+                    try (DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
+                        for (DevicePermissionDTO permission : permissionDao.findByUserId(user.getUserId())) {
+                            if (permission.isActive() && permission.isCanControl()) {
+                                controlSwitchIds.add(permission.getSwitchId());
+                            }
+                        }
                     }
+                    for (SwitchDTO sw : list) {
+                        sw.setCanControl(controlSwitchIds.contains(sw.getSwitchId()));
+                    }
+                    String espFilter = request.getParameter("esp");
+                    String statusFilter = request.getParameter("status");
+                    espFilter = espFilter == null ? "" : espFilter.trim();
+                    statusFilter = statusFilter == null ? "" : statusFilter.trim().toUpperCase(java.util.Locale.ROOT);
+                    if (!statusFilter.isEmpty() && !"all".equalsIgnoreCase(statusFilter)
+                            && !"ON".equals(statusFilter) && !"OFF".equals(statusFilter)) {
+                        request.setAttribute("ERROR", "Trạng thái lọc không hợp lệ.");
+                        statusFilter = "";
+                    }
+                    LinkedHashSet<String> espIds = new LinkedHashSet<>();
+                    for (SwitchDTO sw : list) {
+                        espIds.add(sw.getDeviceId());
+                    }
+                    List<String> espOptions = new ArrayList<>(espIds);
+                    List<SwitchDTO> filteredSwitches = new ArrayList<>();
+                    for (SwitchDTO sw : list) {
+                        if ((!espFilter.isEmpty() && !"all".equals(espFilter) && !espFilter.equals(sw.getDeviceId()))
+                                || (!statusFilter.isEmpty() && !"all".equalsIgnoreCase(statusFilter)
+                                && !statusFilter.equals(sw.getStatus().name()))) {
+                            continue;
+                        }
+                        filteredSwitches.add(sw);
+                    }
+                    list = filteredSwitches;
                     int totalSwitches = list.size();
                     int pageCount = Math.max(1, (totalSwitches + PAGE_SIZE - 1) / PAGE_SIZE);
                     int pageNumber = parsePageNumber(request.getParameter("page"));
@@ -95,6 +127,9 @@ public class DeviceControlController extends HttpServlet {
                     request.setAttribute("totalSwitches", totalSwitches);
                     request.setAttribute("firstSwitchNumber", totalSwitches == 0 ? 0 : startIndex + 1);
                     request.setAttribute("lastSwitchNumber", endIndex);
+                    request.setAttribute("espOptions", espOptions);
+                    request.setAttribute("espFilter", espFilter);
+                    request.setAttribute("statusFilter", statusFilter);
                     request.setAttribute("switchSyncErrors", new LinkedHashMap<String, String>());
                     if (request.getAttribute("ERROR") == null) {
                         try {
