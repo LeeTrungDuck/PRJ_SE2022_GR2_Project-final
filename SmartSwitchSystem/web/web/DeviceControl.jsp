@@ -37,6 +37,25 @@
                     </h1>
                 </header>
                 <p class="ui-notice">Trạng thái được đồng bộ từ ESP32 khi tải lại trang.</p>
+                <form class="dc-filter-form" action="${pageContext.request.contextPath}/DeviceControlController" method="get">
+                    <label for="dc-esp-filter">ESP</label>
+                    <select id="dc-esp-filter" name="esp">
+                        <option value="all" ${empty espFilter or espFilter eq 'all' ? 'selected' : ''}>Tất cả ESP</option>
+                        <c:forEach var="espId" items="${espOptions}">
+                            <option value="<c:out value='${espId}'/>" ${espFilter eq espId ? 'selected' : ''}>
+                                <c:out value="${espId}"/>
+                            </option>
+                        </c:forEach>
+                    </select>
+                    <label for="dc-status-filter">Trạng thái</label>
+                    <select id="dc-status-filter" name="status">
+                        <option value="all" ${empty statusFilter or statusFilter eq 'all' ? 'selected' : ''}>Tất cả</option>
+                        <option value="ON" ${statusFilter eq 'ON' ? 'selected' : ''}>ON</option>
+                        <option value="OFF" ${statusFilter eq 'OFF' ? 'selected' : ''}>OFF</option>
+                    </select>
+                    <button type="submit">Lọc</button>
+                    <a href="${pageContext.request.contextPath}/DeviceControlController">Xóa lọc</a>
+                </form>
                 <section class="dc-device-grid" aria-label="Danh sách công tắc">
                     <c:forEach var="relay" items="${requestScope.list}">
                         <article class="dc-relay-card" data-on="${relay.status eq 'ON'}" data-esp-active="${relay.espActive}">
@@ -66,18 +85,21 @@
                                     <span class="dc-relay-state">${relay.status eq 'ON' ? 'ON' : 'OFF'}</span>
                                 </div>
 
-                                <form action="MainController" method="POST">
+                                <form action="${pageContext.request.contextPath}/MainController" method="POST">
                                     <!-- Các input hidden để truyền dữ liệu -->
                                     <input type="hidden" name="action" value="CHANGE_SWITCH_STAGE">
                                     <input name="id" value="${relay.switchId}" type="hidden">
                                     <input name="page" value="${requestScope.pageNumber}" type="hidden">
+                                    <input type="hidden" name="esp" value="<c:out value='${espFilter}'/>">
+                                    <input type="hidden" name="status" value="<c:out value='${statusFilter}'/>">
 
                                     <!-- Nút bấm đồng bộ trạng thái bật/tắt theo Enum -->
                                     <button type="submit" name="uiOp" value="toggleRelay"
                                             class="dc-switch ${relay.status eq 'ON' ? 'is-checked' : ''}" 
                                             role="switch" 
                                             aria-checked="${relay.status eq 'ON'}"
-                                            aria-label="Đổi trạng thái ${fn:escapeXml(relay.espName)}">
+                                            aria-label="Đổi trạng thái ${fn:escapeXml(relay.espName)}"
+                                            >
                                         <span class="dc-switch-track" aria-hidden="true">
                                             <span></span>
                                         </span>
@@ -101,7 +123,7 @@
                         <c:if test="${requestScope.pageCount gt 1}">
                             <nav class="dc-pagination" aria-label="Phân trang danh sách switch">
                                 <c:if test="${requestScope.pageNumber gt 1}">
-                                    <a href="${pageContext.request.contextPath}/DeviceControlController?page=${requestScope.pageNumber - 1}">
+                                    <a href="${pageContext.request.contextPath}/DeviceControlController?page=${requestScope.pageNumber - 1}&amp;esp=${espFilter}&amp;status=${statusFilter}">
                                         Trước
                                     </a>
                                 </c:if>
@@ -111,14 +133,14 @@
                                             <span aria-current="page">${page}</span>
                                         </c:when>
                                         <c:otherwise>
-                                            <a href="${pageContext.request.contextPath}/DeviceControlController?page=${page}">
+                                            <a href="${pageContext.request.contextPath}/DeviceControlController?page=${page}&amp;esp=${espFilter}&amp;status=${statusFilter}">
                                                 ${page}
                                             </a>
                                         </c:otherwise>
                                     </c:choose>
                                 </c:forEach>
                                 <c:if test="${requestScope.pageNumber lt requestScope.pageCount}">
-                                    <a href="${pageContext.request.contextPath}/DeviceControlController?page=${requestScope.pageNumber + 1}">
+                                    <a href="${pageContext.request.contextPath}/DeviceControlController?page=${requestScope.pageNumber + 1}&amp;esp=${espFilter}&amp;status=${statusFilter}">
                                         Sau
                                     </a>
                                 </c:if>

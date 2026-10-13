@@ -1,6 +1,7 @@
 package controller;
 
 import dao.ESP32DeviceDAO;
+import dao.DevicePermissionDAO;
 import dao.SwitchDAO;
 import dao.UserDAO;
 import dto.ESP32DeviceDTO;
@@ -12,6 +13,7 @@ import enums.SwitchStatus;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -61,7 +63,8 @@ public class DeviceManagementController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/web/login.jsp");
                 return;
             }
-            if (actor.getRole() != Role.ADMIN && actor.getRole() != Role.OPERATOR) {
+            if (actor.getRole() != Role.ADMIN && actor.getRole() != Role.OPERATOR
+                    && actor.getRole() != Role.VIEWER) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền sử dụng chức năng này.");
                 return;
             }
@@ -172,36 +175,72 @@ public class DeviceManagementController extends HttpServlet {
     protected Map<String, Object> view(UserDAO users, UserDTO actor, HttpServletRequest request)
             throws SQLException, ClassNotFoundException {
         String query = input(request, "q", 100).toLowerCase(Locale.ROOT);
+        String espFilter = input(request, "esp", 20);
         List<ESP32DeviceDTO> devices;
         List<ESP32DeviceDTO> deviceOptions;
+        List<ESP32DeviceDTO> espFilterOptions;
         List<SwitchDTO> switches;
+        Map<String, Boolean> devicePowerStates = new HashMap<>();
+        boolean canManageDevices = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
+        boolean canManageSwitches = canManageDevices || actor.getRole() == Role.VIEWER;
         try ( ESP32DeviceDAO deviceDao = new ESP32DeviceDAO();  SwitchDAO switchDao = new SwitchDAO()) {
-            deviceOptions = deviceDao.findAll();
+            List<ESP32DeviceDTO> allDevices = deviceDao.findAll();
+            List<ESP32DeviceDTO> allEspFilterOptions = canManageDevices
+                    ? deviceDao.findAllForManagement() : allDevices;
+            List<SwitchDTO> allSwitches = actor.getRole() == Role.VIEWER
+                    ? switchDao.getPermittedSwitchesForUser(actor.getUserId()) : switchDao.findAllForManagement();
+            espFilterOptions = new ArrayList<>();
+            for (ESP32DeviceDTO device : allEspFilterOptions) {
+                if (canManageDevices || allSwitches.stream().anyMatch(sw -> sw.getDeviceId().equals(device.getDeviceId()))) {
+                    espFilterOptions.add(device);
+                }
+            }
+            deviceOptions = new ArrayList<>();
+            for (ESP32DeviceDTO device : allDevices) {
+                if (canManageDevices || allSwitches.stream().anyMatch(sw -> sw.getDeviceId().equals(device.getDeviceId()))) {
+                    deviceOptions.add(device);
+                }
+            }
+            for (ESP32DeviceDTO device : deviceOptions) {
+                devicePowerStates.put(device.getDeviceId(), false);
+            }
             devices = new ArrayList<>();
             for (ESP32DeviceDTO device : deviceOptions) {
-                if (contains(query, device.getDeviceId(), device.getName(), device.getHostName())) {
+                if ((espFilter.isEmpty() || "all".equals(espFilter) || espFilter.equals(device.getDeviceId()))
+                        && contains(query, device.getDeviceId(), device.getName(), device.getHostName())) {
                     devices.add(device);
                 }
             }
             switches = new ArrayList<>();
-            for (SwitchDTO sw : switchDao.findAll()) {
-                if (contains(query, sw.getSwitchId(), sw.getSwitchName(), sw.getDeviceId(), sw.getEspName())) {
+            for (SwitchDTO sw : allSwitches) {
+                if (sw.isActive() && sw.getStatus() == SwitchStatus.ON) {
+                    devicePowerStates.put(sw.getDeviceId(), true);
+                }
+                if ((espFilter.isEmpty() || "all".equals(espFilter) || espFilter.equals(sw.getDeviceId()))
+                        && contains(query, sw.getSwitchId(), sw.getSwitchName(), sw.getDeviceId(),
+                                sw.getEspName(), sw.getEspHostName())) {
                     switches.add(sw);
                 }
             }
         }
-        return row("devices", devices, "deviceOptions", deviceOptions, "switches", switches, "q", query,
-                "canManage", true, "submitted", submittedValues(request, "deviceId", "deviceName",
+        return row("devices", devices, "deviceOptions", deviceOptions, "espFilterOptions", espFilterOptions,
+                "switches", switches,
+                "devicePowerStates", devicePowerStates, "q", query, "espFilter", espFilter,
+                "canManage", canManageDevices, "canManageDevices", canManageDevices,
+                "canManageSwitches", canManageSwitches,
+                "submitted", submittedValues(request, "deviceId", "deviceName",
                         "hostName", "switchId", "switchDeviceId", "switchName", "gpioPin"),
                 "submittedOperation", param(request, "uiOp"));
     }
 
     protected String change(UserDAO users, UserDTO actor, HttpServletRequest request)
             throws SQLException, ClassNotFoundException {
-        require(actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR,
-                "Bạn không có quyền thay đổi thiết bị.");
         String operation = param(request, "uiOp");
+        boolean canManageDevices = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
+        require(canManageDevices || (actor.getRole() == Role.VIEWER && "updateSwitch".equals(operation)),
+                "Bạn không có quyền thực hiện thao tác này.");
         if (operation.endsWith("Device")) {
+            require(canManageDevices, "Bạn không có quyền thay đổi thiết bị ESP32.");
             try ( ESP32DeviceDAO dao = new ESP32DeviceDAO()) {
                 if ("addDevice".equals(operation)) {
                     String id = required(request, "deviceId", 20, "Device ID");
@@ -221,7 +260,6 @@ public class DeviceManagementController extends HttpServlet {
                 require(current != null, "Không tìm thấy thiết bị đang hoạt động.");
                 if ("updateDevice".equals(operation)) {
                     current.setName(required(request, "deviceName", 50, "tên thiết bị"));
-                    current.setHostName(required(request, "hostName", 255, "hostname"));
                     require(dao.update(current), "Không cập nhật được thiết bị.");
                     message(request, "Đã cập nhật thông tin thiết bị.");
                 } else if ("deleteDevice".equals(operation)) {
@@ -237,7 +275,16 @@ public class DeviceManagementController extends HttpServlet {
 
         if (operation.endsWith("Switch")) {
             try ( SwitchDAO switchDao = new SwitchDAO();  ESP32DeviceDAO deviceDao = new ESP32DeviceDAO()) {
+                if (!canManageDevices) {
+                    String id = required(request, "switchId", 20, "Switch ID");
+                    try (DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
+                        dto.DevicePermissionDTO permission = permissionDao.getUserPermission(id, actor.getUserId());
+                        require(permission != null && permission.isActive(),
+                                "Switch này chưa được cấp quyền xem/sửa cho tài khoản của bạn.");
+                    }
+                }
                 if ("addSwitch".equals(operation)) {
+                    require(canManageDevices, "Bạn không có quyền thêm switch.");
                     String id = required(request, "switchId", 20, "Switch ID");
                     require(id.matches("SW[A-Za-z0-9_-]{1,18}"), "Switch ID phải bắt đầu bằng SW.");
                     String deviceId = required(request, "switchDeviceId", 20, "thiết bị ESP32");
@@ -255,17 +302,23 @@ public class DeviceManagementController extends HttpServlet {
                     return "";
                 }
                 String id = required(request, "switchId", 20, "Switch ID");
+                if ("activateSwitch".equals(operation)) {
+                    require(canManageDevices, "Bạn không có quyền kích hoạt switch.");
+                    SwitchDTO inactive = switchDao.findByIdForManagement(id);
+                    require(inactive != null && !inactive.isActive(), "Không tìm thấy switch đang ngừng hoạt động.");
+                    require(inactive.isEspActive(), "Không thể kích hoạt switch vì thiết bị ESP32 đang ngừng hoạt động.");
+                    require(switchDao.activate(id), "Không kích hoạt được switch. Vui lòng tải lại trang.");
+                    message(request, "Đã kích hoạt switch.");
+                    return "";
+                }
                 SwitchDTO current = switchDao.findById(id);
                 require(current != null, "Không tìm thấy switch đang hoạt động.");
                 if ("updateSwitch".equals(operation)) {
-                    String deviceId = required(request, "switchDeviceId", 20, "thiết bị ESP32");
-                    require(deviceDao.findById(deviceId) != null, "Thiết bị ESP32 không tồn tại hoặc đã ngừng hoạt động.");
-                    current.setDeviceId(deviceId);
                     current.setSwitchName(required(request, "switchName", 50, "tên switch"));
-                    current.setGpioPin(number(request, "gpioPin"));
                     require(switchDao.update(current), "Không cập nhật được switch.");
                     message(request, "Đã cập nhật thông tin switch.");
                 } else if ("deleteSwitch".equals(operation)) {
+                    require(canManageDevices, "Bạn không có quyền ngừng hoạt động switch.");
                     require("yes".equals(param(request, "confirm")), "Vui lòng xác nhận ngừng hoạt động switch.");
                     require(switchDao.delete(id), "Không xóa được switch.");
                     message(request, "Đã ngừng hoạt động switch.");

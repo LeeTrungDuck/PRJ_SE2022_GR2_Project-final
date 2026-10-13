@@ -22,13 +22,11 @@
                         <i class="fa-solid fa-sliders"></i> <span>Điều Khiển Switch</span>
                     </a>
                 </li>
-                <c:if test="${LOGIN_USER.role ne 'VIEWER'}">
                     <li class="${requestScope.activePage eq 'DEVICE_MANAGER' ? 'active' : ''}">
                         <a href="${pageContext.request.contextPath}/MainController?action=DEVICE_MANAGER" aria-current="${requestScope.activePage eq 'DEVICE_MANAGER' ? 'page' : 'false'}">
                             <i class="fa-solid fa-microchip"></i> <span>Quản Lý Thiết Bị &amp; GPIO</span>
                         </a>
                     </li>
-                </c:if>
                 <li class="${requestScope.activePage eq 'CONTROL_HISTORY' ? 'active' : ''}">
                     <a href="${pageContext.request.contextPath}/MainController?action=CONTROL_HISTORY" aria-current="${requestScope.activePage eq 'CONTROL_HISTORY' ? 'page' : 'false'}">
                         <i class="fa-solid fa-clock-rotate-left"></i> <span>Lịch Sử Điều Khiển</span>
@@ -45,7 +43,7 @@
                 <c:if test="${LOGIN_USER.role ne 'VIEWER'}">
                     <li class="${requestScope.activePage eq 'PERMISSION_MANAGER' ? 'active' : ''}">
                         <a href="${pageContext.request.contextPath}/MainController?action=PERMISSION_MANAGER" aria-current="${requestScope.activePage eq 'PERMISSION_MANAGER' ? 'page' : 'false'}">
-                            <i class="fa-solid fa-shield-halved"></i> <span>Phân Quyền Viewer</span>
+                            <i class="fa-solid fa-shield-halved"></i> <span>Phân Quyền Thiết Bị</span>
                         </a>
 
                     </li>

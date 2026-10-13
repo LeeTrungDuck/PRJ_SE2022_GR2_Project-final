@@ -51,7 +51,8 @@ public class PermissionManagementController extends ManagementController {
     List<UserDTO> viewers(UserDAO dao) throws SQLException {
         List<UserDTO> viewers = new ArrayList<>();
         for (UserDTO user : dao.findAll()) {
-            if (user.isActive() && user.getRole() == Role.VIEWER) {
+            if (user.isActive() && (user.getRole() == Role.VIEWER
+                    || user.getRole() == Role.ADMIN || user.getRole() == Role.OPERATOR)) {
                 viewers.add(user);
             }
         }
@@ -98,7 +99,10 @@ public class PermissionManagementController extends ManagementController {
     protected String change(UserDAO dao, UserDTO actor, HttpServletRequest r) throws SQLException, ClassNotFoundException {
         String id = support.required(r, "viewer", 20, "Viewer ID");
         UserDTO viewer = dao.findById(id);
-        support.require(viewer != null && viewer.isActive() && viewer.getRole() == Role.VIEWER, "Chỉ được cấp quyền cho tài khoản Viewer đang hoạt động.");
+        support.require(viewer != null && viewer.isActive()
+                && (viewer.getRole() == Role.VIEWER || viewer.getRole() == Role.ADMIN
+                || viewer.getRole() == Role.OPERATOR),
+                "Chỉ được cấp quyền cho tài khoản Admin, Operator hoặc Viewer đang hoạt động.");
         id = viewer.getUserId();
         String op = support.param(r, "uiOp");
         String target = id;
@@ -135,7 +139,9 @@ public class PermissionManagementController extends ManagementController {
             } else if (op.startsWith("selectViewer:")) {
                 target = op.substring(13);
                 UserDTO next = dao.findById(target);
-                support.require(next != null && next.isActive() && next.getRole() == Role.VIEWER, "Viewer không hợp lệ.");
+                support.require(next != null && next.isActive()
+                        && (next.getRole() == Role.VIEWER || next.getRole() == Role.ADMIN
+                        || next.getRole() == Role.OPERATOR), "Tài khoản không hợp lệ.");
                 target = next.getUserId();
             } else {
                 support.require("confirmRevoke".equals(op), "Thao tác phân quyền không hợp lệ.");

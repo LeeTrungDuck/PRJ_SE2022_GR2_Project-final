@@ -63,6 +63,17 @@ public class ESP32DeviceDAO implements AutoCloseable {
         return list;
     }
 
+    public List<ESP32DeviceDTO> findAllForManagement() throws SQLException {
+        List<ESP32DeviceDTO> list = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(SELECT + " ORDER BY device_id");
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        }
+        return list;
+    }
+
     public boolean insert(ESP32DeviceDTO device) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(INSERT)) {
             ps.setString(1, device.getDeviceId());

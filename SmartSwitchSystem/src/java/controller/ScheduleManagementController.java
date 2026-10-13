@@ -2,6 +2,7 @@ package controller;
 
 import dao.ScheduleDAO;
 import dao.SwitchDAO;
+import dao.DevicePermissionDAO;
 import dao.UserDAO;
 import dto.ScheduleDTO;
 import dto.SwitchDTO;
@@ -172,10 +173,14 @@ public class ScheduleManagementController extends HttpServlet {
         List<ScheduleDTO> schedules;
         List<SwitchDTO> switches;
         try ( ScheduleDAO scheduleDao = new ScheduleDAO();  SwitchDAO switchDao = new SwitchDAO()) {
-            schedules = actor.getRole() == Role.ADMIN
-                    ? scheduleDao.findAll() : scheduleDao.findByUserId(actor.getUserId());
-            switches = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR
-                    ? switchDao.findAll() : new ArrayList<SwitchDTO>();
+            boolean canManageAll = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
+            switches = canManageAll ? switchDao.findAll()
+                    : switchDao.getPermittedSwitchesForUser(actor.getUserId());
+            if (canManageAll) {
+                schedules = scheduleDao.findAll();
+            } else {
+                schedules = scheduleDao.findByPermittedUserId(actor.getUserId());
+            }
         }
         if (!query.isEmpty()) {
             List<ScheduleDTO> filtered = new ArrayList<>();
@@ -190,7 +195,8 @@ public class ScheduleManagementController extends HttpServlet {
             schedules = filtered;
         }
         return row("schedules", schedules, "switches", switches, "q", query,
-                "canManage", actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR,
+                "canManage", actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR
+                        || actor.getRole() == Role.VIEWER,
                 "actorId", actor.getUserId(),
                 "submitted", submittedValues(request, "scheduleId", "switchId", "scheduleAction",
                         "runTime", "enabled"),
@@ -200,13 +206,16 @@ public class ScheduleManagementController extends HttpServlet {
 
     protected String change(UserDAO users, UserDTO actor, HttpServletRequest request)
             throws SQLException, ClassNotFoundException {
-        require(actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR,
-                "Bạn chỉ có quyền xem lịch, không có quyền thay đổi.");
         String operation = param(request, "uiOp");
-        try ( ScheduleDAO scheduleDao = new ScheduleDAO();  SwitchDAO switchDao = new SwitchDAO()) {
+        boolean canManageAll = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
+        require(canManageAll || actor.getRole() == Role.VIEWER,
+                "Bạn không có quyền thay đổi lịch.");
+        try ( ScheduleDAO scheduleDao = new ScheduleDAO();  SwitchDAO switchDao = new SwitchDAO();
+                DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
             if ("addSchedule".equals(operation)) {
                 String switchId = required(request, "switchId", 20, "switch");
                 require(switchDao.findById(switchId) != null, "Switch không tồn tại hoặc đã ngừng hoạt động.");
+                requireSwitchAccess(permissionDao, actor, canManageAll, switchId);
                 ScheduleDTO schedule = new ScheduleDTO();
                 schedule.setSwitchId(switchId);
                 schedule.setUserId(actor.getUserId());
@@ -222,11 +231,11 @@ public class ScheduleManagementController extends HttpServlet {
             int id = integer(required(request, "scheduleId", 10, "Schedule ID"));
             ScheduleDTO schedule = scheduleDao.findById(id);
             require(schedule != null, "Không tìm thấy lịch đang hoạt động.");
-            require(actor.getUserId().equals(schedule.getUserId()),
-                    "Lịch này không thuộc tài khoản của bạn.");
+            requireSwitchAccess(permissionDao, actor, canManageAll, schedule.getSwitchId());
             if ("updateSchedule".equals(operation)) {
                 String switchId = required(request, "switchId", 20, "switch");
                 require(switchDao.findById(switchId) != null, "Switch không tồn tại hoặc đã ngừng hoạt động.");
+                requireSwitchAccess(permissionDao, actor, canManageAll, switchId);
                 schedule.setSwitchId(switchId);
                 schedule.setAction(action(request));
                 schedule.setRunTime(runTime(request));
@@ -242,6 +251,16 @@ public class ScheduleManagementController extends HttpServlet {
             }
         }
         return "";
+    }
+
+    private void requireSwitchAccess(DevicePermissionDAO permissions, UserDTO actor,
+            boolean canManageAll, String switchId) throws SQLException {
+        if (canManageAll) {
+            return;
+        }
+        dto.DevicePermissionDTO permission = permissions.getUserPermission(switchId, actor.getUserId());
+        require(permission != null && permission.isActive(),
+                "Switch này chưa được cấp quyền xem/sửa cho tài khoản của bạn.");
     }
 
     private static ScheduleAction action(HttpServletRequest request) {

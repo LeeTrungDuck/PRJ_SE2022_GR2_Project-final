@@ -1,6 +1,38 @@
 /* Schedule Management shares the dashboard palette, sidebar and focus styles. */
 .schedule-manager-page .sidebar { font-family: inherit; }
 .schedule-manager-page .sidebar .sidebar-menu .menu-group > .menu-title { color: #ffffff; font-size: 11px; padding-left: 8px; }
+.schedule-manager-page .um-table-panel { margin-bottom: 16px; padding: 16px; border-radius: 8px; background: var(--um-surface); }
+.schedule-manager-page .um-main input:not([type="hidden"]):not([type="checkbox"]), .schedule-manager-page .um-main select { min-height: 40px; padding: 9px 12px; border: 1px solid transparent; border-radius: 4px; background: var(--um-inset); color: var(--um-text); font-size: 12px; }
+.schedule-manager-page .um-main input:not([type="hidden"]):not([type="checkbox"]):focus, .schedule-manager-page .um-main select:focus { border-color: var(--um-primary); }
+.schedule-manager-page .um-main input::placeholder { color: var(--um-muted); }
+.schedule-manager-page .um-table-panel select, .schedule-manager-page .um-table-panel input[type="time"] { height: 40px; padding: 8px 10px; border: 1px solid transparent; border-radius: 4px; background: var(--um-inset); color: var(--um-secondary); color-scheme: dark; font-size: 12px; }
+.schedule-manager-page .um-table-panel select:focus, .schedule-manager-page .um-table-panel input[type="time"]:focus { border-color: var(--um-primary); }
+.schedule-manager-page .um-main form[method="get"] { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; padding: 12px; border-radius: 4px; background: var(--um-surface); }
+.schedule-manager-page .um-main form[method="get"] input[type="search"] { flex: 1 1 260px; }
+.schedule-manager-page .um-main form[method="get"] button[type="submit"] { min-height: 38px; padding: 9px 16px; border: 1px solid transparent; border-radius: 4px; background: var(--um-blue); color: #ffffff; font-size: 13px; font-weight: 600; transition: background-color 160ms ease; }
+.schedule-manager-page .um-main form[method="get"] button[type="submit"]:hover:enabled { background: #1d4ed8; }
+.schedule-manager-page .um-table .sm-row-actions { display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 6px; }
+.schedule-manager-page .um-table .sm-row-actions form { display: flex; flex-direction: column; align-items: flex-start; flex: 0 0 auto; margin: 0; }
+.schedule-manager-page .um-table td.sm-deactivation-pending .sm-row-actions form[id^="update-schedule-"] { display: none; }
+.schedule-manager-page .um-table button[type="submit"] { min-height: 38px; padding: 8px 14px; border: 1px solid transparent; border-radius: 4px; background: #00a572; color: #002113; font-size: 13px; font-weight: 600; transition: background-color 160ms ease; }
+.schedule-manager-page .um-table button[type="submit"]:hover:enabled { background: #1d4ed8; }
+.schedule-manager-page .um-table .sm-save-button:hover:enabled { background: #13bd88; }
+.schedule-manager-page .um-table details.sm-deactivate-confirm { width: auto; }
+.schedule-manager-page .um-table details.sm-deactivate-confirm[open] > summary { display: none; }
+.schedule-manager-page .um-table details.sm-deactivate-confirm > summary { display: inline-flex; align-items: center; min-height: 38px; padding: 8px 14px; border-radius: 4px; background: var(--um-raised); color: var(--um-text); font-size: 13px; font-weight: 600; cursor: pointer; list-style: none; }
+.schedule-manager-page .um-table details.sm-deactivate-confirm > summary::-webkit-details-marker { display: none; }
+.schedule-manager-page .um-table details.sm-deactivate-confirm > summary:hover { background: #31394d; }
+.schedule-manager-page .um-table .sm-confirm-content { display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding-top: 6px; }
+.schedule-manager-page .um-table .sm-confirm-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.schedule-manager-page .um-table button.sm-danger-button { background: #a92b3c; color: #ffffff; }
+.schedule-manager-page .um-table button.sm-danger-button:hover:enabled { background: #922436; }
+.schedule-manager-page .um-table button.sm-return-button { min-height: 32px; padding: 6px 10px; border: 1px solid #3a4253; border-radius: 4px; background: transparent; color: var(--um-muted); font-size: 12px; cursor: pointer; }
+.schedule-manager-page .um-table button.sm-return-button:hover { border-color: #596174; color: var(--um-secondary); }
+.schedule-manager-page .um-table .sm-confirm-label { display: inline-flex; align-items: center; gap: 6px; color: var(--um-secondary); font-size: 12px; line-height: 1.5; }
+.schedule-manager-page .um-table .sm-confirm-label input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: #2563eb; }
+.schedule-manager-page .um-main button.sm-add-schedule-button { min-height: 38px; padding: 9px 16px; border: 1px solid transparent; border-radius: 4px; background: #00a572; color: #002113; font-size: 13px; font-weight: 600; transition: background-color 160ms ease; }
+.schedule-manager-page .um-main button.sm-add-schedule-button:hover:enabled { background: #13bd88; }
+.schedule-manager-page .um-main button.sm-add-schedule-button:disabled { background: #00a572; color: #002113; opacity: .55; cursor: not-allowed; }
 .sm-main { padding-top: 72px; }
 .sm-role { display: inline-flex; align-items: center; gap: 8px; color: var(--um-secondary); font: 500 11px/1.5 var(--um-mono); }
 .sm-context-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 8px 12px; margin-bottom: 10px; border: 1px solid #253047; background: var(--um-inset); color: var(--um-muted); font: 500 10px/1.7 var(--um-mono); }
@@ -145,5 +177,12 @@
     .sm-form-field > label, .sm-fieldset legend, .sm-form-footer .um-button, .sm-form-field input, .sm-form-field select, .sm-form-field small, .sm-switch-detail, .sm-action-options label, .sm-time-row button, .sm-presets button, .sm-day-buttons button, .sm-form-field label span, .sm-fieldset legend span, .sm-editor-tag { font-size: 14px; }
     .sm-form-footer { flex-direction: column; }
     .sm-form-footer .um-button { width: 100%; }
+    .schedule-manager-page .um-table button[type="submit"], .schedule-manager-page .um-table details.sm-deactivate-confirm > summary { min-height: 44px; }
+    .schedule-manager-page .um-table .sm-row-actions { flex-wrap: nowrap; }
+    .schedule-manager-page .um-table .sm-row-actions button[type="submit"], .schedule-manager-page .um-table .sm-row-actions details.sm-deactivate-confirm > summary { padding-right: 10px; padding-left: 10px; font-size: 12px; white-space: nowrap; }
+    .schedule-manager-page .um-table .sm-confirm-content { align-items: flex-start; gap: 8px; }
+    .schedule-manager-page .um-table .sm-confirm-actions { min-width: 0; }
+    .schedule-manager-page .um-main form[method="get"] input[type="search"] { flex-basis: 100%; }
+    .schedule-manager-page .um-table-panel select, .schedule-manager-page .um-table-panel input[type="time"] { min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) { .sm-toggle-track, .sm-toggle-track > span { transition: none; } }

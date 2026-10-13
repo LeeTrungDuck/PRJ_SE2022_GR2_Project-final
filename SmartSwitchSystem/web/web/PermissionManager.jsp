@@ -14,7 +14,7 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
-                <title>Phân Quyền Viewer | ESP32 IoT Hub</title>
+                <title>Phân Quyền Thiết Bị | ESP32 IoT Hub</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                 <link
@@ -44,14 +44,14 @@
                                 <h1>Quản Lý Phân Quyền Thiết Bị <span>(Permission Management)</span>
                                 </h1>
                                 <p>Thiết lập quyền Xem (<code>canView</code>) và Điều Khiển (<code>canControl</code>)
-                                    cho từng tài khoản Viewer trên từng Switch.</p>
+                                    cho từng tài khoản Admin, Operator hoặc Viewer trên từng Switch.</p>
                             </header>
-                            <c:if test="${empty ui.activeViewer.id}"><p class="ui-notice">Chưa có tài khoản Viewer đang hoạt động. Thêm Viewer tại Quản Lý Tài Khoản.</p></c:if><div class="pm-workspace">
+                            <c:if test="${empty ui.activeViewer.id}"><p class="ui-notice">Chưa có tài khoản đang hoạt động để phân quyền.</p></c:if><div class="pm-workspace">
                                 <aside class="pm-viewers-panel">
                                     <div class="pm-viewers-heading">
                                         <h2>
                                             <i class="fa-solid fa-id-card-clip" aria-hidden="true">
-                                            </i> Tài Khoản Viewer
+                                            </i> Tài Khoản
                                         </h2>
                                         <span class="pm-account-count">${ui.viewerTotal} TÀI KHOẢN</span>
                                     </div>
@@ -60,7 +60,7 @@
                                         <input name="action" value="PERMISSION_MANAGER" type="hidden">
                                         <input name="viewer" value="<c:out value='${ui.activeViewer.id}'/>"
                                             type="hidden">
-                                        <label class="um-sr-only" for="pm-search">Tìm tài khoản Viewer</label>
+                                        <label class="um-sr-only" for="pm-search">Tìm tài khoản</label>
                                         <input id="pm-search" type="search" name="q" value="<c:out value='${ui.q}'/>"
                                             placeholder="Tìm tên đăng nhập, họ tên...">
                                         <button class="ui-get-button" type="submit" aria-label="Tìm tài khoản">
@@ -80,7 +80,7 @@
                                                             <c:out value="${viewer.name}" />
                                                         </strong>
                                                         <span class="pm-viewer-handle">
-                                                            <c:out value="${viewer.id}" />
+                                                            <c:out value="${viewer.id}" /> · <c:out value="${viewer.role}"/>
                                                         </span>
                                                     </span>
                                                     <i class="fa-solid fa-eye" aria-hidden="true">
@@ -107,7 +107,7 @@
                                                     </i>
                                                 </span>
                                                 <div>
-                                                    <span class="pm-target-label">ĐANG CẤU HÌNH QUYỀN CHO:</span>
+                                                    <span class="pm-target-label">ĐANG CẤU HÌNH QUYỀN CHO TÀI KHOẢN:</span>
                                                     <span class="pm-target-handle">
                                                         <c:out value="${ui.activeViewer.id}" />
                                                     </span>

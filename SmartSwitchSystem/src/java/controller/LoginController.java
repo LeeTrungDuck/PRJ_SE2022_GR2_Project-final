@@ -80,7 +80,8 @@ public class LoginController extends HttpServlet {
             log("Unexpected login error", e);
             response.setStatus(500);
             request.setAttribute("ERROR", "Không đăng nhập được. Vui lòng thử lại sau.");
-        } finally {
+        }
+        finally {
             if (redirect) {
                 response.sendRedirect(url);
             } else {

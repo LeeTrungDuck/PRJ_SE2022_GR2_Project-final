@@ -61,6 +61,26 @@ public class ScheduleDAO implements AutoCloseable {
         return query(SELECT + " WHERE switch_id = ? AND is_active = 1", switchId);
     }
 
+    public List<ScheduleDTO> findByPermittedUserId(String userId) throws SQLException {
+        String sql = SELECT + " sched WHERE sched.is_active = 1 AND EXISTS ("
+                + "SELECT 1 FROM tblDevice_Permission p "
+                + "JOIN tblSwitch sw ON sw.switch_id = p.switch_id "
+                + "JOIN tblESP32_Device esp ON esp.device_id = sw.device_id "
+                + "WHERE p.user_id = ? AND p.switch_id = sched.switch_id "
+                + "AND ISNULL(p.is_active, 0) = 1 AND ISNULL(sw.is_active, 0) = 1 "
+                + "AND ISNULL(esp.is_active, 0) = 1)";
+        List<ScheduleDTO> schedules = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    schedules.add(map(rs));
+                }
+            }
+        }
+        return schedules;
+    }
+
     public List<ScheduleDTO> findAll() throws SQLException {
         return query(SELECT + " WHERE is_active = 1", null);
     }

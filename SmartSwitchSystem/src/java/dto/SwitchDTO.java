@@ -20,6 +20,7 @@ public class SwitchDTO {
     private String espName;
     private String espHostName;
     private boolean espActive;
+    private boolean canControl;
     public SwitchDTO() {
     }
 
@@ -29,6 +30,14 @@ public class SwitchDTO {
 
     public void setEspActive(boolean espActive) {
         this.espActive = espActive;
+    }
+
+    public boolean isCanControl() {
+        return canControl;
+    }
+
+    public void setCanControl(boolean canControl) {
+        this.canControl = canControl;
     }
 
     public SwitchDTO(String switchId, String deviceId, String switchName, int gpioPin, SwitchStatus status, boolean active,String espName,

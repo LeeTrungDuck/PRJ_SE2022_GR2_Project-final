@@ -136,11 +136,11 @@ final class ManagementViews {
                     .contains(support.normalize(ui.get("q")))) {
                 people.add(support.row("id", viewer.getUserId(), "name", viewer.getFullName(), "initials",
                         support.initials(viewer.getFullName()), "grantCount", count, "selected",
-                        selected.equals(viewer.getUserId())));
+                        selected.equals(viewer.getUserId()), "role", viewer.getRole().name()));
             }
         }
         if (!selected.isEmpty()) {
-            support.require(active != null, "Không tìm thấy Viewer đang hoạt động.");
+            support.require(active != null, "Không tìm thấy tài khoản đang hoạt động.");
         }
         Map<String, Map<String, Object>> matrix = active == null ? new LinkedHashMap<String, Map<String, Object>>()
                 : drafts.get(selected);

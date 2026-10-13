@@ -21,9 +21,11 @@ import utills.DBConnection;
  * @author ADMIN
  */
 public class ControlHistoryDAO implements AutoCloseable {
+
     private final Connection connection;
 
     private static final String SELECT = "SELECT history_id, user_id, switch_id, command, result, control_time FROM tblControl_History";
+    private static final String SELECT_LATEST_50 = "SELECT TOP (50) history_id, user_id, switch_id, command, result, control_time FROM tblControl_History";
     private static final String INSERT = "INSERT INTO tblControl_History(user_id, switch_id, command, result, control_time) VALUES(?, ?, ?, ?, ?)";
 
     public ControlHistoryDAO() throws SQLException, ClassNotFoundException {
@@ -43,9 +45,9 @@ public class ControlHistoryDAO implements AutoCloseable {
     }
 
     public ControlHistoryDTO findById(int id) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE history_id = ?")) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE history_id = ?")) {
             ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? map(rs) : null;
             }
         }
@@ -53,6 +55,10 @@ public class ControlHistoryDAO implements AutoCloseable {
 
     public List<ControlHistoryDTO> findByUserId(String userId) throws SQLException {
         return query(SELECT + " WHERE user_id = ? ORDER BY control_time DESC", userId);
+    }
+
+    public List<ControlHistoryDTO> findLatest50ByUserId(String userId) throws SQLException {
+        return query(SELECT_LATEST_50 + " WHERE user_id = ? ORDER BY control_time DESC, history_id DESC", userId);
     }
 
     public List<ControlHistoryDTO> findBySwitchId(String switchId) throws SQLException {
@@ -63,13 +69,39 @@ public class ControlHistoryDAO implements AutoCloseable {
         return query(SELECT + " ORDER BY control_time DESC", null);
     }
 
+    public List<ControlHistoryDTO> findLatest50() throws SQLException {
+        return query(SELECT_LATEST_50 + " ORDER BY control_time DESC, history_id DESC", null);
+    }
+
+    public List<ControlHistoryDTO> findLatest50ByPermittedUserId(String userId) throws SQLException {
+        String sql = "SELECT TOP (50) h.history_id, h.user_id, h.switch_id, h.command, h.result, h.control_time "
+                + "FROM tblControl_History h WHERE EXISTS ("
+                + "SELECT 1 FROM tblDevice_Permission p "
+                + "JOIN tblSwitch sw ON sw.switch_id = p.switch_id "
+                + "JOIN tblESP32_Device esp ON esp.device_id = sw.device_id "
+                + "WHERE p.user_id = ? AND p.switch_id = h.switch_id "
+                + "AND ISNULL(p.is_active, 0) = 1 AND ISNULL(sw.is_active, 0) = 1 "
+                + "AND ISNULL(esp.is_active, 0) = 1) "
+                + "ORDER BY h.control_time DESC, h.history_id DESC";
+        List<ControlHistoryDTO> list = new ArrayList<>();
+        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            try ( ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(map(rs));
+                }
+            }
+        }
+        return list;
+    }
+
     private List<ControlHistoryDTO> query(String sql, String param) throws SQLException {
         List<ControlHistoryDTO> list = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try ( PreparedStatement ps = connection.prepareStatement(sql)) {
             if (param != null) {
                 ps.setString(1, param);
             }
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(map(rs));
                 }
@@ -79,7 +111,7 @@ public class ControlHistoryDAO implements AutoCloseable {
     }
 
     public boolean insert(ControlHistoryDTO history) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(INSERT)) {
+        try ( PreparedStatement ps = connection.prepareStatement(INSERT)) {
             ps.setString(1, history.getUserId());
             ps.setString(2, history.getSwitchId());
             ps.setString(3, history.getCommand().name());
