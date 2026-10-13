@@ -8,7 +8,6 @@ import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import utills.PasswordUtil;
-import static ui.UiSupport.*;
 
 @WebServlet(name = "UserManagerController", urlPatterns = { "/UserManagerController" })
 public class UserManagerController extends ManagementController {
