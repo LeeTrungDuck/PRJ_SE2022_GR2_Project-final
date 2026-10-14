@@ -1,9 +1,9 @@
-insert into tblESP32_Device values ('ESP1',N'Phòng ngủ','esp32-switch1','ONLINE',null,1);
-insert into tblESP32_Device values ('ESP2',N'Phòng Bếp','esp32-switch2','ONLINE',null,1);
-insert into tblESP32_Device values ('ESP3',N'Phòng Khách','esp32-switch3','ONLINE',null,0);
-insert into tblESP32_Device values ('ESP4',N'Phòng ngủ 2','esp32-switch4','ONLINE',null,1);
-insert into tblESP32_Device values ('ESP5',N'Phòng ngủ 3','esp32-switch5','ONLINE',null,1);
-insert into tblESP32_Device values ('ESP6',N'Phòng ngủ 4','esp32-switch6','ONLINE',null,0);
+insert into tblESP32_Device values ('ESP1',N'Phòng ngủ','esp32-switch1','ONLINE',1);
+insert into tblESP32_Device values ('ESP2',N'Phòng Bếp','esp32-switch2','ONLINE',1);
+insert into tblESP32_Device values ('ESP3',N'Phòng Khách','esp32-switch3','ONLINE',0);
+insert into tblESP32_Device values ('ESP4',N'Phòng ngủ 2','esp32-switch4','ONLINE',1);
+insert into tblESP32_Device values ('ESP5',N'Phòng ngủ 3','esp32-switch5','ONLINE',1);
+insert into tblESP32_Device values ('ESP6',N'Phòng ngủ 4','esp32-switch6','ONLINE',0);
 
 
 insert into tblUser values('U1',N'LeeDuck','123456',N'Lê Trung Đức','ADMIN',1,'ltrungduc05@gmail.com','0123456789')
@@ -39,18 +39,14 @@ insert into tblSwitch values ('SW24','ESP6',N'Đèn 24',19,'OFF',1);
 
 
 
-
-
-
-
-insert into tblDevice_Permission values('U3','SW2',1,'U1',1);
-insert into tblDevice_Permission values('U3','SW3',0,'U1',1);
-insert into tblDevice_Permission values('U3','SW4',1,'U1',1);
-insert into tblDevice_Permission values('U3','SW1',1,'U1',1);
-insert into tblDevice_Permission values('U2','SW6',1,'U1',1);
-insert into tblDevice_Permission values('U2','SW7',1,'U1',1);
-insert into tblDevice_Permission values('U2','SW8',0,'U1',1);
-insert into tblDevice_Permission values('U2','SW3',1,'U1',1);
+insert into tblDevice_Permission values('U3','SW2','U1',1);
+insert into tblDevice_Permission values('U3','SW3','U1',1);
+insert into tblDevice_Permission values('U3','SW4','U1',1);
+insert into tblDevice_Permission values('U3','SW1','U1',1);
+insert into tblDevice_Permission values('U2','SW6','U1',1);
+insert into tblDevice_Permission values('U2','SW7','U1',1);
+insert into tblDevice_Permission values('U2','SW8','U1',1);
+insert into tblDevice_Permission values('U2','SW3','U1',1);
 
 
 insert into tblControl_History values('U3','SW2','ON','ON',GETDATE());
