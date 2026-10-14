@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,6 +38,7 @@ import utills.URLMap;
 public class SwitchStageController extends HttpServlet {
 
     private static final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
+    private static final String FLASH_SWITCH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_SWITCH_ERROR";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -52,10 +55,10 @@ public class SwitchStageController extends HttpServlet {
         String url = new URLMap().getUrl("DEVICE_CONTROL");
         boolean redirectAfterAction = false;
         int pageNumber = parsePageNumber(request.getParameter("page"));
+        String switchID = request.getParameter("id");
         try {
                 HttpSession session = request.getSession();
                 UserDTO user = (UserDTO) session.getAttribute("LOGIN_USER");
-                String switchID = request.getParameter("id");
                 if (switchID == null || switchID.trim().isEmpty()) {
                     request.setAttribute("ERROR", "Switch ID is required. Please try again.");
                     return;
@@ -114,15 +117,24 @@ public class SwitchStageController extends HttpServlet {
                 request.setAttribute("ERROR", "Class not found, please try again!");
             } catch (HardwareException ex) {
                 log("ESP32 hardware operation failed", ex);
-                request.setAttribute("ERROR", "Unable to connect to or communicate with ESP32. Please try again.");
+                request.setAttribute("SWITCH_SYNC_ERROR",
+                        "Unable to connect to or communicate with ESP32. Please try again.");
         } finally {
             if (redirectAfterAction) {
                 HttpSession session = request.getSession();
                 Object error = request.getAttribute("ERROR");
-                if (error != null) {
+                Object switchError = request.getAttribute("SWITCH_SYNC_ERROR");
+                if (switchError != null && switchID != null) {
+                    Map<String, String> switchErrors = new LinkedHashMap<>();
+                    switchErrors.put(switchID, String.valueOf(switchError));
+                    session.setAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE, switchErrors);
+                    session.removeAttribute(FLASH_ERROR_ATTRIBUTE);
+                } else if (error != null) {
                     session.setAttribute(FLASH_ERROR_ATTRIBUTE, error);
+                    session.removeAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE);
                 } else {
                     session.removeAttribute(FLASH_ERROR_ATTRIBUTE);
+                    session.removeAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE);
                 }
                 response.sendRedirect(response.encodeRedirectURL(
                         request.getContextPath() + "/MainController?action=DEVICE_CONTROL&page=" + pageNumber

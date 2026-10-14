@@ -40,6 +40,7 @@ import utills.URLMap;
 public class DeviceControlController extends HttpServlet {
 
     private final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
+    private final String FLASH_SWITCH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_SWITCH_ERROR";
     private final int PAGE_SIZE = 20;
     private final int MAX_CONCURRENT_ESP_CHECKS = 5;
 
@@ -66,6 +67,11 @@ public class DeviceControlController extends HttpServlet {
                 if (flashError != null) {
                     request.setAttribute("ERROR", flashError);
                     session.removeAttribute(FLASH_ERROR_ATTRIBUTE);
+                }
+                Object flashSwitchError = session.getAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE);
+                if (flashSwitchError instanceof Map) {
+                    request.setAttribute("switchSyncErrors", new LinkedHashMap<>((Map<String, String>) flashSwitchError));
+                    session.removeAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE);
                 }
             }
             if (user == null) {
@@ -123,7 +129,12 @@ public class DeviceControlController extends HttpServlet {
                     request.setAttribute("espOptions", espOptions);
                     request.setAttribute("espFilter", espFilter);
                     request.setAttribute("statusFilter", statusFilter);
-                    request.setAttribute("switchSyncErrors", new LinkedHashMap<String, String>());
+                    Map<String, String> switchSyncErrors = new LinkedHashMap<>();
+                    Object requestSwitchErrors = request.getAttribute("switchSyncErrors");
+                    if (requestSwitchErrors instanceof Map) {
+                        switchSyncErrors.putAll((Map<String, String>) requestSwitchErrors);
+                    }
+                    request.setAttribute("switchSyncErrors", switchSyncErrors);
                     if (request.getAttribute("ERROR") == null) {
                         try {
                             syncSwitchStatuses(dao, pageSwitches, request);
@@ -160,6 +171,10 @@ public class DeviceControlController extends HttpServlet {
     private void syncSwitchStatuses(SwitchDAO dao, List<SwitchDTO> switches,
             HttpServletRequest request) throws SQLException, HardwareException {
         Map<String, String> switchSyncErrors = new LinkedHashMap<>();
+        Object existingErrors = request.getAttribute("switchSyncErrors");
+        if (existingErrors instanceof Map) {
+            switchSyncErrors.putAll((Map<String, String>) existingErrors);
+        }
         Map<String, List<SwitchDTO>> switchesByDevice = new LinkedHashMap<>();
         for (SwitchDTO sw : switches) {
             switchesByDevice.computeIfAbsent(sw.getDeviceId(), key -> new ArrayList<>()).add(sw);
@@ -199,18 +214,20 @@ public class DeviceControlController extends HttpServlet {
                     throw new HardwareException("ESP32 status result retrieval was interrupted.", ex);
                 } catch (ExecutionException ex) {
                     Throwable cause = ex.getCause();
-                    if (cause instanceof HardwareException) {
-                        throw (HardwareException) cause;
+                    String message = "Unable to connect to or read status from ESP32. Please try again.";
+                    log("ESP32 status synchronization failed for " + deviceId, cause);
+                    for (SwitchDTO sw : deviceSwitches) {
+                        switchSyncErrors.put(sw.getSwitchId(), message);
                     }
-                    throw new HardwareException("Unable to sync switches for ESP32 " + deviceId + ".",
-                            cause == null ? ex : cause);
+                    continue;
                 }
 
                 for (SwitchDTO sw : deviceSwitches) {
                     String status = statuses.get(sw.getGpioPin());
                     if (!"ON".equals(status) && !"OFF".equals(status)) {
-                        throw new HardwareException("ESP32 response did not include a valid state for GPIO "
-                                + sw.getGpioPin() + ".");
+                        switchSyncErrors.put(sw.getSwitchId(),
+                                "ESP32 returned an invalid status for this switch. Please try again.");
+                        continue;
                     }
 
                     SwitchStatus actualStatus = SwitchStatus.valueOf(status);
