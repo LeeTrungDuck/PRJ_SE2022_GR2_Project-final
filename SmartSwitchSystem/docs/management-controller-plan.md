@@ -26,8 +26,8 @@ Implementation:
    protected from deletion/demotion/deactivation. Profile/password/role updates
    use separate SQL statements to avoid overwriting unrelated fields.
 2. Permission CRUD: active Viewer accounts and active Switch/ESP32 records are
-   loaded from SQL. The current schema has no `canView` column: an active
-   permission grants view; `canControl` adds control. Unchecking both soft-deletes
+   loaded from SQL. The permission's active flag grants both view and control.
+   Unchecking Access soft-deletes
    the permission. Re-granting reactivates the existing `(user_id,switch_id)` row,
    respecting its unique constraint. Matrix writes are atomic and rollback on
    failure. Existing native form draft/bulk/select/reset buttons remain usable.

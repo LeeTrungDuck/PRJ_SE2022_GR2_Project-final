@@ -11,7 +11,7 @@
 .user-manager-page a { text-decoration: none; }
 .pm-search-wrap { display: flex; gap: 4px; }
 .pm-search-wrap input { padding-left: 12px; }
-.pm-switch-permissions input[name^="control_"] { accent-color: var(--um-primary); }
+.pm-switch-permissions input[name^="access_"] { accent-color: var(--um-primary); }
 .sm-toolbar select { max-width: 100%; min-height: 34px; border: 1px solid var(--um-line); border-radius: 3px; padding: 6px; background: var(--um-inset); color: var(--um-secondary); font-size: 11px; }
 .sm-time-block strong { color: var(--um-green); font: 600 16px/1.5 var(--um-mono); }
 .sm-schedule.is-off .sm-time-block strong { color: var(--um-red); }

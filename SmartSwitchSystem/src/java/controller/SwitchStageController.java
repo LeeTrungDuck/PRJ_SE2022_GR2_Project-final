@@ -40,6 +40,14 @@ public class SwitchStageController extends HttpServlet {
     private static final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
     private static final String FLASH_SWITCH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_SWITCH_ERROR";
 
+    protected DevicePermissionDAO permissions() throws SQLException, ClassNotFoundException {
+        return new DevicePermissionDAO();
+    }
+
+    protected SwitchDAO switches() throws SQLException, ClassNotFoundException {
+        return new SwitchDAO();
+    }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -70,15 +78,15 @@ public class SwitchStageController extends HttpServlet {
                 }
                 redirectAfterAction = true;
                 DevicePermissionDTO permission;
-                try (DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
+                try (DevicePermissionDAO permissionDao = permissions()) {
                     permission = permissionDao.getUserPermission(switchID, user.getUserId());
                 }
-                if (permission == null || !permission.isActive() || !permission.isCanControl()) {
+                if (permission == null || !permission.isActive()) {
                     request.setAttribute("ERROR", "You do not have permission to control this switch.");
                     return;
                 }
 
-                try (SwitchDAO switchDAO = new SwitchDAO();
+                try (SwitchDAO switchDAO = switches();
                      ControlHistoryDAO hisDao = new ControlHistoryDAO()) {
                     SwitchDTO sw = switchDAO.findById(switchID);
                     if (sw == null) {

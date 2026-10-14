@@ -110,7 +110,7 @@ public final class NoJavaScriptUiTest {
         success("USER_MANAGER", "deleteUser", "id", "7");
         check(!page("USER_MANAGER", "").body.contains("native.test"), "user deleted");
 
-        success("PERMISSION_MANAGER", "savePermissions", "viewer", "viewer_khu_a", "control_sw-01-16", "1");
+        success("PERMISSION_MANAGER", "savePermissions", "permissionFormat", "active-v1", "viewer", "viewer_khu_a", "access_sw-01-16", "1");
         Reply permissions = page("PERMISSION_MANAGER", "&viewer=viewer_khu_a");
         check(Pattern.compile("name=\"view_sw-01-16\"[^>]+checked").matcher(permissions.body).find(), "control implies view");
         success("PERMISSION_MANAGER", "selectViewer:viewer_kho", "viewer", "viewer_khu_a", "view_sw-02-18", "1");

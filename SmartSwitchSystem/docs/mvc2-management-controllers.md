@@ -16,8 +16,8 @@ Scope: `huong_dan_de_tai.md` sections 4, 5, 7 and 9 and the supplied
   with HTTP 403. GET mutations return 405; invalid CSRF returns 403.
 - User deletion and permission revocation UPDATE is_active=0. History and
   foreign-key rows are retained. Unlocking does not automatically restore rights.
-- The actual schema uses permission.is_active as view permission, with
-  canControl adding control; there is no separate canView column.
+- The actual schema uses permission.is_active as the single view/control flag.
+  There is no separate control flag or view-only permission.
 - Account identity comes only from LOGIN_USER. Passwords are verified and hashed,
   never returned in form values. Password whitespace is preserved during
   verification rather than silently changing the user's secret.

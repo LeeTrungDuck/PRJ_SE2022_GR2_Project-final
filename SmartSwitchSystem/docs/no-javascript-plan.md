@@ -36,7 +36,7 @@ to its controller; unauthenticated access redirects to login.
 - The schedule schema only stores a daily `run_time`, enabled/active flags, one
   switch, user, and ON/OFF action. The page does not claim weekday or one-time
   scheduling, which the current database cannot represent.
-- Device status and `last_seen` and switch status are not editable in the
+- Device status and switch status are not editable in the
   management forms; live state is maintained by the control/device flow.
 - `HardwareClient` reports non-200 responses, timeouts, connection failures,
   invalid GPIO values and malformed/missing status data as `HardwareException`.

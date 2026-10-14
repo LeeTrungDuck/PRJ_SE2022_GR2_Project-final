@@ -42,10 +42,11 @@ public class PermissionManagementController extends ManagementController {
     @SuppressWarnings("unchecked")
     private Map<String, Map<String, Map<String, Object>>> drafts(HttpServletRequest r) {
         HttpSession session = r.getSession();
-        if (session.getAttribute("PERMISSION_DRAFTS") == null) {
-            session.setAttribute("PERMISSION_DRAFTS", new LinkedHashMap<String, Map<String, Map<String, Object>>>());
+        session.removeAttribute("PERMISSION_DRAFTS");
+        if (session.getAttribute("PERMISSION_ACCESS_DRAFTS") == null) {
+            session.setAttribute("PERMISSION_ACCESS_DRAFTS", new LinkedHashMap<String, Map<String, Map<String, Object>>>());
         }
-        return (Map<String, Map<String, Map<String, Object>>>) session.getAttribute("PERMISSION_DRAFTS");
+        return (Map<String, Map<String, Map<String, Object>>>) session.getAttribute("PERMISSION_ACCESS_DRAFTS");
     }
 
     List<UserDTO> viewers(UserDAO dao) throws SQLException {
@@ -97,6 +98,8 @@ public class PermissionManagementController extends ManagementController {
     }
 
     protected String change(UserDAO dao, UserDTO actor, HttpServletRequest r) throws SQLException, ClassNotFoundException {
+        support.require("active-v1".equals(r.getParameter("permissionFormat")),
+                "This permission form is outdated. Please reload the page before saving.");
         String id = support.required(r, "viewer", 20, "Viewer ID");
         UserDTO viewer = dao.findById(id);
         support.require(viewer != null && viewer.isActive()
@@ -117,24 +120,25 @@ public class PermissionManagementController extends ManagementController {
             }
             if (!Arrays.asList("resetPermissions", "revokePermissions").contains(op)) {
                 for (String key : r.getParameterMap().keySet()) {
-                    if (key.startsWith("view_") || key.startsWith("control_")) {
+                    support.require(!key.startsWith("view_") && !key.startsWith("control_"),
+                            "This permission form is outdated. Please reload the page before saving.");
+                    if (key.startsWith("access_")) {
                         support.require(matrix.containsKey(key.substring(key.indexOf('_') + 1)), "Invalid switch.");
                     }
                 }
                 for (String key : matrix.keySet()) {
-                    boolean control = r.getParameter("control_" + key) != null;
-                    matrix.put(key, support.row("canView", control || r.getParameter("view_" + key) != null, "canControl", control));
+                    boolean active = r.getParameter("access_" + key) != null;
+                    matrix.put(key, support.row("active", active));
                 }
             }
             if ("savePermissions".equals(op)) {
                 permissions.saveMatrix(id, matrix, actor.getUserId());
-                message(r, "Permissions saved. Removing view access deactivates the permission.");
+                message(r, "Permissions saved. Enabled access allows viewing and controlling the switch.");
             } else if ("resetPermissions".equals(op)) {
                 matrix = stored;
             } else if ("revokePermissions".equals(op)) {
                 for (Map<String, Object> grant : matrix.values()) {
-                    grant.put("canView", false);
-                    grant.put("canControl", false);
+                    grant.put("active", false);
                 }
             } else if (op.startsWith("selectViewer:")) {
                 target = op.substring(13);

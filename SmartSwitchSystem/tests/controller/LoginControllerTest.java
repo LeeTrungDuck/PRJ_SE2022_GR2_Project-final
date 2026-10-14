@@ -107,6 +107,7 @@ public final class LoginControllerTest {
 
         Fixture active = new Fixture(user(true, hashed));
         active.request.session.put("PERMISSION_DRAFTS", "old-draft");
+        active.request.session.put("PERMISSION_ACCESS_DRAFTS", "old-access-draft");
         active.request.session.put("MANAGEMENT_CSRF", "old-token");
         active.request.session.put("MANAGEMENT_FLASH", "old-flash");
         active.submit("  account  ", password);
@@ -116,6 +117,7 @@ public final class LoginControllerTest {
         check(active.rotations == 1 && active.request.session.get("LOGIN_USER") == active.users.stored,
                 "only active verified account receives a rotated authenticated session");
         check(!active.request.session.containsKey("PERMISSION_DRAFTS")
+                && !active.request.session.containsKey("PERMISSION_ACCESS_DRAFTS")
                 && !active.request.session.containsKey("MANAGEMENT_CSRF")
                 && !active.request.session.containsKey("MANAGEMENT_FLASH"), "login clears old management state");
         check("account".equals(active.users.submittedName) && active.users.closed,

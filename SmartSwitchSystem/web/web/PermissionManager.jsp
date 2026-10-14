@@ -43,7 +43,7 @@
                             <header class="pm-page-heading">
                                 <h1>Device Permissions <span>(Permission Management)</span>
                                 </h1>
-                                <p>Configure view access (<code>canView</code>) and control access (<code>canControl</code>)
+                                <p>Grant or revoke view and control access together
                                     for each Admin, Operator or Viewer account on individual switches.</p>
                             </header>
                             <c:if test="${empty ui.activeViewer.id}"><p class="ui-notice">No active accounts are available for permission management.</p></c:if><div class="pm-workspace">
@@ -98,6 +98,7 @@
                                 <form id="pm-permission-form" class="pm-permissions"
                                     action="${pageContext.request.contextPath}/MainController" method="post"><fieldset style="margin:0;padding:0;border:0;min-width:0" ${empty ui.activeViewer.id ? 'disabled' : ''}>
                                     <%@ include file="uiPostFields.jspf" %>
+                                        <input type="hidden" name="permissionFormat" value="active-v1">
                                         <input name="viewer" value="<c:out value='${ui.activeViewer.id}'/>"
                                             type="hidden">
                                         <section class="pm-target-panel">
@@ -138,7 +139,7 @@
                                         </section>
                                         <p class="pm-rule-note">
                                             <i class="fa-solid fa-circle-info" aria-hidden="true">
-                                            </i> When saved, control access includes view access. Drafts are kept when
+                                            </i> Enabled access allows viewing and controlling the switch. Drafts are kept when
                                             switching accounts.
                                         </p>
                                         <div class="pm-device-groups">
@@ -188,11 +189,11 @@
                                                                 <div class="pm-switch-permissions">
                                                                     
                                                                     <label>
-                                                                        <input name="control_${fn:escapeXml(sw.id)}" value="1"
-                                                                            type="checkbox" ${sw.canControl ? 'checked'
+                                                                        <input name="access_${fn:escapeXml(sw.id)}" value="1"
+                                                                            type="checkbox" ${sw.active ? 'checked'
                                                                             : '' }>
-                                                                        <span>canControl</span>
-                                                                        <span class="um-sr-only"> cho
+                                                                        <span>View &amp; Control</span>
+                                                                        <span class="um-sr-only"> for
                                                                             <c:out value="${sw.name}" />
                                                                         </span>
                                                                     </label>
@@ -215,6 +216,7 @@
                             </strong> on all switches? Changes remain in the draft until you select Save Permissions.</p>
                         <form action="${pageContext.request.contextPath}/MainController" method="post">
                             <%@ include file="uiPostFields.jspf" %>
+                                <input type="hidden" name="permissionFormat" value="active-v1">
                                 <input name="viewer" value="<c:out value='${ui.activeViewer.id}'/>" type="hidden">
                                 <div class="um-dialog-footer">
                                     <a class="um-button um-button-secondary"

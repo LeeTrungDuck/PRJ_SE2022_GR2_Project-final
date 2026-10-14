@@ -96,7 +96,7 @@
 .pm-switch-permissions { display: flex; align-items: center; flex-shrink: 0; gap: 12px; padding: 7px 10px; border-radius: 4px; background: var(--um-inset); }
 .pm-switch-permissions label { display: inline-flex; align-items: center; gap: 7px; min-height: 24px; cursor: pointer; color: var(--um-secondary); font: 500 10px/1.5 var(--um-mono); }
 .pm-switch-permissions input { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--um-green); }
-.pm-switch-permissions input[data-permission="canControl"] { accent-color: var(--um-primary); }
+.pm-switch-permissions input[name^="access_"] { accent-color: var(--um-primary); }
 .pm-switch-permissions input:checked + span { color: var(--um-text); }
 .pm-workspace-footer { margin-top: 16px; color: var(--um-secondary); font-size: 11px; }
 .pm-workspace-footer > span { color: var(--um-primary); font: 500 11px/1.5 var(--um-mono); }

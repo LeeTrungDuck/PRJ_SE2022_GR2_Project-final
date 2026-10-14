@@ -10,7 +10,7 @@ import utills.DBConnection;
 public class DevicePermissionDAO implements AutoCloseable {
 
     private final Connection connection;
-    private static final String SELECT = "SELECT permission_id,user_id,switch_id,canControl,granted_by,is_active FROM tblDevice_Permission";
+    private static final String SELECT = "SELECT permission_id,user_id,switch_id,granted_by,is_active FROM tblDevice_Permission";
 
     public DevicePermissionDAO() throws SQLException, ClassNotFoundException {
         this(DBConnection.getConnection());
@@ -21,7 +21,7 @@ public class DevicePermissionDAO implements AutoCloseable {
     }
 
     private DevicePermissionDTO map(ResultSet rs) throws SQLException {
-        return new DevicePermissionDTO(rs.getInt("permission_id"), rs.getString("user_id"), rs.getString("switch_id"), rs.getBoolean("canControl"), rs.getString("granted_by"), rs.getBoolean("is_active"));
+        return new DevicePermissionDTO(rs.getInt("permission_id"), rs.getString("user_id"), rs.getString("switch_id"), rs.getString("granted_by"), rs.getBoolean("is_active"));
     }
 
     public DevicePermissionDTO findById(int id) throws SQLException {
@@ -71,16 +71,16 @@ public class DevicePermissionDAO implements AutoCloseable {
     }
 
     public boolean insert(DevicePermissionDTO p) throws SQLException {
-        try ( PreparedStatement ps = connection.prepareStatement("INSERT INTO tblDevice_Permission(user_id,switch_id,canControl,granted_by,is_active) VALUES(?,?,?,?,?)")) {
+        try ( PreparedStatement ps = connection.prepareStatement("INSERT INTO tblDevice_Permission(user_id,switch_id,granted_by,is_active) VALUES(?,?,?,?)")) {
             bind(ps, p);
             return ps.executeUpdate() == 1;
         }
     }
 
     public boolean update(DevicePermissionDTO p) throws SQLException {
-        try ( PreparedStatement ps = connection.prepareStatement("UPDATE tblDevice_Permission SET user_id=?,switch_id=?,canControl=?,granted_by=?,is_active=? WHERE permission_id=?")) {
+        try ( PreparedStatement ps = connection.prepareStatement("UPDATE tblDevice_Permission SET user_id=?,switch_id=?,granted_by=?,is_active=? WHERE permission_id=?")) {
             bind(ps, p);
-            ps.setInt(6, p.getPermissionId());
+            ps.setInt(5, p.getPermissionId());
             return ps.executeUpdate() == 1;
         }
     }
@@ -88,9 +88,8 @@ public class DevicePermissionDAO implements AutoCloseable {
     private void bind(PreparedStatement ps, DevicePermissionDTO p) throws SQLException {
         ps.setString(1, p.getUserId());
         ps.setString(2, p.getSwitchId());
-        ps.setBoolean(3, p.isCanControl());
-        ps.setString(4, p.getGrantedBy());
-        ps.setBoolean(5, p.isActive());
+        ps.setString(3, p.getGrantedBy());
+        ps.setBoolean(4, p.isActive());
     }
 
     public boolean delete(int id) throws SQLException {
@@ -139,8 +138,7 @@ public class DevicePermissionDAO implements AutoCloseable {
             }
             for (Map.Entry<String, Map<String, Object>> entry : matrix.entrySet()) {
                 String switchId = entry.getKey();
-                boolean control = Boolean.TRUE.equals(entry.getValue().get("canControl"));
-                boolean active = control || Boolean.TRUE.equals(entry.getValue().get("canView"));
+                boolean active = Boolean.TRUE.equals(entry.getValue().get("active"));
                 try ( PreparedStatement ps = connection.prepareStatement("SELECT sw.switch_id FROM tblSwitch sw WITH (HOLDLOCK) JOIN tblESP32_Device esp WITH (HOLDLOCK) ON sw.device_id=esp.device_id WHERE sw.switch_id=? AND sw.is_active=1 AND esp.is_active=1")) {
                     ps.setString(1, switchId);
                     try ( ResultSet rs = ps.executeQuery()) {
@@ -159,7 +157,7 @@ public class DevicePermissionDAO implements AutoCloseable {
                         }
                     }
                 }
-                DevicePermissionDTO p = new DevicePermissionDTO(id, viewer, switchId, control, grantor, active);
+                DevicePermissionDTO p = new DevicePermissionDTO(id, viewer, switchId, grantor, active);
                 boolean ok = id == 0 ? !active || insert(p) : active ? update(p) : delete(id);
                 if (!ok) {
                     throw new SQLException("Permission write lost its target");

@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import utills.DBConnection;
@@ -22,14 +21,18 @@ import utills.DBConnection;
 public class ESP32DeviceDAO implements AutoCloseable {
     private final Connection connection;
 
-    private static final String SELECT = "SELECT device_id, name, host_name, status, last_seen, is_active FROM tblESP32_Device";
-    private static final String INSERT = "INSERT INTO tblESP32_Device(device_id, name, host_name, status, last_seen, is_active) VALUES(?, ?, ?, ?, ?, ?)";
+    private static final String SELECT = "SELECT device_id, name, host_name, status, is_active FROM tblESP32_Device";
+    private static final String INSERT = "INSERT INTO tblESP32_Device(device_id, name, host_name, status, is_active) VALUES(?, ?, ?, ?, ?)";
     private static final String UPDATE_DETAILS = "UPDATE tblESP32_Device SET name = ?, host_name = ? WHERE device_id = ? AND is_active = 1";
     private static final String DELETE = "UPDATE tblESP32_Device SET is_active = 0 WHERE device_id = ? AND is_active = 1";
-    private static final String UPDATE_STATUS = "UPDATE tblESP32_Device SET status = ?, last_seen = GETDATE() WHERE device_id = ?";
+    private static final String UPDATE_STATUS = "UPDATE tblESP32_Device SET status = ? WHERE device_id = ?";
 
     public ESP32DeviceDAO() throws SQLException, ClassNotFoundException {
-        this.connection = DBConnection.getConnection();
+        this(DBConnection.getConnection());
+    }
+
+    public ESP32DeviceDAO(Connection connection) {
+        this.connection = connection;
     }
 
     private ESP32DeviceDTO map(ResultSet rs) throws SQLException {
@@ -38,8 +41,6 @@ public class ESP32DeviceDAO implements AutoCloseable {
         d.setName(rs.getString("name"));
         d.setHostName(rs.getString("host_name"));
         d.setStatus(DeviceStatus.valueOf(rs.getString("status")));
-        Timestamp ts = rs.getTimestamp("last_seen");
-        d.setLastSeen(ts == null ? null : ts.toLocalDateTime());
         d.setActive(rs.getBoolean("is_active"));
         return d;
     }
@@ -80,8 +81,7 @@ public class ESP32DeviceDAO implements AutoCloseable {
             ps.setString(2, device.getName());
             ps.setString(3, device.getHostName());
             ps.setString(4, device.getStatus().name());
-            ps.setTimestamp(5, device.getLastSeen() == null ? null : Timestamp.valueOf(device.getLastSeen()));
-            ps.setBoolean(6, device.isActive());
+            ps.setBoolean(5, device.isActive());
             return ps.executeUpdate() > 0;
         }
     }

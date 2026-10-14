@@ -62,6 +62,7 @@ public class LoginController extends HttpServlet {
                 HttpSession session = request.getSession();
                 request.changeSessionId();
                 session.removeAttribute("PERMISSION_DRAFTS");
+                session.removeAttribute("PERMISSION_ACCESS_DRAFTS");
                 session.removeAttribute("MANAGEMENT_CSRF");
                 session.removeAttribute("MANAGEMENT_FLASH");
                 session.setAttribute("LOGIN_USER", dto);

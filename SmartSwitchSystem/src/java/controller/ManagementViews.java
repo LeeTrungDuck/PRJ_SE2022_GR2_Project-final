@@ -21,12 +21,11 @@ final class ManagementViews {
             List<DevicePermissionDTO> permissions) {
         Map<String, Map<String, Object>> matrix = new LinkedHashMap<>();
         for (SwitchDTO sw : switches) {
-            matrix.put(sw.getSwitchId(), support.row("canView", false, "canControl", false));
+            matrix.put(sw.getSwitchId(), support.row("active", false));
         }
         for (DevicePermissionDTO permission : permissions) {
             if (viewer.equals(permission.getUserId()) && matrix.containsKey(permission.getSwitchId())) {
-                matrix.put(permission.getSwitchId(), support.row("canView", permission.isActive(), "canControl",
-                        permission.isActive() && permission.isCanControl()));
+                matrix.put(permission.getSwitchId(), support.row("active", permission.isActive()));
             }
         }
         return matrix;
@@ -125,7 +124,7 @@ final class ManagementViews {
         for (UserDTO viewer : viewers) {
             int count = 0;
             for (Map<String, Object> grant : drafts.get(viewer.getUserId()).values()) {
-                if (support.yes(grant.get("canView"))) {
+                if (support.yes(grant.get("active"))) {
                     count++;
                 }
             }
@@ -153,9 +152,9 @@ final class ManagementViews {
             }
             Map<String, Object> grant = matrix.get(sw.getSwitchId());
             if (grant == null) {
-                grant = support.row("canView", false, "canControl", false);
+                grant = support.row("active", false);
             }
-            if (support.yes(grant.get("canView"))) {
+            if (support.yes(grant.get("active"))) {
                 granted++;
             }
             Map<String, Object> item = support.row("id", sw.getSwitchId(), "name", sw.getSwitchName(), "gpio",
