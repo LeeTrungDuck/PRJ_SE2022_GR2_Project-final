@@ -55,7 +55,7 @@ public class SwitchDAO implements AutoCloseable {
                 + "JOIN tblESP32_Device esp ON sw.device_id = esp.device_id "
                 + "JOIN tblDevice_Permission p ON p.switch_id = sw.switch_id "
                 + "WHERE p.user_id = ? "
-                + "AND ISNULL(p.is_active, 0) = 1 "
+//                + "AND ISNULL(p.is_active, 0) = 1 "
                 + "AND ISNULL(esp.is_active, 0) = 1 "
                 + "AND ISNULL(sw.is_active, 0) = 1 "
                 + "ORDER BY sw.device_id, sw.switch_name";
