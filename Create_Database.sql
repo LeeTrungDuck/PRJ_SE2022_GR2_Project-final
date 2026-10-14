@@ -32,7 +32,6 @@ create table tblESP32_Device(
     name nvarchar(50) not null,
     host_name varchar(255) not null unique,
     status VARCHAR(10) DEFAULT 'OFFLINE' CHECK (status IN ('ONLINE', 'OFFLINE', 'ERROR')), /* 3 trạng thái thiết bị*/
-    last_seen DATETIME,
     is_active bit DEFAULT 1
 )
 
@@ -50,7 +49,6 @@ create table tblDevice_Permission(
     permission_id INT IDENTITY(1,1) primary key,
     user_id varchar(20) references tblUser(user_id) not null,
     switch_id varchar(20) references tblSwitch(switch_id) not null,
-    canControl bit default 1,
     granted_by varchar(20) references tblUser(user_id),
     UNIQUE (user_id, switch_id),
     is_active bit DEFAULT 1
