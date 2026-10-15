@@ -185,5 +185,7 @@
     .schedule-manager-page .um-table .sm-confirm-actions { min-width: 0; }
     .schedule-manager-page .um-main form[method="get"] input[type="search"] { flex-basis: 100%; }
     .schedule-manager-page .um-table-panel select, .schedule-manager-page .um-table-panel input[type="time"] { min-height: 44px; }
+    .schedule-manager-page .um-table-panel { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .sm-editor, .sm-side-panel, .sm-table-panel { min-width: 0; max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .sm-toggle-track, .sm-toggle-track > span { transition: none; } }

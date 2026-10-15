@@ -57,4 +57,10 @@
 .ui-permission-checkboxes { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; background: var(--um-inset); padding: 10px 12px; border-radius: 4px; font: 500 11px/1.6 var(--um-mono); }
 .ui-permission-checkboxes label { display: inline-flex; gap: 6px; align-items: center; }
 .ui-permission-checkboxes input { width: 16px; height: 16px; accent-color: var(--um-green); }
-@media (max-width: 700px) { .ui-notice,.ui-get-button,.ui-demo-footer,.ui-repeat > label,.ui-permission-checkboxes,.sm-day-buttons label span { font-size: 14px; } .ui-get-button,.ui-demo-footer .um-button,.sm-day-buttons label span { min-height: 44px; } }
+@media (max-width: 700px) {
+    .ui-notice { font-size: 13px; }
+    .ui-get-button, .ui-demo-footer .um-button, .sm-day-buttons label span { min-height: 44px; }
+    .ui-demo-footer { align-items: stretch; flex-direction: column; }
+    .ui-permission-checkboxes { align-items: stretch; flex-direction: column; gap: 8px; }
+    .ui-permission-checkboxes label { min-height: 36px; }
+}

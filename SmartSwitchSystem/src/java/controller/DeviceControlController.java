@@ -8,8 +8,6 @@ import dao.SwitchDAO;
 import dto.SwitchDTO;
 import dto.UserDTO;
 import enums.Role;
-import enums.SwitchStatus;
-import exception.HardwareException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,18 +16,12 @@ import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import utills.HardwareClient;
 import utills.URLMap;
 
 /**
@@ -42,7 +34,6 @@ public class DeviceControlController extends HttpServlet {
     private final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
     private final String FLASH_SWITCH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_SWITCH_ERROR";
     private final int PAGE_SIZE = 20;
-    private final int MAX_CONCURRENT_ESP_CHECKS = 5;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -135,15 +126,6 @@ public class DeviceControlController extends HttpServlet {
                         switchSyncErrors.putAll((Map<String, String>) requestSwitchErrors);
                     }
                     request.setAttribute("switchSyncErrors", switchSyncErrors);
-                    if (request.getAttribute("ERROR") == null) {
-                        try {
-                            syncSwitchStatuses(dao, pageSwitches, request);
-                        } catch (HardwareException ex) {
-                            log("ESP32 status synchronization failed", ex);
-                            request.setAttribute("ERROR",
-                                    "Unable to connect to ESP32 or read its status. Please try again.");
-                        }
-                    }
                 }
             }
         } catch (SQLException ex) {
@@ -166,84 +148,6 @@ public class DeviceControlController extends HttpServlet {
         } catch (NumberFormatException ex) {
             return 1;
         }
-    }
-
-    private void syncSwitchStatuses(SwitchDAO dao, List<SwitchDTO> switches,
-            HttpServletRequest request) throws SQLException, HardwareException {
-        Map<String, String> switchSyncErrors = new LinkedHashMap<>();
-        Object existingErrors = request.getAttribute("switchSyncErrors");
-        if (existingErrors instanceof Map) {
-            switchSyncErrors.putAll((Map<String, String>) existingErrors);
-        }
-        Map<String, List<SwitchDTO>> switchesByDevice = new LinkedHashMap<>();
-        for (SwitchDTO sw : switches) {
-            switchesByDevice.computeIfAbsent(sw.getDeviceId(), key -> new ArrayList<>()).add(sw);
-        }
-
-        if (switchesByDevice.isEmpty()) {
-            request.setAttribute("switchSyncErrors", switchSyncErrors);
-            return;
-        }
-
-        ExecutorService executor = Executors.newFixedThreadPool(
-                Math.min(MAX_CONCURRENT_ESP_CHECKS, switchesByDevice.size()));
-        try {
-            List<String> deviceIds = new ArrayList<>(switchesByDevice.keySet());
-            List<Callable<Map<Integer, String>>> checks = new ArrayList<>();
-            for (String deviceId : deviceIds) {
-                String hostName = switchesByDevice.get(deviceId).get(0).getEspHostName();
-                checks.add(() -> new HardwareClient(hostName).getSwitchStatuses());
-            }
-
-            List<Future<Map<Integer, String>>> results;
-            try {
-                results = executor.invokeAll(checks);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw new HardwareException("ESP32 status synchronization was interrupted.", ex);
-            }
-
-            for (int i = 0; i < deviceIds.size(); i++) {
-                String deviceId = deviceIds.get(i);
-                List<SwitchDTO> deviceSwitches = switchesByDevice.get(deviceId);
-                Map<Integer, String> statuses;
-                try {
-                    statuses = results.get(i).get();
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    throw new HardwareException("ESP32 status result retrieval was interrupted.", ex);
-                } catch (ExecutionException ex) {
-                    Throwable cause = ex.getCause();
-                    String message = "Unable to connect to or read status from ESP32. Please try again.";
-                    log("ESP32 status synchronization failed for " + deviceId, cause);
-                    for (SwitchDTO sw : deviceSwitches) {
-                        switchSyncErrors.put(sw.getSwitchId(), message);
-                    }
-                    continue;
-                }
-
-                for (SwitchDTO sw : deviceSwitches) {
-                    String status = statuses.get(sw.getGpioPin());
-                    if (!"ON".equals(status) && !"OFF".equals(status)) {
-                        switchSyncErrors.put(sw.getSwitchId(),
-                                "ESP32 returned an invalid status for this switch. Please try again.");
-                        continue;
-                    }
-
-                    SwitchStatus actualStatus = SwitchStatus.valueOf(status);
-                    SwitchStatus previousStatus = sw.getStatus();
-                    sw.setStatus(actualStatus);
-                    if (actualStatus != previousStatus
-                            && !dao.updateStatus(sw.getSwitchId(), actualStatus)) {
-                        switchSyncErrors.put(sw.getSwitchId(), "Unable to save status");
-                    }
-                }
-            }
-        } finally {
-            executor.shutdownNow();
-        }
-
-        request.setAttribute("switchSyncErrors", switchSyncErrors);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the

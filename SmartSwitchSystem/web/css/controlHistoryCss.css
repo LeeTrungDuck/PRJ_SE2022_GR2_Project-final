@@ -558,6 +558,9 @@
     .ch-panel-footer {
         gap: 10px;
     }
+    .ch-table-scroll { max-width: 100%; -webkit-overflow-scrolling: touch; }
+    .ch-toolbar { align-items: stretch; }
+    .ch-toolbar > * { max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
     .ch-table td {

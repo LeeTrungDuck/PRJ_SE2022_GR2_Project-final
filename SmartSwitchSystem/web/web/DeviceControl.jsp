@@ -36,7 +36,7 @@
                     <h1>Switch Dashboard <span>(Device Control)</span>
                     </h1>
                 </header>
-                <p class="ui-notice">Device status is synchronized with ESP32 when you reload this page.</p>
+                <p class="ui-notice">Switch status is loaded from the database. ESP32 connection is checked when you control a switch.</p>
                 <form class="dc-filter-form" action="${pageContext.request.contextPath}/DeviceControlController" method="get">
                     <label for="dc-esp-filter">ESP</label>
                     <select id="dc-esp-filter" name="esp">

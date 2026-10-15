@@ -171,3 +171,22 @@
     display: flex;
     justify-content: space-between;
 }
+
+@media (max-width: 700px) {
+    .sidebar { width: 56px; padding: 0; }
+    .sidebar-header { padding: 18px 8px; }
+    .sidebar-header .um-brand > div,
+    .sidebar .menu-title,
+    .sidebar .nav-pills a span,
+    .sidebar-footer .user-media { display: none; }
+    .sidebar-menu { padding: 12px 8px; }
+    .sidebar .nav-pills > li { margin-bottom: 6px; padding: 0; height: auto; }
+    .sidebar .nav-pills > li > a { width: 100%; min-height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .sidebar .nav-pills > li > a i { margin: 0; font-size: 18px; }
+    .sidebar-footer { justify-content: center; padding: 12px 8px; }
+}
+
+@media (max-width: 480px) {
+    .sidebar { width: 52px; }
+    .sidebar-menu { padding-right: 6px; padding-left: 6px; }
+}

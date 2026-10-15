@@ -83,12 +83,41 @@
     .dc-main { padding-top: 72px; }
     .dc-page-heading h1 { font-size: 23px; }
     .dc-page-heading h1 > span { display: block; margin-top: 4px; font-size: 13px; }
-    .dc-filter-form { align-items: stretch; }
-    .dc-filter-form select, .dc-filter-form button { min-height: 44px; }
+    .dc-filter-form {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 7px;
+        padding: 12px;
+    }
+    .dc-filter-form label { margin-top: 3px; }
+    .dc-filter-form select,
+    .dc-filter-form button,
+    .dc-filter-form a {
+        width: 100%;
+        min-height: 44px;
+    }
+    .dc-filter-form a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+    }
     .dc-empty-state { min-height: 260px; padding: 32px 16px; }
-    .dc-device-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 224px), 1fr)); }
+    .dc-device-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .dc-relay-card { min-height: 196px; padding: 14px; }
+    .device-control-page .dc-switch { min-width: 60px; min-height: 48px; }
     .dc-topbar-role { gap: 5px; font-size: 10px; }
     .dc-pagination-row { align-items: flex-start; flex-direction: column; }
+    .dc-pagination { width: 100%; flex-wrap: wrap; }
+    .dc-pagination a, .dc-pagination span { min-height: 40px; }
+}
+
+@media (max-width: 380px) {
+    .dc-page-heading { margin-bottom: 18px; }
+    .dc-page-heading h1 { font-size: 21px; }
+    .dc-page-heading h1 > span { font-size: 12px; }
+    .dc-relay-card { padding: 12px; }
+    .dc-card-footer { gap: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
     .dc-action-button, .dc-switch-track, .dc-switch-track > span { transition: none; }

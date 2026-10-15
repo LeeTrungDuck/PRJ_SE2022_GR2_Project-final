@@ -116,4 +116,6 @@
     .ac-password-footer { padding-top: 12px; gap: 14px; }
     .ac-strength { gap: 8px; }
     .ac-topbar-role { font-size: 9px; }
+    .ac-personal-grid, .ac-password-grid { width: 100%; }
+    .account-manager-page .um-main input, .account-manager-page .um-main select { min-height: 44px; }
 }

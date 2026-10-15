@@ -55,6 +55,8 @@
     .login-access-icon { display: none; }
     .login-form-heading { margin-bottom: 24px; }
     .login-form-heading h2 { font-size: 24px; }
+    .login-page .login-submit,
+    .login-input-wrap input { min-height: 48px; }
 }
 @media (max-width: 380px) {
     .login-intro, .login-access { padding: 20px; }

@@ -64,9 +64,13 @@ public class SwitchStageController extends HttpServlet {
         boolean redirectAfterAction = false;
         int pageNumber = parsePageNumber(request.getParameter("page"));
         String switchID = request.getParameter("id");
+        UserDTO user = null;
+        SwitchDTO sw = null;
+        Command command = null;
+        String switchMessage = null;
         try {
                 HttpSession session = request.getSession();
-                UserDTO user = (UserDTO) session.getAttribute("LOGIN_USER");
+                user = (UserDTO) session.getAttribute("LOGIN_USER");
                 if (switchID == null || switchID.trim().isEmpty()) {
                     request.setAttribute("ERROR", "Switch ID is required. Please try again.");
                     return;
@@ -88,7 +92,7 @@ public class SwitchStageController extends HttpServlet {
 
                 try (SwitchDAO switchDAO = switches();
                      ControlHistoryDAO hisDao = new ControlHistoryDAO()) {
-                    SwitchDTO sw = switchDAO.findById(switchID);
+                    sw = switchDAO.findById(switchID);
                     if (sw == null) {
                         request.setAttribute("ERROR", "The switch is inactive or does not exist.");
                         return;
@@ -97,6 +101,7 @@ public class SwitchStageController extends HttpServlet {
                     HardwareClient hardwareClient = new HardwareClient(sw.getEspHostName());
                     String currentStatus = hardwareClient.getStatus(sw.getGpioPin());
                     SwitchStatus status = "ON".equals(currentStatus) ? SwitchStatus.OFF : SwitchStatus.ON;
+                    command = status == SwitchStatus.ON ? Command.ON : Command.OFF;
                     if (status == SwitchStatus.ON) {
                         hardwareClient.turnOn(sw.getGpioPin());
                     } else {
@@ -106,7 +111,7 @@ public class SwitchStageController extends HttpServlet {
 
                     hisDto.setSwitchId(switchID);
                     hisDto.setUserId(user.getUserId());
-                    hisDto.setCommand(status == SwitchStatus.ON ? Command.ON : Command.OFF);
+                    hisDto.setCommand(command);
                     hisDto.setControlTime(hisDto.getTimeNow());
                     hisDto.setResult(status == SwitchStatus.ON ? ControlResult.ON : ControlResult.OFF);
                     if (!switchDAO.updateStatus(switchID, status)) {
@@ -116,6 +121,9 @@ public class SwitchStageController extends HttpServlet {
                         log("Error at SwitchStageController: History control cannot insert into database");
                         request.setAttribute("ERROR", "Unable to save control history.");
                     }
+                    if (request.getAttribute("ERROR") == null) {
+                        switchMessage = "ESP32 connected. Switch turned " + status.name() + ".";
+                    }
                 }
             } catch (SQLException ex) {
                 log("Error at LoginController: " + ex.toString());
@@ -123,8 +131,9 @@ public class SwitchStageController extends HttpServlet {
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(SwitchStageController.class.getName()).log(Level.SEVERE, null, ex);
                 request.setAttribute("ERROR", "Class not found, please try again!");
-            } catch (HardwareException ex) {
+        } catch (HardwareException ex) {
                 log("ESP32 hardware operation failed", ex);
+                recordFailedControl(user, switchID, sw, command);
                 request.setAttribute("SWITCH_SYNC_ERROR",
                         "Unable to connect to or communicate with ESP32. Please try again.");
         } finally {
@@ -141,8 +150,14 @@ public class SwitchStageController extends HttpServlet {
                     session.setAttribute(FLASH_ERROR_ATTRIBUTE, error);
                     session.removeAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE);
                 } else {
+                    if (switchMessage != null && switchID != null) {
+                        Map<String, String> switchMessages = new LinkedHashMap<>();
+                        switchMessages.put(switchID, switchMessage);
+                        session.setAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE, switchMessages);
+                    } else {
+                        session.removeAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE);
+                    }
                     session.removeAttribute(FLASH_ERROR_ATTRIBUTE);
-                    session.removeAttribute(FLASH_SWITCH_ERROR_ATTRIBUTE);
                 }
                 response.sendRedirect(response.encodeRedirectURL(
                         request.getContextPath() + "/MainController?action=DEVICE_CONTROL&page=" + pageNumber
@@ -150,6 +165,41 @@ public class SwitchStageController extends HttpServlet {
             } else {
                 request.getRequestDispatcher(url).forward(request, response);
             }
+        }
+    }
+
+    /**
+     * A failed hardware command is still a control attempt and must remain
+     * visible in control history.
+     */
+    private void recordFailedControl(UserDTO user, String switchID, SwitchDTO sw,
+            Command attemptedCommand) {
+        if (user == null || switchID == null || switchID.trim().isEmpty()) {
+            return;
+        }
+
+        Command command = attemptedCommand;
+        if (command == null && sw != null) {
+            command = sw.getStatus() == SwitchStatus.ON ? Command.OFF : Command.ON;
+        }
+        if (command == null) {
+            command = Command.ON;
+        }
+
+        ControlHistoryDTO failedControl = new ControlHistoryDTO();
+        failedControl.setUserId(user.getUserId());
+        failedControl.setSwitchId(switchID);
+        failedControl.setCommand(command);
+        failedControl.setResult(ControlResult.ERROR);
+        failedControl.setControlTime(failedControl.getTimeNow());
+
+        try (ControlHistoryDAO historyDao = new ControlHistoryDAO()) {
+            if (!historyDao.insert(failedControl)) {
+                log("Error at SwitchStageController: Failed control history cannot insert into database");
+            }
+        } catch (SQLException | ClassNotFoundException historyException) {
+            log("Error at SwitchStageController: Failed control history cannot insert into database",
+                    historyException);
         }
     }
 

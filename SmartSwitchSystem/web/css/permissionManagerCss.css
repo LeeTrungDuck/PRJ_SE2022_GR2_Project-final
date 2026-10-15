@@ -143,4 +143,7 @@
     .pm-device-identity { gap: 8px; }
     .pm-device-title h3 { font-size: 14px; }
     .pm-device-description { overflow-wrap: anywhere; }
+    .pm-search-form, .pm-bulk-actions, .pm-save-actions { width: 100%; }
+    .pm-search-wrap { width: 100%; }
+    .pm-search-wrap button, .pm-toolbar .um-button { min-height: 44px; }
 }

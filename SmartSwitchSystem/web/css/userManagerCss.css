@@ -922,7 +922,8 @@
 
 @media (max-width: 700px) {
     .user-manager-page {
-        --um-sidebar-width: 64px;
+        --um-sidebar-width: 56px;
+        overflow-x: hidden;
     }
 
     .user-manager-page .sidebar-header {
@@ -947,7 +948,7 @@
 
     .user-manager-page .sidebar .nav-pills>li>a {
         padding: 0;
-        width: 48px;
+        width: 100%;
         min-height: 44px;
         justify-content: center;
     }
@@ -963,16 +964,20 @@
     }
 
     .um-topbar {
-        padding: 0 16px;
+        padding: 0 12px;
     }
 
     .um-section-label {
         font-size: 8px;
-        max-width: 100px;
+        max-width: min(42vw, 180px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .um-main {
-        padding: 80px 16px 24px;
+        width: calc(100% - var(--um-sidebar-width));
+        padding: 80px 12px 24px;
     }
 
     .um-page-heading h1 {
@@ -1007,12 +1012,44 @@
     }
 
     .um-toast {
-        right: 16px;
-        bottom: 16px;
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+        max-width: none;
+    }
+
+    .user-manager-page .ui-notice {
+        padding: 11px 12px;
+        font-size: 12px;
+    }
+
+    .user-manager-page .um-button,
+    .user-manager-page input,
+    .user-manager-page select,
+    .user-manager-page button {
+        max-width: 100%;
+    }
+
+    .user-manager-page .um-table-scroll {
+        max-width: 100%;
+        -webkit-overflow-scrolling: touch;
     }
 }
 
 @media (max-width: 480px) {
+    .user-manager-page {
+        --um-sidebar-width: 52px;
+    }
+
+    .user-manager-page .sidebar .nav-pills>li>a {
+        width: 100%;
+    }
+
+    .user-manager-page .um-main {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
     .um-form-grid {
         grid-template-columns: 1fr;
     }

@@ -163,6 +163,8 @@
     .device-manager-page .dm-toggle { min-height: 44px; }
     .dm-row-actions { gap: 6px; }
     .dm-row-actions details.dm-deactivate-confirm > summary { min-height: 44px; padding: 7px 10px; }
+    .dm-table-scroll { max-width: 100%; -webkit-overflow-scrolling: touch; }
+    .dm-table th, .dm-table td { white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
     .dm-toggle-track, .dm-toggle-track > span { transition: none; }
