@@ -16,11 +16,13 @@ import enums.ControlResult;
 import enums.SwitchStatus;
 import exception.HardwareException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -39,6 +41,17 @@ public class SwitchStageController extends HttpServlet {
 
     private static final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
     private static final String FLASH_SWITCH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_SWITCH_ERROR";
+    private static final String CSRF_ATTRIBUTE = "DEVICE_CONTROL_CSRF";
+    private static final String CONTROL_TOKENS_ATTRIBUTE = "DEVICE_CONTROL_TOKENS";
+    private static final Object[] SWITCH_LOCKS = createSwitchLocks();
+
+    private static Object[] createSwitchLocks() {
+        Object[] locks = new Object[64];
+        for (int i = 0; i < locks.length; i++) {
+            locks[i] = new Object();
+        }
+        return locks;
+    }
 
     protected DevicePermissionDAO permissions() throws SQLException, ClassNotFoundException {
         return new DevicePermissionDAO();
@@ -58,6 +71,55 @@ public class SwitchStageController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        UserDTO user = session == null ? null : (UserDTO) session.getAttribute("LOGIN_USER");
+        if (user != null && !consumeControlToken(session, request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Invalid or already-used control form. Reload the device page and try again.");
+            return;
+        }
+        String switchID = request.getParameter("id");
+        if (switchID == null || switchID.trim().isEmpty()) {
+            processControlRequest(request, response);
+            return;
+        }
+        Object lock = SWITCH_LOCKS[(switchID.hashCode() & 0x7fffffff) % SWITCH_LOCKS.length];
+        synchronized (lock) {
+            processControlRequest(request, response);
+        }
+    }
+
+    private boolean consumeControlToken(HttpSession session, HttpServletRequest request) {
+        String suppliedCsrf = request.getParameter("csrf");
+        String expectedCsrf = (String) session.getAttribute(CSRF_ATTRIBUTE);
+        if (suppliedCsrf == null || expectedCsrf == null
+                || !MessageDigest.isEqual(expectedCsrf.getBytes(StandardCharsets.UTF_8),
+                        suppliedCsrf.getBytes(StandardCharsets.UTF_8))
+                || !"toggleRelay".equals(request.getParameter("uiOp"))) {
+            return false;
+        }
+        String token = request.getParameter("controlToken");
+        if (token == null) {
+            return false;
+        }
+        synchronized (session) {
+            Object stored = session.getAttribute(CONTROL_TOKENS_ATTRIBUTE);
+            if (!(stored instanceof Map)) {
+                return false;
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, String> tokens = (Map<String, String>) stored;
+            String switchId = request.getParameter("id");
+            if (switchId == null || !switchId.equals(tokens.get(token))) {
+                return false;
+            }
+            tokens.remove(token);
+            return true;
+        }
+    }
+
+    private void processControlRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = new URLMap().getUrl("DEVICE_CONTROL");
@@ -226,7 +288,8 @@ public class SwitchStageController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED,
+                "Switch controls must be submitted using POST.");
     }
 
     /**

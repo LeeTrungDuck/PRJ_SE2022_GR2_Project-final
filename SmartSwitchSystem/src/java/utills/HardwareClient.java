@@ -4,8 +4,11 @@ import exception.HardwareException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.time.LocalTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -27,6 +30,9 @@ import java.util.regex.Pattern;
  *
  * GET /device/status
  * GET /device/info
+ *
+ * GET /schedule/add?id=1&gpio=2&time=07%3A30&action=ON&enabled=true
+ * GET /schedule/delete?id=1
  */
 public class HardwareClient {
 
@@ -118,6 +124,33 @@ public class HardwareClient {
         return callAndCheckOk(
                 "/switch/off?gpio=" + gpio
         );
+    }
+
+    public boolean addOrUpdateSchedule(int scheduleId, int gpio, LocalTime runTime,
+            String action, boolean enabled) throws HardwareException {
+        if (scheduleId <= 0) {
+            throw new HardwareException("Schedule ID must be positive.");
+        }
+        validateGpio(gpio);
+        if (runTime == null) {
+            throw new HardwareException("Schedule time must not be empty.");
+        }
+        if (!"ON".equals(action) && !"OFF".equals(action)) {
+            throw new HardwareException("Schedule action must be ON or OFF.");
+        }
+        String path = "/schedule/add?id=" + scheduleId
+                + "&gpio=" + gpio
+                + "&time=" + encodeQueryValue(runTime.toString())
+                + "&action=" + encodeQueryValue(action)
+                + "&enabled=" + enabled;
+        return callAndCheckOk(path);
+    }
+
+    public boolean deleteSchedule(int scheduleId) throws HardwareException {
+        if (scheduleId <= 0) {
+            throw new HardwareException("Schedule ID must be positive.");
+        }
+        return callAndCheckOk("/schedule/delete?id=" + scheduleId);
     }
 
 
@@ -246,6 +279,14 @@ public class HardwareClient {
     private void validateGpio(int gpio) throws HardwareException {
         if (gpio < 0 || gpio > 255) {
             throw new HardwareException("GPIO must be between 0 and 255.");
+        }
+    }
+
+    private String encodeQueryValue(String value) throws HardwareException {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new HardwareException("Could not encode ESP32 request parameters.", e);
         }
     }
 

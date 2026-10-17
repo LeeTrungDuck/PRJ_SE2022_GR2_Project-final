@@ -9,6 +9,7 @@ import dto.SwitchDTO;
 import dto.UserDTO;
 import enums.Role;
 import enums.ScheduleAction;
+import exception.HardwareException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import static controller.ManagementController.*;
+import utills.HardwareClient;
 
 public class ScheduleManagementController extends HttpServlet {
 
@@ -87,6 +89,11 @@ public class ScheduleManagementController extends HttpServlet {
                 } catch (SQLException e) {
                     log("Schedule management write failed", e);
                     request.setAttribute("uiError", sqlMessage(e));
+                } catch (HardwareException e) {
+                    log("Schedule hardware synchronization failed", e);
+                    request.setAttribute("uiError",
+                            "Could not synchronize the schedule with ESP32. The database may already contain the change. "
+                            + "Check the schedule and retry after restoring the device connection.");
                 }
             }
             Object flash = session.getAttribute("MANAGEMENT_FLASH");
@@ -205,7 +212,7 @@ public class ScheduleManagementController extends HttpServlet {
     }
 
     protected String change(UserDAO users, UserDTO actor, HttpServletRequest request)
-            throws SQLException, ClassNotFoundException {
+            throws SQLException, ClassNotFoundException, HardwareException {
         String operation = param(request, "uiOp");
         boolean canManageAll = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
         require(canManageAll || actor.getRole() == Role.VIEWER,
@@ -224,6 +231,8 @@ public class ScheduleManagementController extends HttpServlet {
                 schedule.setEnabled(checked(request));
                 schedule.setActive(true);
                 require(scheduleDao.insert(schedule), "Unable to add the schedule.");
+                SwitchDTO targetSwitch = switchDao.findById(switchId);
+                syncSchedule(targetSwitch, schedule);
                 message(request, "Daily schedule added.");
                 return "";
             }
@@ -233,17 +242,27 @@ public class ScheduleManagementController extends HttpServlet {
             require(schedule != null, "No active schedule was found.");
             requireSwitchAccess(permissionDao, actor, canManageAll, schedule.getSwitchId());
             if ("updateSchedule".equals(operation)) {
+                SwitchDTO previousSwitch = switchDao.findById(schedule.getSwitchId());
                 String switchId = required(request, "switchId", 20, "switch");
-                require(switchDao.findById(switchId) != null, "The switch does not exist or is inactive.");
+                SwitchDTO targetSwitch = switchDao.findById(switchId);
+                require(targetSwitch != null, "The switch does not exist or is inactive.");
                 requireSwitchAccess(permissionDao, actor, canManageAll, switchId);
                 schedule.setSwitchId(switchId);
                 schedule.setAction(action(request));
                 schedule.setRunTime(runTime(request));
                 schedule.setEnabled(checked(request));
+                syncSchedule(targetSwitch, schedule);
+                if (previousSwitch != null
+                        && !previousSwitch.getDeviceId().equals(targetSwitch.getDeviceId())) {
+                    new HardwareClient(previousSwitch.getEspHostName()).deleteSchedule(id);
+                }
                 require(scheduleDao.update(schedule), "Unable to update the schedule.");
                 message(request, "Schedule updated.");
             } else if ("deleteSchedule".equals(operation)) {
                 require("yes".equals(param(request, "confirm")), "Please confirm schedule deactivation.");
+                SwitchDTO targetSwitch = switchDao.findById(schedule.getSwitchId());
+                require(targetSwitch != null, "The switch is inactive or does not exist.");
+                new HardwareClient(targetSwitch.getEspHostName()).deleteSchedule(id);
                 require(scheduleDao.delete(id), "Unable to deactivate the schedule.");
                 message(request, "Schedule deactivated.");
             } else {
@@ -251,6 +270,18 @@ public class ScheduleManagementController extends HttpServlet {
             }
         }
         return "";
+    }
+
+    private void syncSchedule(SwitchDTO targetSwitch, ScheduleDTO schedule) throws HardwareException {
+        if (targetSwitch == null) {
+            throw new HardwareException("The schedule switch is unavailable.");
+        }
+        new HardwareClient(targetSwitch.getEspHostName()).addOrUpdateSchedule(
+                schedule.getScheduleId(),
+                targetSwitch.getGpioPin(),
+                schedule.getRunTime(),
+                schedule.getAction().name(),
+                schedule.isEnabled());
     }
 
     private void requireSwitchAccess(DevicePermissionDAO permissions, UserDTO actor,

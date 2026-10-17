@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +34,8 @@ public class DeviceControlController extends HttpServlet {
 
     private final String FLASH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_ERROR";
     private final String FLASH_SWITCH_ERROR_ATTRIBUTE = "DEVICE_CONTROL_FLASH_SWITCH_ERROR";
+    private static final String CSRF_ATTRIBUTE = "DEVICE_CONTROL_CSRF";
+    private static final String CONTROL_TOKENS_ATTRIBUTE = "DEVICE_CONTROL_TOKENS";
     private final int PAGE_SIZE = 20;
 
     /**
@@ -72,6 +75,7 @@ public class DeviceControlController extends HttpServlet {
                 }
             } else {
                 url = success;
+                request.setAttribute("csrf", csrfToken(session));
                 try (SwitchDAO dao = new SwitchDAO()) {
                     // Admin/operator can view all active switches on active ESP32
                     // devices. Viewer can only view switches granted to the user.
@@ -111,6 +115,7 @@ public class DeviceControlController extends HttpServlet {
                     int endIndex = Math.min(startIndex + PAGE_SIZE, totalSwitches);
                     List<SwitchDTO> pageSwitches = list.subList(startIndex, endIndex);
 
+                    request.setAttribute("switchControlTokens", controlTokens(session, pageSwitches));
                     request.setAttribute("list", new ArrayList<>(pageSwitches));
                     request.setAttribute("pageNumber", pageNumber);
                     request.setAttribute("pageCount", pageCount);
@@ -136,6 +141,37 @@ public class DeviceControlController extends HttpServlet {
             request.setAttribute("ERROR", "Device Controller has an error(Class), please try again!");
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
+        }
+    }
+
+    private String csrfToken(HttpSession session) {
+        synchronized (session) {
+            String csrf = (String) session.getAttribute(CSRF_ATTRIBUTE);
+            if (csrf == null) {
+                csrf = UUID.randomUUID().toString();
+                session.setAttribute(CSRF_ATTRIBUTE, csrf);
+            }
+            return csrf;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> controlTokens(HttpSession session, List<SwitchDTO> switches) {
+        synchronized (session) {
+            Object stored = session.getAttribute(CONTROL_TOKENS_ATTRIBUTE);
+            Map<String, String> tokens = stored instanceof Map
+                    ? (Map<String, String>) stored : new LinkedHashMap<String, String>();
+            Map<String, String> pageTokens = new LinkedHashMap<>();
+            for (SwitchDTO sw : switches) {
+                String token = UUID.randomUUID().toString();
+                tokens.put(token, sw.getSwitchId());
+                pageTokens.put(sw.getSwitchId(), token);
+            }
+            while (tokens.size() > 200) {
+                tokens.remove(tokens.keySet().iterator().next());
+            }
+            session.setAttribute(CONTROL_TOKENS_ATTRIBUTE, tokens);
+            return pageTokens;
         }
     }
 

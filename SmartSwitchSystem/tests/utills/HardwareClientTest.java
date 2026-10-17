@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class HardwareClientTest {
 
@@ -45,6 +46,8 @@ public final class HardwareClientTest {
 
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicReference<String> scheduleAddRequest = new AtomicReference<>();
+        AtomicReference<String> scheduleDeleteRequest = new AtomicReference<>();
         server.createContext("/", exchange -> {
             String path = exchange.getRequestURI().toString();
             if (path.startsWith("/switch/on?")) {
@@ -59,6 +62,16 @@ public final class HardwareClientTest {
                 respond(exchange, 200, "{\"switches\":[{\"gpio\":2,\"status\":\"on\"},{\"gpio\":5,\"status\":\"off\"}]}");
             } else if ("/device/status".equals(path)) {
                 respond(exchange, 200, "{\"status\":\"online\"}");
+            } else if (path.startsWith("/schedule/add?")) {
+                scheduleAddRequest.set(path);
+                respond(exchange, 200, "{\"result\":\"ok\"}");
+            } else if (path.startsWith("/schedule/delete?")) {
+                scheduleDeleteRequest.set(path);
+                if (path.endsWith("id=99")) {
+                    respond(exchange, 503, "{\"error\":\"offline\"}");
+                    return;
+                }
+                respond(exchange, 200, "{\"result\":\"ok\"}");
             } else {
                 respond(exchange, 404, "{\"error\":\"missing\"}");
             }
@@ -75,6 +88,25 @@ public final class HardwareClientTest {
             check("ON".equals(statuses.get(2)) && "OFF".equals(statuses.get(5)),
                     "valid device info returns all switch states");
             check(client.isOnline(), "online device status is accepted");
+            check(client.addOrUpdateSchedule(12, 18, java.time.LocalTime.of(7, 30), "ON", true),
+                    "schedule add/update API success is accepted");
+            check("/schedule/add?id=12&gpio=18&time=07%3A30&action=ON&enabled=true"
+                    .equals(scheduleAddRequest.get()), "schedule parameters match ESP32 API format");
+            check(client.addOrUpdateSchedule(13, 5, java.time.LocalTime.of(19, 0), "OFF", false),
+                    "disabled OFF schedules are accepted");
+            check("/schedule/add?id=13&gpio=5&time=19%3A00&action=OFF&enabled=false"
+                    .equals(scheduleAddRequest.get()), "disabled flag and OFF action are transmitted");
+            check(client.deleteSchedule(12), "schedule delete API success is accepted");
+            check("/schedule/delete?id=12".equals(scheduleDeleteRequest.get()),
+                    "schedule delete ID matches ESP32 API format");
+            expectHardwareException(() -> client.deleteSchedule(99),
+                    "non-200 schedule response must throw");
+            expectHardwareException(() -> client.addOrUpdateSchedule(0, 18,
+                    java.time.LocalTime.of(7, 30), "ON", true),
+                    "non-positive schedule IDs must be rejected");
+            expectHardwareException(() -> client.addOrUpdateSchedule(12, 18,
+                    java.time.LocalTime.of(7, 30), "TOGGLE", true),
+                    "unsupported schedule actions must be rejected");
             expectHardwareException(() -> client.turnOn(-1), "invalid GPIO must throw");
             expectHardwareException(() -> new HardwareClient("http://127.0.0.1:1").isOnline(),
                     "connection failure must throw");

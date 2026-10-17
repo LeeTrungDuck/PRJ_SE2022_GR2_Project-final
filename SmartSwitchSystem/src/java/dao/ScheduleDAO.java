@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,14 +102,23 @@ public class ScheduleDAO implements AutoCloseable {
     }
 
     public boolean insert(ScheduleDTO schedule) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(INSERT)) {
+        try (PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, schedule.getSwitchId());
             ps.setString(2, schedule.getUserId());
             ps.setString(3, schedule.getAction().name());
             ps.setTime(4, Time.valueOf(schedule.getRunTime()));
             ps.setBoolean(5, schedule.isEnabled());
             ps.setBoolean(6, schedule.isActive());
-            return ps.executeUpdate() > 0;
+            if (ps.executeUpdate() == 0) {
+                return false;
+            }
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (!keys.next()) {
+                    throw new SQLException("Schedule insert did not return its generated ID.");
+                }
+                schedule.setScheduleId(keys.getInt(1));
+            }
+            return true;
         }
     }
 

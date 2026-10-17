@@ -171,14 +171,34 @@ public final class SchemaCompatibilityTest {
         };
         ManagementControllerTest.Request r=new ManagementControllerTest.Request();
         r.session.put("LOGIN_USER",ManagementControllerTest.FakeUsers.user("U2",Role.VIEWER));
-        r.reset("POST","id","SW1"); controller.doPost(r.request,r.response);
+        r.session.put("DEVICE_CONTROL_CSRF","test-csrf");
+        r.reset("GET","id","SW1"); controller.doGet(r.request,r.response);
+        check(r.status==405 && switchLookups[0]==0,"GET cannot run switch controls");
+        r.reset("POST","id","SW1","uiOp","toggleRelay","controlToken","one");
+        controller.doPost(r.request,r.response);
+        check(r.status==403 && switchLookups[0]==0,"switch control without CSRF is rejected");
+        r.reset("POST","id","SW1","uiOp","toggleRelay","csrf","test-csrf","controlToken","one");
+        controller.doPost(r.request,r.response);
+        check(r.status==403 && switchLookups[0]==0,"switch control without a rendered form token is rejected");
+        prepareControlToken(r,"one");
+        r.reset("POST","id","SW1","uiOp","toggleRelay","csrf","test-csrf","controlToken","one"); controller.doPost(r.request,r.response);
         check(switchLookups[0]==0 && r.session.containsKey("DEVICE_CONTROL_FLASH_ERROR"),"missing permission is denied before hardware lookup");
         stored[0]=new DevicePermissionDTO(17,"U2","SW1","U1",false);
-        r.reset("POST","id","SW1"); controller.doPost(r.request,r.response);
+        prepareControlToken(r,"two");
+        r.reset("POST","id","SW1","uiOp","toggleRelay","csrf","test-csrf","controlToken","two"); controller.doPost(r.request,r.response);
         check(switchLookups[0]==0 && r.session.containsKey("DEVICE_CONTROL_FLASH_ERROR"),"inactive permission is denied before hardware lookup");
         stored[0].setActive(true);
-        r.reset("POST","id","SW1"); controller.doPost(r.request,r.response);
+        prepareControlToken(r,"three");
+        r.reset("POST","id","SW1","uiOp","toggleRelay","csrf","test-csrf","controlToken","three"); controller.doPost(r.request,r.response);
         check(switchLookups[0]==1,"active permission alone passes the control permission guard");
+        r.reset("POST","id","SW1","uiOp","toggleRelay","csrf","test-csrf","controlToken","three");
+        controller.doPost(r.request,r.response);
+        check(r.status==403 && switchLookups[0]==1,"replayed control form token cannot issue another command");
+    }
+    private static void prepareControlToken(ManagementControllerTest.Request request, String token) {
+        Map<String,String> tokens = new LinkedHashMap<>();
+        tokens.put(token,"SW1");
+        request.session.put("DEVICE_CONTROL_TOKENS",tokens);
     }
     public static void main(String[] args) throws Exception {
         jdbcChecks(); draftChecks(); controlGuardChecks();

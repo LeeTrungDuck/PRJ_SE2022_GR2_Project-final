@@ -20,6 +20,10 @@ to its controller; unauthenticated access redirects to login.
 
 - GET is read-only. Mutations use POST, a session CSRF token, and a 303
   redirect back through `MainController` after success.
+- Switch controls accept POST only and require both a session CSRF token and a
+  one-time token bound to the rendered switch form. Replayed form submissions
+  are rejected, and commands for the same switch are serialized in the
+  controller to prevent overlapping read-toggle-write operations.
 - The authenticated user ID comes from the refreshed session account. Schedule
   edits and soft deletes are restricted to schedules owned by that user; viewers
   can only read their own schedules and history.
@@ -36,6 +40,11 @@ to its controller; unauthenticated access redirects to login.
 - The schedule schema only stores a daily `run_time`, enabled/active flags, one
   switch, user, and ON/OFF action. The page does not claim weekday or one-time
   scheduling, which the current database cannot represent.
+- Schedule create, update and delete operations are synchronized to the
+  corresponding ESP32 through `/schedule/add` and `/schedule/delete`. If an
+  ESP32 request fails, the page reports the synchronization failure; the
+  database change may already have been saved. The Java server must be able to
+  reach each device's configured host name over HTTP.
 - Device status and switch status are not editable in the
   management forms; live state is maintained by the control/device flow.
 - `HardwareClient` reports non-200 responses, timeouts, connection failures,

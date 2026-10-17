@@ -88,6 +88,8 @@
                                 <form action="${pageContext.request.contextPath}/MainController" method="POST">
                                     <!-- Các input hidden để truyền dữ liệu -->
                                     <input type="hidden" name="action" value="CHANGE_SWITCH_STAGE">
+                                    <input type="hidden" name="csrf" value="<c:out value='${csrf}'/>">
+                                    <input type="hidden" name="controlToken" value="<c:out value='${switchControlTokens[relay.switchId]}'/>">
                                     <input name="id" value="${relay.switchId}" type="hidden">
                                     <input name="page" value="${requestScope.pageNumber}" type="hidden">
                                     <input type="hidden" name="esp" value="<c:out value='${espFilter}'/>">
