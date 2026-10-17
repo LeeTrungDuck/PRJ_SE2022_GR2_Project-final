@@ -62,6 +62,11 @@ Map these questions to `USER` filtered by the authenticated `USER.user_id`:
 - Tài khoản của tôi còn hoạt động không?
 - Với vai trò hiện tại, tôi có thể làm gì?
 
+For a profile lookup, select only the requested fields from `USER`: `user_id`, `user_name`,
+`full_name`, `role`, `email`, `phone_number` or `is_active`. Treat common shorthand and minor
+misspellings such as `sdt` or `emal` as phone/email requests. Never remove the authenticated-user
+filter or use an id supplied in the question.
+
 Questions asking for another user's profile, a list of users by role, a global user count, an email
 lookup, or a phone lookup must receive a privacy refusal. Do not create a query plan for them, even
 when the requester is an administrator or operator. A user id mentioned in the question is not a
@@ -142,6 +147,11 @@ Use `SCHEDULE`, joined to `SWITCH` when a switch name is requested:
 
 Use `run_time`, `action`, `is_enabled` and `is_active`. Chat does not create, edit, enable, disable
 or delete a schedule.
+
+For questions such as "SW1 có bao nhiêu lịch hẹn", match an identifier like `SW1` against
+`SWITCH.switch_id`; do not mistake it for a switch name. For "lịch hôm nay", list active, enabled
+schedule records ordered by `run_time`. The database stores a time of day, not a calendar date, so
+explain that the data cannot distinguish schedules for today from schedules for another day.
 
 ### F. Control history
 
@@ -336,10 +346,11 @@ Read-only questions:
 - Hiển thị lịch cùng tên switch và người dùng tạo.
 - Kiểm tra action `ON`/`OFF`, `run_time`, `is_enabled` và `is_active`.
 
-Use `SCHEDULE.action` values `ON`/`OFF`; do not invent a recurrence column. The current schema has
-`run_time`, but no explicit recurrence/frequency column, so "hằng ngày" cannot be proven unless the
-stored time and application scheduler semantics are available. Creating, changing, enabling,
-disabling or deleting schedules must be done through the schedule management feature, not chat.
+Use `SCHEDULE.action` values `ON`/`OFF`; do not invent a recurrence column or a calendar date.
+The UI describes schedules as daily and stores only `run_time`; report enabled records as time-of-day
+schedules, and state that the database cannot filter a specific calendar day. Creating, changing,
+enabling, disabling or deleting schedules must be done through the schedule management feature, not
+chat.
 
 ## 8. Requests that must not be converted into a query plan
 

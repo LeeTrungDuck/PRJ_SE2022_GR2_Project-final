@@ -15,8 +15,11 @@ import java.nio.charset.StandardCharsets;
 /** Small HTTP client responsible only for communicating with the Gemini API. */
 public class GeminiClient {
 
-    private static final String MODEL = "gemini-3.5-flash-lite";
-    private static final String API_KEY = "AQ.Ab8RN6Jcx0Fl2aW6oZb-BdXFHsgpqLBowkOyg0kydQazaIiB3g";
+    private static final String DEFAULT_MODEL = "gemini-2.5-flash-lite";
+    private static final String API_KEY_ENV = "SMARTSWITCH_GEMINI_API_KEY";
+    private static final String API_KEY_PROPERTY = "smartswitch.gemini.api.key";
+    private static final String MODEL_ENV = "SMARTSWITCH_GEMINI_MODEL";
+    private static final String MODEL_PROPERTY = "smartswitch.gemini.model";
     private static final int CONNECT_TIMEOUT_MS = 5000;
     private static final int READ_TIMEOUT_MS = 120000;
 
@@ -26,11 +29,12 @@ public class GeminiClient {
 
     public String complete(String prompt, String responseFormat) throws Exception {
         String apiKey = getApiKey();
+        String model = getModel();
         String payload = buildPayload(prompt, responseFormat);
         Exception last = null;
         for (int attempt = 0; attempt < 2; attempt++) {
             try {
-                return send(payload, apiKey);
+                return send(payload, apiKey, model);
             } catch (IllegalStateException e) {
                 last = e;
                 if (!isTemporaryFailure(e) || attempt == 1) {
@@ -43,10 +47,33 @@ public class GeminiClient {
     }
 
     private String getApiKey() {
-        return API_KEY;
+        String apiKey = System.getProperty(API_KEY_PROPERTY);
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            apiKey = System.getenv(API_KEY_ENV);
+        }
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            throw new ConfigurationException("Missing Gemini API key. Configure "
+                    + API_KEY_ENV + " or " + API_KEY_PROPERTY + ".");
+        }
+        return apiKey.trim();
     }
 
-    private String buildPayload(String prompt, String responseFormat) {
+    private String getModel() {
+        String model = System.getProperty(MODEL_PROPERTY);
+        if (model == null || model.trim().isEmpty()) {
+            model = System.getenv(MODEL_ENV);
+        }
+        if (model == null || model.trim().isEmpty()) {
+            model = DEFAULT_MODEL;
+        }
+        model = model.trim();
+        if (!model.matches("[A-Za-z0-9._-]+")) {
+            throw new ConfigurationException("Invalid Gemini model name.");
+        }
+        return model;
+    }
+
+    String buildPayload(String prompt, String responseFormat) {
         JsonObject part = new JsonObject();
         part.addProperty("text", prompt);
         JsonArray parts = new JsonArray();
@@ -62,17 +89,12 @@ public class GeminiClient {
         payload.add("contents", contents);
 
         if (responseFormat != null && !responseFormat.trim().isEmpty()) {
-            JsonObject textFormat = new JsonObject();
-            textFormat.addProperty("mimeType", "APPLICATION_JSON");
+            JsonObject generationConfig = new JsonObject();
+            generationConfig.addProperty("responseMimeType", "application/json");
             if (!"json".equalsIgnoreCase(responseFormat.trim())) {
                 JsonElement schema = JsonParser.parseString(responseFormat);
-                textFormat.add("schema", normalizeSchema(schema));
+                generationConfig.add("responseSchema", normalizeSchema(schema));
             }
-
-            JsonObject responseFormatObject = new JsonObject();
-            responseFormatObject.add("text", textFormat);
-            JsonObject generationConfig = new JsonObject();
-            generationConfig.add("responseFormat", responseFormatObject);
             payload.add("generationConfig", generationConfig);
         }
         return payload.toString();
@@ -115,9 +137,9 @@ public class GeminiClient {
         return object;
     }
 
-    private String send(String payload, String apiKey) throws Exception {
+    private String send(String payload, String apiKey, String model) throws Exception {
         String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/"
-                + MODEL + ":generateContent";
+                + model + ":generateContent";
         HttpURLConnection connection = (HttpURLConnection) URI.create(endpoint).toURL().openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -145,7 +167,7 @@ public class GeminiClient {
                 response.append(line);
             }
             if (status < 200 || status >= 300) {
-                throw new IllegalStateException("Gemini request failed with HTTP " + status + ": " + response);
+                throw new IllegalStateException("Gemini request failed with HTTP " + status + ".");
             }
             return extractText(response.toString());
         } finally {
@@ -156,12 +178,12 @@ public class GeminiClient {
     private String extractText(String json) {
         JsonObject response = JsonParser.parseString(json).getAsJsonObject();
         if (!response.has("candidates") || response.getAsJsonArray("candidates").size() == 0) {
-            throw new IllegalStateException("Gemini returned no candidates: " + json);
+            throw new IllegalStateException("Gemini returned no candidates.");
         }
 
         JsonObject candidate = response.getAsJsonArray("candidates").get(0).getAsJsonObject();
         if (!candidate.has("content") || !candidate.getAsJsonObject("content").has("parts")) {
-            throw new IllegalStateException("Gemini returned no candidate content: " + json);
+            throw new IllegalStateException("Gemini returned no candidate content.");
         }
 
         StringBuilder text = new StringBuilder();
@@ -179,14 +201,22 @@ public class GeminiClient {
             }
         }
         if (text.length() == 0) {
-            throw new IllegalStateException("Gemini returned no response text: " + json);
+            throw new IllegalStateException("Gemini returned no response text.");
         }
         return text.toString();
     }
 
     private boolean isTemporaryFailure(Exception exception) {
         String message = exception.getMessage();
-        return message != null && (message.contains("HTTP 500") || message.contains("HTTP 502")
-                || message.contains("HTTP 503"));
+        return message != null && (message.contains("HTTP 429") || message.contains("HTTP 500")
+                || message.contains("HTTP 502") || message.contains("HTTP 503")
+                || message.contains("HTTP 504"));
+    }
+
+    public static final class ConfigurationException extends IllegalStateException {
+
+        public ConfigurationException(String message) {
+            super(message);
+        }
     }
 }

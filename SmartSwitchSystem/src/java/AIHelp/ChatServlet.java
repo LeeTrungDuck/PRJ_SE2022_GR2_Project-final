@@ -67,10 +67,10 @@ public class ChatServlet extends HttpServlet {
         }
 
         AIQueryPlanTemplateResolver templates = new AIQueryPlanTemplateResolver();
-        String smallTalkAnswer = smallTalkAnswer(question);
-        if (smallTalkAnswer != null) {
+        String builtInAnswer = builtInAnswer(question);
+        if (builtInAnswer != null) {
             JsonObject result = new JsonObject();
-            result.addProperty("answer", smallTalkAnswer);
+            result.addProperty("answer", builtInAnswer);
             response.getWriter().write(result.toString());
             return;
         }
@@ -95,7 +95,7 @@ public class ChatServlet extends HttpServlet {
             List<Map<String, Object>> rows = queryDao.execute(plan, user.getUserId(), user.getRole());
             String answer;
             if (isCurrentUserProfilePlan(plan)) {
-                answer = currentUserProfileAnswer(rows);
+                answer = currentUserProfileAnswer(rows, question);
             } else if (isSpecificSwitchOnlinePlan(plan)) {
                 answer = specificSwitchOnlineAnswer(rows);
             } else if (isOnlineSwitchCountPlan(plan)) {
@@ -105,15 +105,21 @@ public class ChatServlet extends HttpServlet {
             } else if (isOnlineDeviceListPlan(plan)) {
                 answer = onlineDeviceListAnswer(rows);
             } else if (templates.isPermissionListQuestion(question)) {
-                answer = permissionListAnswer(rows);
+                answer = permissionListAnswer(rows, question);
             } else if (templates.isPermissionCountQuestion(question)) {
-                answer = permissionCountAnswer(rows);
+                answer = permissionCountAnswer(rows, question);
             } else if (isScheduleCountPlan(plan)) {
-                answer = scheduleCountAnswer(rows);
+                answer = scheduleCountAnswer(rows, question);
+            } else if (templates.isScheduleTodayQuestion(question)) {
+                answer = scheduleListAnswer(rows, question);
             } else if (templates.isSpecificPermissionQuestion(question)) {
-                answer = rows.isEmpty()
-                        ? "No. The database does not show an active permission for you on that switch."
-                        : "Yes. The database confirms that you can control that switch.";
+                answer = isVietnameseQuestion(question)
+                        ? rows.isEmpty()
+                                ? "Cơ sở dữ liệu không ghi nhận quyền điều khiển đang hoạt động của bạn trên switch đó."
+                                : "Có. Cơ sở dữ liệu xác nhận bạn có quyền điều khiển switch đó."
+                        : rows.isEmpty()
+                                ? "No. The database does not show an active permission for you on that switch."
+                                : "Yes. The database confirms that you can control that switch.";
             } else if (rows.isEmpty()) {
                 answer = emptyResultAnswer(plan);
             } else {
@@ -127,54 +133,160 @@ public class ChatServlet extends HttpServlet {
         } catch (IllegalArgumentException e) {
             log("AI query plan rejected", e);
             writeError(response, HttpServletResponse.SC_BAD_REQUEST,
-                    "I could not understand that request. Please ask about available Smart Switch data.");
+                    isVietnameseQuestion(question)
+                            ? "Tôi chưa hiểu yêu cầu. Hãy hỏi về dữ liệu Smart Switch mà bạn được phép xem."
+                            : "I could not understand that request. Please ask about available Smart Switch data.");
         } catch (SQLException e) {
             log("AI query database failure", e);
             writeError(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                    "The Smart Switch data is temporarily unavailable.");
+                    isVietnameseQuestion(question)
+                            ? "Dữ liệu Smart Switch tạm thời không khả dụng. Vui lòng thử lại sau."
+                            : "Smart Switch data is temporarily unavailable. Please try again later.");
+        } catch (GeminiClient.ConfigurationException e) {
+            log("AI assistant configuration failure", e);
+            writeError(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    isVietnameseQuestion(question)
+                            ? "Dịch vụ AI chưa được cấu hình. Vui lòng liên hệ quản trị viên."
+                            : "The AI service is not configured. Please contact an administrator.");
         } catch (Exception e) {
             log("AI assistant request failed", e);
             writeError(response, HttpServletResponse.SC_BAD_GATEWAY,
-                    "The AI assistant is temporarily unavailable. Please try again.");
+                    isVietnameseQuestion(question)
+                            ? "Trợ lý AI tạm thời không phản hồi. Vui lòng thử lại hoặc báo quản trị viên nếu lỗi tiếp diễn."
+                            : "The AI assistant is temporarily unavailable. Please retry or contact an administrator if the problem continues.");
         }
     }
 
-    private String permissionCountAnswer(List<Map<String, Object>> rows) {
+    private String permissionCountAnswer(List<Map<String, Object>> rows, String question) {
         Object value = rows.isEmpty() ? null : rows.get(0).get("total");
         int count = value instanceof Number ? ((Number) value).intValue()
                 : value == null ? 0 : Integer.parseInt(value.toString());
-        return "You can control " + count + " active switch" + (count == 1 ? "." : "es.");
+        return isVietnameseQuestion(question)
+                ? "Theo dữ liệu hiện tại, bạn có quyền điều khiển " + count + " switch đang hoạt động."
+                : "You can control " + count + " active switch" + (count == 1 ? "." : "es.");
     }
 
     private boolean isCurrentUserProfilePlan(AIQueryPlan plan) {
-        if (plan == null || plan.getTables() == null || !plan.getTables().contains("USER")
+        if (plan == null || plan.getTables() == null || plan.getTables().size() != 1
+                || !plan.getTables().contains("USER")
                 || plan.getSelect() == null) {
             return false;
         }
-        boolean hasRole = false;
-        boolean hasName = false;
         for (String expression : plan.getSelect()) {
-            if (expression == null) {
-                continue;
+            if (expression != null && expression.toUpperCase(Locale.ROOT).startsWith("USER.")) {
+                return true;
             }
-            String selected = expression.toUpperCase(Locale.ROOT);
-            hasRole |= selected.contains("USER.ROLE");
-            hasName |= selected.contains("USER.USER_NAME") || selected.contains("USER.FULL_NAME");
         }
-        return hasRole && hasName;
+        return false;
     }
 
-    private String currentUserProfileAnswer(List<Map<String, Object>> rows) {
+    private String currentUserProfileAnswer(List<Map<String, Object>> rows, String question) {
         if (rows.isEmpty()) {
-            return "I could not find your profile in the database.";
+            return isVietnameseQuestion(question)
+                    ? "Không tìm thấy hồ sơ của bạn trong cơ sở dữ liệu."
+                    : "I could not find your profile in the database.";
         }
         Map<String, Object> profile = rows.get(0);
+        String userId = resultValue(profile, "user_id");
         String fullName = resultValue(profile, "full_name");
         String userName = resultValue(profile, "user_name");
         String role = resultValue(profile, "role");
+        String email = resultValue(profile, "email");
+        String phone = resultValue(profile, "phone_number");
+        String normalizedQuestion = normalizeQuestion(question);
+        boolean asksForId = normalizedQuestion.contains("user id")
+                || normalizedQuestion.contains("user_id");
+        boolean asksForEmail = normalizedQuestion.contains("email")
+                || normalizedQuestion.contains("emal") || normalizedQuestion.contains("mail");
+        boolean asksForPhone = normalizedQuestion.contains("sdt")
+                || normalizedQuestion.contains("phone")
+                || normalizedQuestion.contains("so dien thoai");
+        boolean asksForAccount = normalizedQuestion.contains("tai khoan")
+                || normalizedQuestion.contains("account");
+        boolean asksForUsername = normalizedQuestion.contains("username")
+                || normalizedQuestion.contains("user name")
+                || normalizedQuestion.contains("ten dang nhap");
+        boolean asksForRole = normalizedQuestion.contains("vai tro")
+                || normalizedQuestion.contains("role");
+        boolean asksForActive = normalizedQuestion.contains("hoat dong")
+                || normalizedQuestion.contains("active");
+
+        if (isVietnameseQuestion(question)) {
+            List<String> details = new java.util.ArrayList<>();
+            if (asksForId) {
+                details.add("User ID: " + valueOrUnavailable(userId, true));
+            }
+            if (asksForEmail) {
+                details.add("email: " + valueOrUnavailable(email, true));
+            }
+            if (asksForPhone) {
+                details.add("số điện thoại: " + valueOrUnavailable(phone, true));
+            }
+            if (!details.isEmpty()) {
+                return "Thông tin tài khoản của bạn — " + String.join(", ", details) + ".";
+            }
+            if (asksForActive) {
+                String active = resultValue(profile, "is_active");
+                return active == null
+                        ? "Trạng thái hoạt động của tài khoản chưa có trong dữ liệu."
+                        : ("true".equalsIgnoreCase(active) || "1".equals(active))
+                                ? "Tài khoản của bạn đang hoạt động."
+                                : "Tài khoản của bạn hiện đã bị vô hiệu hóa.";
+            }
+            if (asksForAccount) {
+                return "Tài khoản của bạn — User ID: " + valueOrUnavailable(userId, true)
+                        + ", tên đăng nhập: " + valueOrUnavailable(userName, true) + ".";
+            }
+            if (asksForUsername) {
+                return "Tên đăng nhập của bạn: " + valueOrUnavailable(userName, true) + ".";
+            }
+            if (asksForRole) {
+                return "Vai trò của bạn: " + valueOrUnavailable(role, true) + ".";
+            }
+            String name = fullName == null || fullName.trim().isEmpty() ? userName : fullName;
+            if (name == null || name.trim().isEmpty()) {
+                name = "chưa có";
+            }
+            String usernamePart = userName == null || userName.trim().isEmpty()
+                    ? "" : " (tên đăng nhập: " + userName + ")";
+            return role == null || role.trim().isEmpty()
+                    ? "Tên của bạn là " + name + usernamePart + "."
+                    : "Tên của bạn là " + name + usernamePart + "; vai trò: " + role + ".";
+        }
+
         String name = fullName == null || fullName.trim().isEmpty() ? userName : fullName;
         if (name == null || name.trim().isEmpty()) {
             name = "not available";
+        }
+        if (asksForId) {
+            return "Your user ID is " + valueOrUnavailable(userId, false) + ".";
+        }
+        if (asksForEmail || asksForPhone) {
+            List<String> details = new java.util.ArrayList<>();
+            if (asksForEmail) {
+                details.add("email: " + valueOrUnavailable(email, false));
+            }
+            if (asksForPhone) {
+                details.add("phone: " + valueOrUnavailable(phone, false));
+            }
+            return "Your account details — " + String.join(", ", details) + ".";
+        }
+        if (asksForActive) {
+            String active = resultValue(profile, "is_active");
+            return active == null ? "Your account status is not available."
+                    : ("true".equalsIgnoreCase(active) || "1".equals(active))
+                            ? "Your account is active."
+                            : "Your account is inactive.";
+        }
+        if (asksForAccount) {
+            return "Your account — user ID: " + valueOrUnavailable(userId, false)
+                    + ", username: " + valueOrUnavailable(userName, false) + ".";
+        }
+        if (asksForUsername) {
+            return "Your username is " + valueOrUnavailable(userName, false) + ".";
+        }
+        if (asksForRole) {
+            return "Your role is " + valueOrUnavailable(role, false) + ".";
         }
         if (role == null || role.trim().isEmpty()) {
             return "Your name is " + name + ".";
@@ -182,6 +294,12 @@ public class ChatServlet extends HttpServlet {
         String usernamePart = userName == null || userName.trim().isEmpty()
                 ? "" : " (username: " + userName + ")";
         return "Your name is " + name + usernamePart + ", and your role is " + role + ".";
+    }
+
+    private String valueOrUnavailable(String value, boolean vietnamese) {
+        return value == null || value.trim().isEmpty()
+                ? vietnamese ? "chưa cập nhật" : "not available"
+                : value;
     }
 
     private String resultValue(Map<String, Object> row, String key) {
@@ -350,9 +468,12 @@ public class ChatServlet extends HttpServlet {
                 : value == null ? 0 : Integer.parseInt(value.toString());
     }
 
-    private String permissionListAnswer(List<Map<String, Object>> rows) {
+    private String permissionListAnswer(List<Map<String, Object>> rows, String question) {
+        boolean vietnamese = isVietnameseQuestion(question);
         if (rows.isEmpty()) {
-            return "You do not have active permission to control any active switches.";
+            return vietnamese
+                    ? "Bạn chưa được cấp quyền điều khiển switch đang hoạt động nào."
+                    : "You do not have active permission to control any active switches.";
         }
         Set<String> switches = new LinkedHashSet<>();
         for (Map<String, Object> row : rows) {
@@ -364,7 +485,9 @@ public class ChatServlet extends HttpServlet {
             }
             switches.add(label);
         }
-        return "You can control these switches: " + String.join(", ", switches) + ".";
+        return vietnamese
+                ? "Bạn có thể điều khiển các switch sau: " + String.join(", ", switches) + "."
+                : "You can control these switches: " + String.join(", ", switches) + ".";
     }
 
     private String emptyResultAnswer(AIQueryPlan plan) {
@@ -391,31 +514,108 @@ public class ChatServlet extends HttpServlet {
         return false;
     }
 
-    private String scheduleCountAnswer(List<Map<String, Object>> rows) {
+    private String scheduleCountAnswer(List<Map<String, Object>> rows, String question) {
         Object value = rows.isEmpty() ? null : rows.get(0).get("total");
         int count = value instanceof Number ? ((Number) value).intValue()
                 : value == null ? 0 : Integer.parseInt(value.toString());
-        return "Found " + count + " schedule record" + (count == 1 ? "" : "s") + " matching your query.";
+        return isVietnameseQuestion(question)
+                ? "Tìm thấy " + count + " lịch đang hoạt động phù hợp với switch được hỏi."
+                : "Found " + count + " schedule record" + (count == 1 ? "" : "s") + " matching your query.";
     }
 
-    private String smallTalkAnswer(String question) {
-        String text = Normalizer.normalize(question, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "")
-                .toLowerCase(Locale.ROOT)
-                .replaceAll("[!?.]+$", "")
-                .replaceAll("\\s+", " ")
-                .trim();
+    String builtInAnswer(String question) {
+        String text = normalizeQuestion(question);
+        boolean vietnamese = isVietnameseQuestion(question);
         if (text.matches("(hello|hi|hey|hello there|hi there|hey there|hello ai|hello assistant|"
                 + "xin chao|chao|chao ban|chao tro ly|chao ban tro ly|good morning|good afternoon|good evening)")) {
-            return "Hello! I can look up Smart Switch data, including switches, permissions, schedules, and control history.";
+            return vietnamese
+                    ? "Chào bạn! Tôi có thể tra cứu switch, quyền điều khiển, lịch hẹn giờ và lịch sử điều khiển trong Smart Switch."
+                    : "Hello! I can look up Smart Switch data, including switches, permissions, schedules, and control history.";
         }
         if (text.matches("(thanks|thank you|thank you very much|cam on|cam on ban|cam on tro ly)")) {
-            return "You're welcome. Ask me about Smart Switch switches, permissions, schedules, or control history.";
+            return vietnamese
+                    ? "Rất vui được hỗ trợ. Bạn có thể hỏi về switch, quyền điều khiển, lịch hẹn giờ hoặc lịch sử điều khiển."
+                    : "You're welcome. Ask me about Smart Switch switches, permissions, schedules, or control history.";
+        }
+        if ((text.contains("trang web") || text.contains("website") || text.contains("this site"))
+                && (text.contains("gi") || text.contains("what") || text.contains("la gi"))) {
+            return vietnamese
+                    ? "Đây là hệ thống Smart Switch dùng để theo dõi và điều khiển các switch/đèn được cấp quyền, quản lý lịch hẹn giờ và xem lịch sử. Chat AI chỉ tra cứu dữ liệu, không tự bật/tắt thiết bị."
+                    : "This is the Smart Switch system for viewing and controlling permitted switches, managing schedules, and checking control history. The AI chat is read-only and cannot turn devices on or off.";
+        }
+        if (text.contains("tao tai khoan") || text.contains("dang ky")
+                || text.contains("create account") || text.contains("sign up")) {
+            return vietnamese
+                    ? "Hệ thống không có chức năng tự đăng ký. Bạn cần nhờ quản trị viên tạo tài khoản trong mục Quản lý người dùng; sau đó đăng nhập bằng thông tin được cấp."
+                    : "Self-registration is not available. Ask an administrator to create your account in User Management, then sign in with the credentials they provide.";
+        }
+        if (text.contains("hen gio nhu the nao") || text.contains("lam sao de hen gio")
+                || text.contains("how to schedule") || text.contains("how do i schedule")
+                || text.contains("create schedule") || text.contains("tao lich")
+                || text.contains("lap lich")) {
+            return vietnamese
+                    ? "Mở mục Lịch Hẹn Giờ, chọn switch, chọn lệnh ON hoặc OFF, đặt giờ chạy và bật Enabled, rồi nhấn Add Schedule. Lịch lưu giờ trong ngày chứ không lưu một ngày cụ thể; AI chỉ hướng dẫn, không tạo lịch thay bạn."
+                    : "Open Schedules, choose a switch, select ON or OFF, set the run time, enable the schedule, and select Add Schedule. Schedules store a time of day rather than a specific date; chat can explain but cannot create one for you.";
         }
         if (text.matches("(help|what can you do|who are you|ban la ai|ban co the lam gi|tro ly nay lam duoc gi)")) {
-            return "I'm the read-only Smart Switch assistant. I can look up switches, permissions, schedules, and control history, but I cannot change data or control hardware.";
+            return vietnamese
+                    ? "Tôi là trợ lý chỉ đọc của Smart Switch. Tôi có thể tra cứu switch, quyền, lịch hẹn giờ và lịch sử; tôi không thể thay đổi dữ liệu hoặc điều khiển phần cứng."
+                    : "I'm the read-only Smart Switch assistant. I can look up switches, permissions, schedules, and control history, but I cannot change data or control hardware.";
         }
         return null;
+    }
+
+    private String scheduleListAnswer(List<Map<String, Object>> rows, String question) {
+        boolean vietnamese = isVietnameseQuestion(question);
+        if (rows.isEmpty()) {
+            return vietnamese
+                    ? "Không có lịch nào đang hoạt động và được bật. Cơ sở dữ liệu lưu giờ trong ngày, không lưu ngày riêng để lọc chính xác lịch chỉ của hôm nay."
+                    : "There are no active, enabled schedules. The database stores a time of day, not a specific date, so it cannot filter schedules for today only.";
+        }
+        List<String> schedules = new java.util.ArrayList<>();
+        for (Map<String, Object> row : rows) {
+            String switchName = resultValue(row, "switch_name");
+            String action = resultValue(row, "action");
+            String runTime = resultValue(row, "run_time");
+            schedules.add((switchName == null ? "Switch" : switchName) + ": "
+                    + (action == null ? "?" : action) + " @ "
+                    + (runTime == null ? "unknown time" : runTime));
+        }
+        String list = String.join("; ", schedules);
+        return vietnamese
+                ? "Các lịch đang bật: " + list
+                        + ". Lưu ý: dữ liệu chỉ lưu giờ trong ngày, không lưu ngày riêng, nên không thể xác định lịch chỉ dành cho hôm nay."
+                : "Enabled schedules: " + list
+                        + ". Note: the data stores a time of day, not a specific date, so it cannot identify schedules for today only.";
+    }
+
+    private boolean isVietnameseQuestion(String question) {
+        if (question == null) {
+            return false;
+        }
+        String withoutDiacritics = Normalizer.normalize(question, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "").replace('đ', 'd').replace('Đ', 'D');
+        if (!question.equals(withoutDiacritics)) {
+            return true;
+        }
+        String text = normalizeQuestion(question);
+        return text.contains("toi") || text.contains("cua") || text.contains("lich")
+                || text.contains("hen gio") || text.contains("bao nhieu")
+                || text.contains("tai khoan") || text.contains("sdt")
+                || text.contains("huong dan") || text.contains("la gi")
+                || text.contains("hom nay") || text.contains("switch nao")
+                || text.contains("vai tro") || text.contains("ten dang nhap")
+                || text.contains("trang web") || text.contains("chao");
+    }
+
+    private String normalizeQuestion(String question) {
+        return Normalizer.normalize(question == null ? "" : question, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase(Locale.ROOT)
+                .replace('đ', 'd')
+                .replaceAll("[^a-z0-9_ ]", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 
     private UserDTO authenticatedUser(HttpServletRequest request) {

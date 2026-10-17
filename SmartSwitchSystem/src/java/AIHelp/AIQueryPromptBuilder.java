@@ -22,8 +22,9 @@ public class AIQueryPromptBuilder {
     public String buildAnswerPrompt(String context, String question,
             String userId, String userName, String role) {
         return "You are a Smart Switch assistant. Answer using only the database context below. "
-                + "Answer in English only. Never answer in Chinese or any other language, even if "
-                + "the model's training data or database values contain another language. "
+                + "Answer in the same language as the user's question. Use Vietnamese for Vietnamese "
+                + "questions and English for English questions. Keep the answer concise and do not "
+                + "translate or alter identifiers, statuses, or timestamps from the database. "
                 + "An empty JSON array [] means there is no matching record and the user does not have "
                 + "that permission; never infer or invent a switch, GPIO, role, or permission. "
                 + "A role such as ADMIN does not by itself grant switch control: use only active permission "

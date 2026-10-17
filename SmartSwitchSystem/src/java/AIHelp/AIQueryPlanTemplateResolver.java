@@ -14,6 +14,9 @@ public class AIQueryPlanTemplateResolver {
     private static final Pattern SIMPLE_SWITCH_NAME = Pattern.compile(
             "(?i)(?:den|switch|cong tac)\\s*([a-z0-9_-]+)");
 
+    private static final Pattern SWITCH_ID = Pattern.compile(
+            "(?i)\\b(SW[0-9][A-Z0-9_-]*)\\b");
+
     private static final Pattern SWITCH_NAME = Pattern.compile(
             "(?i)(?:đèn|den|switch|công tắc|cong tac)\\s*([a-z0-9_-]+(?:\\s+[a-z0-9_-]+)*?)(?=\\s+(?:co|la|su dung|dung)|$)");
 
@@ -21,7 +24,7 @@ public class AIQueryPlanTemplateResolver {
         String text = normalize(question);
         if (isCurrentUserQuestion(text)) {
             AIQueryPlan plan = plan(Arrays.asList("USER"),
-                    Arrays.asList("USER.user_name", "USER.full_name", "USER.role"), 1);
+                    currentUserProfileSelect(text), 1);
             addFilter(plan, "USER", "user_id", "=", currentUserId);
             return plan;
         }
@@ -82,8 +85,9 @@ public class AIQueryPlanTemplateResolver {
             return plan(Arrays.asList("DEVICE"), Arrays.asList("COUNT(DEVICE.device_id) AS total"), 1);
         }
         if (isScheduleCountQuestion(text)) {
-            Matcher switchName = SIMPLE_SWITCH_NAME.matcher(text);
-            if (switchName.find()) {
+            String switchId = switchIdInQuestion(text);
+            String switchName = switchId == null ? switchNameInQuestion(text) : null;
+            if (switchId != null || switchName != null) {
                 AIQueryPlan plan = plan(Arrays.asList("SCHEDULE", "SWITCH"),
                         Arrays.asList("COUNT(SCHEDULE.schedul_id) AS total"), 1);
                 AIJoin join = new AIJoin();
@@ -91,9 +95,32 @@ public class AIQueryPlanTemplateResolver {
                 join.setOn("SWITCH.switch_id=SCHEDULE.switch_id");
                 plan.getJoins().add(join);
                 addFilter(plan, "SCHEDULE", "is_active", "=", "1");
-                addFilter(plan, "SWITCH", "switch_name", "LIKE", "%" + switchName.group(1) + "%");
+                if (switchId != null) {
+                    addFilter(plan, "SWITCH", "switch_id", "=", switchId);
+                } else {
+                    addFilter(plan, "SWITCH", "switch_name", "LIKE", "%" + switchName + "%");
+                }
                 return plan;
             }
+        }
+        if (isScheduleTodayQuestion(text)) {
+            AIQueryPlan plan = plan(Arrays.asList("SCHEDULE", "SWITCH"),
+                    Arrays.asList("SCHEDULE.schedul_id AS schedule_id", "SCHEDULE.action",
+                            "SCHEDULE.run_time", "SCHEDULE.is_enabled", "SWITCH.switch_name"), 100);
+            AIJoin join = new AIJoin();
+            join.setTable("SWITCH");
+            join.setOn("SWITCH.switch_id=SCHEDULE.switch_id");
+            plan.getJoins().add(join);
+            addFilter(plan, "SCHEDULE", "is_active", "=", "1");
+            addFilter(plan, "SCHEDULE", "is_enabled", "=", "1");
+            if (isCurrentUserScheduleQuestion(text)) {
+                addFilter(plan, "SCHEDULE", "user_id", "=", currentUserId);
+            }
+            AIOrderBy orderBy = new AIOrderBy();
+            orderBy.setColumn("SCHEDULE.run_time");
+            orderBy.setDirection("ASC");
+            plan.setOrderBy(orderBy);
+            return plan;
         }
         if (isPermissionQuestion(text)) {
             return permissionPlan(currentUserId, false, switchNameInQuestion(text));
@@ -177,6 +204,12 @@ public class AIQueryPlanTemplateResolver {
                 || text.contains("switch nao"));
     }
 
+    public boolean isScheduleTodayQuestion(String question) {
+        String text = normalize(question);
+        return (text.contains("lich") || text.contains("schedule"))
+                && (text.contains("hom nay") || text.contains("today"));
+    }
+
     private String switchNameInQuestion(String text) {
         Matcher matcher = SIMPLE_SWITCH_NAME.matcher(text);
         if (!matcher.find()) {
@@ -214,9 +247,62 @@ public class AIQueryPlanTemplateResolver {
     }
 
     private boolean isCurrentUserQuestion(String text) {
-        return text.contains("toi la ai") || text.contains("vai tro")
-                || text.contains("role cua toi") || text.equals("role")
-                || text.contains("vai tro cua toi");
+        boolean refersToCurrentUser = text.contains("toi") || text.contains("cua toi")
+                || text.contains("my ") || text.contains("for me");
+        boolean asksForProfile = text.contains("user id") || text.contains("user_id")
+                || text.contains("email") || text.contains("emal") || text.contains("mail")
+                || text.contains("sdt") || text.contains("phone") || text.contains("so dien thoai")
+                || text.contains("tai khoan") || text.contains("account")
+                || text.contains("username") || text.contains("user name")
+                || text.contains("vai tro") || text.contains("role")
+                || text.contains("ten") || text.contains("name")
+                || text.contains("dang nhap")
+                || text.contains("hoat dong") || text.contains("active");
+        return text.contains("toi la ai") || text.contains("who am i")
+                || text.equals("role") || text.equals("vai tro")
+                || (refersToCurrentUser && asksForProfile);
+    }
+
+    private List<String> currentUserProfileSelect(String text) {
+        List<String> select = new ArrayList<>();
+        boolean asksForIdentity = text.contains("toi la ai") || text.contains("who am i");
+        boolean asksForAccount = text.contains("tai khoan") || text.contains("account");
+        boolean asksForUsername = text.contains("username") || text.contains("user name")
+                || text.contains("ten dang nhap");
+        boolean asksForRole = text.contains("vai tro") || text.contains("role");
+        boolean asksForName = text.contains("ten toi") || text.contains("ten cua toi")
+                || text.contains("ten cua minh") || text.contains("ten day du")
+                || text.contains("my name") || text.contains("full name");
+
+        if (text.contains("user id") || text.contains("user_id")) {
+            select.add("USER.user_id");
+        }
+        if (text.contains("email") || text.contains("emal") || text.contains("mail")) {
+            select.add("USER.email");
+        }
+        if (text.contains("sdt") || text.contains("phone") || text.contains("so dien thoai")) {
+            select.add("USER.phone_number");
+        }
+        if (text.contains("hoat dong") || text.contains("active")) {
+            select.add("USER.is_active");
+        }
+        if (asksForAccount) {
+            select.add("USER.user_id");
+            select.add("USER.user_name");
+        } else if (asksForUsername) {
+            select.add("USER.user_name");
+        }
+        if (asksForRole || asksForIdentity) {
+            select.add("USER.role");
+        }
+        if (asksForName || asksForIdentity || select.isEmpty()) {
+            select.add("USER.full_name");
+            select.add("USER.user_name");
+            if (select.isEmpty()) {
+                select.add("USER.role");
+            }
+        }
+        return new ArrayList<>(new java.util.LinkedHashSet<>(select));
     }
 
     private boolean isPermissionQuestion(String text) {
@@ -229,9 +315,19 @@ public class AIQueryPlanTemplateResolver {
     }
 
     private boolean isScheduleCountQuestion(String text) {
-        return (text.contains("bao nhieu") || text.contains("tong so") || text.contains("so luong"))
+        return isCountQuestion(text)
                 && (text.contains("lich") || text.contains("schedule"))
-                && (text.contains("den") || text.contains("switch") || text.contains("cong tac"));
+                && (switchIdInQuestion(text) != null || switchNameInQuestion(text) != null);
+    }
+
+    private boolean isCurrentUserScheduleQuestion(String text) {
+        return text.contains("cua toi") || text.contains("my schedule")
+                || text.contains("lich cua minh") || text.contains("lich cua toi");
+    }
+
+    private String switchIdInQuestion(String text) {
+        Matcher matcher = SWITCH_ID.matcher(text);
+        return matcher.find() ? matcher.group(1).toUpperCase(Locale.ROOT) : null;
     }
 
     private boolean isSwitchCountQuestion(String text) {
