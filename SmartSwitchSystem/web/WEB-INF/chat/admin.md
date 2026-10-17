@@ -1,0 +1,3 @@
+## User Management | USER_MANAGER
+Keywords: admin user account create role lock delete tai khoan nguoi dung them khoa xoa.
+Only Admin can use User Management. Add User requires a valid unique username, full name, password of at least 8 characters, role ADMIN/OPERATOR/VIEWER, valid email and a 10-digit phone number. New and reset passwords are hashed. Account deactivation is a soft delete that also revokes device permissions and retains history. Re-enabling an account does not automatically restore revoked permissions. You cannot disable/delete/change the role of your currently signed-in account here. The backend also protects the last active Admin. The assistant cannot create accounts, reset passwords or change roles.

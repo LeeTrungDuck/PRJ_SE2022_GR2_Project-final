@@ -36,7 +36,7 @@ public final class ManagementControllerTest {
             return zero(m.getReturnType());
         });
         final HttpServletResponse response=proxy(HttpServletResponse.class,(o,m,a)-> {
-            switch(m.getName()) { case "sendError":status=(Integer)a[0];return null;case "sendRedirect":status=302;location=(String)a[0];return null;case "setStatus":status=(Integer)a[0];return null;case "setHeader":if("Location".equals(a[0]))location=(String)a[1];return null;case "encodeRedirectURL":return a[0]; }
+            switch(m.getName()) { case "sendError":status=(Integer)a[0];return null;case "sendRedirect":status=302;location=(String)a[0];return null;case "setStatus":status=(Integer)a[0];return null;case "getStatus":return status;case "setHeader":if("Location".equals(a[0]))location=(String)a[1];return null;case "encodeRedirectURL":return a[0]; }
             return zero(m.getReturnType());
         });
         void reset(String method,String... fields) { this.method=method;params=fields(fields);status=200;forwards=0;forward=null;location=null;attrs.clear(); }

@@ -28,6 +28,7 @@ public class URLMap {
         urlMap.put("SCHEDULE_MANAGER", "/ScheduleManagementController");
         urlMap.put("CONTROL_HISTORY", "/ControlHistoryController");
         urlMap.put("CHANGE_SWITCH_STAGE", "/SwitchStageController");
+        urlMap.put("CHAT", "/ChatController");
 
     }
 

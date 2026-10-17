@@ -38,6 +38,10 @@ public class LoginController extends HttpServlet {
             HttpSession previousSession = request.getSession(false);
             if ("POST".equals(request.getMethod()) && previousSession != null) {
                 previousSession.removeAttribute("LOGIN_USER");
+                for (String attribute : new String[]{"CHAT_OWNER", "CHAT_HISTORY", "CHAT_CSRF", "CHAT_REQUEST_IDS",
+                        "CHAT_BUSY", "CHAT_LAST_SENT", "CHAT_WINDOW", "CHAT_COUNT", "CHAT_LAST_REQUEST", "CHAT_FEEDBACK", "CHAT_DATA_SCOPE"}) {
+                    previousSession.removeAttribute(attribute);
+                }
             }
             String submittedName = request.getParameter("userName");
             String userName = submittedName == null ? "" : submittedName.trim();

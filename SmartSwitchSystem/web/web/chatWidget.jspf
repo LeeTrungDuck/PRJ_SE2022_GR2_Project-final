@@ -1,0 +1,18 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:if test="${not empty sessionScope.LOGIN_USER}">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/chat.css?v=20261016-chat-enter">
+    <details class="chat-widget">
+        <summary class="chat-launcher" title="Open or close AI assistant">
+            <svg class="chat-open-icon" viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M12 3v3m-1-3h2M5 8h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4l-3 3-3-3H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"/>
+                <path d="M8 12v2m8-2v2m-7 3h6"/>
+            </svg>
+            <svg class="chat-close-icon" viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+            <span class="chat-sr-only">Open or close AI assistant</span>
+        </summary>
+        <div class="chat-panel">
+            <iframe src="${pageContext.request.contextPath}/MainController?action=CHAT"
+                    title="SmartSwitch AI assistant conversation" loading="lazy" referrerpolicy="same-origin"></iframe>
+        </div>
+    </details>
+</c:if>
