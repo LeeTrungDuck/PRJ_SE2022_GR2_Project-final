@@ -8,6 +8,7 @@ import utills.DBConnection;
 import utills.PasswordUtil;
 
 public class UserDAO implements AutoCloseable {
+
     private final Connection connection;
     private final String SELECT = "SELECT user_id, user_name, password, full_name, role, is_active, email, phone_number FROM tblUser";
 
@@ -33,9 +34,9 @@ public class UserDAO implements AutoCloseable {
     }
 
     private UserDTO one(String column, String value) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE " + column + " = ?")) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE " + column + " = ?")) {
             ps.setString(1, value);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? map(rs) : null;
             }
         }
@@ -51,16 +52,16 @@ public class UserDAO implements AutoCloseable {
 
     public List<UserDTO> findAll() throws SQLException {
         List<UserDTO> users = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT_PROFILE + " ORDER BY user_id");
-                ResultSet rs = ps.executeQuery()) {
-            while (rs.next())
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT_PROFILE + " ORDER BY user_id");  ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
                 users.add(map(rs, false));
+            }
         }
         return users;
     }
 
     public boolean insert(UserDTO user) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(
+        try ( PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO tblUser(user_id,user_name,password,full_name,role,is_active,email,phone_number) VALUES(?,?,?,?,?,?,?,?)")) {
             ps.setString(1, user.getUserId());
             ps.setString(2, user.getUserName());
@@ -91,7 +92,7 @@ public class UserDAO implements AutoCloseable {
     }
 
     public boolean resetPassword(String id, String hash) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement("UPDATE tblUser SET password=? WHERE user_id=?")) {
+        try ( PreparedStatement ps = connection.prepareStatement("UPDATE tblUser SET password=? WHERE user_id=?")) {
             ps.setString(1, hash);
             ps.setString(2, id);
             return ps.executeUpdate() == 1;
@@ -99,12 +100,14 @@ public class UserDAO implements AutoCloseable {
     }
 
     /**
-     * Soft deletion preserves FK references/history and revokes Viewer permissions.
+     * Soft deletion preserves FK references/history and revokes Viewer
+     * permissions.
      */
     public boolean delete(String id) throws SQLException {
         UserDTO user = findById(id);
-        if (user == null)
+        if (user == null) {
             return false;
+        }
         user.setActive(false);
         return managedChange(user, "DELETE");
     }
@@ -119,19 +122,20 @@ public class UserDAO implements AutoCloseable {
             // the last Admin.
             int admins = 0;
             boolean targetAdmin = false;
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT user_id FROM tblUser WITH (UPDLOCK,HOLDLOCK) WHERE role='ADMIN' AND is_active=1");
-                    ResultSet rs = ps.executeQuery()) {
+            try ( PreparedStatement ps = connection.prepareStatement(
+                    "SELECT user_id FROM tblUser WITH (UPDLOCK,HOLDLOCK) WHERE role='ADMIN' AND is_active=1");  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     admins++;
-                    if (user.getUserId().equals(rs.getString("user_id")))
+                    if (user.getUserId().equals(rs.getString("user_id"))) {
                         targetAdmin = true;
+                    }
                 }
             }
             boolean deactivating = deleting || (active || all) && !user.isActive();
             boolean demoting = (role || details || all) && user.getRole() != Role.ADMIN;
-            if (targetAdmin && admins <= 1 && (deactivating || demoting))
+            if (targetAdmin && admins <= 1 && (deactivating || demoting)) {
                 throw new IllegalArgumentException("The last active Admin cannot be disabled, deleted or assigned another role.");
+            }
             boolean changed;
             String sql = deleting ? "UPDATE tblUser SET is_active=0 WHERE user_id=?"
                     : role ? "UPDATE tblUser SET role=? WHERE user_id=?"
@@ -139,10 +143,10 @@ public class UserDAO implements AutoCloseable {
                                     : details
                                             ? "UPDATE tblUser SET full_name=?,role=?,email=?,phone_number=? WHERE user_id=?"
                                             : "UPDATE tblUser SET user_name=?,password=?,full_name=?,role=?,is_active=?,email=?,phone_number=? WHERE user_id=?";
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                if (deleting)
+            try ( PreparedStatement ps = connection.prepareStatement(sql)) {
+                if (deleting) {
                     ps.setString(1, user.getUserId());
-                else if (role) {
+                } else if (role) {
                     ps.setString(1, user.getRole().name());
                     ps.setString(2, user.getUserId());
                 } else if (active) {
@@ -167,7 +171,7 @@ public class UserDAO implements AutoCloseable {
                 changed = ps.executeUpdate() == 1;
             }
             if (changed && (deactivating || (all || role || details) && user.getRole() != Role.VIEWER)) {
-                try (PreparedStatement ps = connection
+                try ( PreparedStatement ps = connection
                         .prepareStatement("UPDATE tblDevice_Permission SET is_active=0 WHERE user_id=?")) {
                     ps.setString(1, user.getUserId());
                     ps.executeUpdate();
@@ -184,7 +188,7 @@ public class UserDAO implements AutoCloseable {
     }
 
     public boolean updateProfile(String id, String name, String email, String phone) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(
+        try ( PreparedStatement ps = connection.prepareStatement(
                 "UPDATE tblUser SET full_name=?,email=?,phone_number=? WHERE user_id=? AND is_active=1")) {
             ps.setString(1, name);
             ps.setString(2, email);
@@ -195,7 +199,7 @@ public class UserDAO implements AutoCloseable {
     }
 
     public boolean updatePassword(String id, String oldHash, String newHash) throws SQLException {
-        try (PreparedStatement ps = connection
+        try ( PreparedStatement ps = connection
                 .prepareStatement("UPDATE tblUser SET password=? WHERE user_id=? AND password=? AND is_active=1")) {
             ps.setString(1, newHash);
             ps.setString(2, id);
@@ -205,8 +209,8 @@ public class UserDAO implements AutoCloseable {
     }
 
     /**
-     * Verifies credentials; the controller must check isActive before creating a
-     * login session.
+     * Verifies credentials; the controller must check isActive before creating
+     * a login session.
      */
     public UserDTO checkLogin(String name, String password) throws SQLException {
         UserDTO user = findByUserName(name);
@@ -217,4 +221,5 @@ public class UserDAO implements AutoCloseable {
     public void close() throws SQLException {
         connection.close();
     }
+
 }

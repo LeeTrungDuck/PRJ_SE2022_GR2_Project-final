@@ -195,4 +195,7 @@ public class SwitchDAO implements AutoCloseable {
     public void close() throws SQLException {
         connection.close();
     }
+
+    // switchid, devie id( esp id), switch name, GPIO pin, stauts và trạng thái
+    // active
 }

@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "description": "Read-only Smart Switch query plan. For a current-user identity question, select USER.full_name, USER.user_name, and USER.role; the authenticated user id is supplied by the server. ONLINE/OFFLINE/ERROR is a DEVICE.status, while SWITCH.status is ON/OFF. To check whether a named switch is online, join SWITCH to DEVICE, select SWITCH.switch_name, DEVICE.name, DEVICE.status, and filter SWITCH.switch_name with LIKE; do not filter DEVICE.status so OFFLINE can also be reported. To list online switches, join DEVICE to SWITCH, select SWITCH.switch_name and DEVICE.name, and filter DEVICE.status = ONLINE plus both active flags. To count active switches connected to online devices, count SWITCH.switch_id after joining DEVICE to SWITCH and filtering DEVICE.status = ONLINE, DEVICE.is_active = 1, and SWITCH.is_active = 1. For online ESP32 lists, use DEVICE and select DEVICE.name, DEVICE.host_name, DEVICE.status, filtering DEVICE.status = ONLINE and DEVICE.is_active = 1. For a schedule list or count for a named switch, use SCHEDULE joined to SWITCH on SWITCH.switch_id=SCHEDULE.switch_id; filter SWITCH.switch_name with LIKE and SCHEDULE.is_active = 1. For a list, select SCHEDULE.schedul_id, SCHEDULE.action, SCHEDULE.run_time, SCHEDULE.is_enabled, SCHEDULE.is_active, and SWITCH.switch_name. For a count, select COUNT(SCHEDULE.schedul_id) AS total.",
+  "required": ["tables", "select", "joins", "filters", "limit"],
+  "properties": {
+    "tables": {
+      "description": "For questions about schedule appointments, use SCHEDULE. When the question identifies a switch by name (such as lamp 1), also use SWITCH.",
+      "type": "array",
+      "items": { "type": "string", "enum": ["USER", "DEVICE", "SWITCH", "PERMISSION", "SCHEDULE", "HISTORY"] }
+    },
+    "select": {
+      "description": "For schedule lists, select SCHEDULE.schedul_id, SCHEDULE.action, SCHEDULE.run_time, SCHEDULE.is_enabled, SCHEDULE.is_active, and SWITCH.switch_name. For schedule counts, select COUNT(SCHEDULE.schedul_id) AS total.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "joins": {
+      "description": "When SCHEDULE and SWITCH are both requested, join SWITCH with on = SWITCH.switch_id=SCHEDULE.switch_id.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["table", "on"],
+        "properties": { "table": { "type": "string" }, "on": { "type": "string" } }
+      }
+    },
+    "filters": {
+      "description": "For a named switch schedule query, filter SWITCH.switch_name using LIKE with the identifying switch name, and filter SCHEDULE.is_active = 1. Do not use the schedule's switch_id as the display name.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["table", "column", "operator", "value"],
+        "properties": {
+          "table": { "type": "string" },
+          "column": { "type": "string" },
+          "operator": { "type": "string" },
+          "value": { "type": ["string", "number", "boolean"] },
+          "secondValue": { "type": ["string", "number", "boolean", "null"] }
+        }
+      }
+    },
+    "groupBy": { "type": "array", "items": { "type": "string" } },
+    "orderBy": { "type": ["object", "null"] },
+    "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+  }
+}

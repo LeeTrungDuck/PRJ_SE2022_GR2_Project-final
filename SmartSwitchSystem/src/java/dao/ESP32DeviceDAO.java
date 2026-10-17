@@ -19,6 +19,7 @@ import utills.DBConnection;
  * @author ADMIN
  */
 public class ESP32DeviceDAO implements AutoCloseable {
+
     private final Connection connection;
 
     private static final String SELECT = "SELECT device_id, name, host_name, status, is_active FROM tblESP32_Device";
@@ -46,9 +47,9 @@ public class ESP32DeviceDAO implements AutoCloseable {
     }
 
     public ESP32DeviceDTO findById(String deviceId) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE device_id = ? AND is_active = 1")) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE device_id = ? AND is_active = 1")) {
             ps.setString(1, deviceId);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? map(rs) : null;
             }
         }
@@ -56,7 +57,7 @@ public class ESP32DeviceDAO implements AutoCloseable {
 
     public List<ESP32DeviceDTO> findAll() throws SQLException {
         List<ESP32DeviceDTO> list = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE is_active = 1"); ResultSet rs = ps.executeQuery()) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " WHERE is_active = 1");  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(map(rs));
             }
@@ -66,8 +67,7 @@ public class ESP32DeviceDAO implements AutoCloseable {
 
     public List<ESP32DeviceDTO> findAllForManagement() throws SQLException {
         List<ESP32DeviceDTO> list = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT + " ORDER BY device_id");
-                ResultSet rs = ps.executeQuery()) {
+        try ( PreparedStatement ps = connection.prepareStatement(SELECT + " ORDER BY device_id");  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(map(rs));
             }
@@ -76,7 +76,7 @@ public class ESP32DeviceDAO implements AutoCloseable {
     }
 
     public boolean insert(ESP32DeviceDTO device) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(INSERT)) {
+        try ( PreparedStatement ps = connection.prepareStatement(INSERT)) {
             ps.setString(1, device.getDeviceId());
             ps.setString(2, device.getName());
             ps.setString(3, device.getHostName());
@@ -87,7 +87,7 @@ public class ESP32DeviceDAO implements AutoCloseable {
     }
 
     public boolean update(ESP32DeviceDTO device) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(UPDATE_DETAILS)) {
+        try ( PreparedStatement ps = connection.prepareStatement(UPDATE_DETAILS)) {
             ps.setString(1, device.getName());
             ps.setString(2, device.getHostName());
             ps.setString(3, device.getDeviceId());
@@ -96,14 +96,14 @@ public class ESP32DeviceDAO implements AutoCloseable {
     }
 
     public boolean delete(String deviceId) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(DELETE)) {
+        try ( PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setString(1, deviceId);
             return ps.executeUpdate() > 0;
         }
     }
 
     public boolean updateStatus(String deviceId, DeviceStatus status) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement(UPDATE_STATUS)) {
+        try ( PreparedStatement ps = connection.prepareStatement(UPDATE_STATUS)) {
             ps.setString(1, status.name());
             ps.setString(2, deviceId);
             return ps.executeUpdate() > 0;
@@ -114,4 +114,6 @@ public class ESP32DeviceDAO implements AutoCloseable {
     public void close() throws SQLException {
         connection.close();
     }
+
+    //id, name, status và trạng thái active
 }

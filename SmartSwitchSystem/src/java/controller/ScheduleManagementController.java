@@ -56,7 +56,7 @@ public class ScheduleManagementController extends HttpServlet {
             return;
         }
 
-        try ( UserDAO users = new UserDAO()) {
+        try (UserDAO users = new UserDAO()) {
             UserDTO actor = users.findById(login.getUserId());
             if (actor == null || !actor.isActive()) {
                 session.invalidate();
@@ -172,7 +172,7 @@ public class ScheduleManagementController extends HttpServlet {
         String query = input(request, "q", 100).toLowerCase(Locale.ROOT);
         List<ScheduleDTO> schedules;
         List<SwitchDTO> switches;
-        try ( ScheduleDAO scheduleDao = new ScheduleDAO();  SwitchDAO switchDao = new SwitchDAO()) {
+        try (ScheduleDAO scheduleDao = new ScheduleDAO(); SwitchDAO switchDao = new SwitchDAO()) {
             boolean canManageAll = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
             switches = canManageAll ? switchDao.findAll()
                     : switchDao.getPermittedSwitchesForUser(actor.getUserId());
@@ -210,7 +210,8 @@ public class ScheduleManagementController extends HttpServlet {
         boolean canManageAll = actor.getRole() == Role.ADMIN || actor.getRole() == Role.OPERATOR;
         require(canManageAll || actor.getRole() == Role.VIEWER,
                 "You do not have permission to manage schedules.");
-        try ( ScheduleDAO scheduleDao = new ScheduleDAO();  SwitchDAO switchDao = new SwitchDAO();
+        try (ScheduleDAO scheduleDao = new ScheduleDAO();
+                SwitchDAO switchDao = new SwitchDAO();
                 DevicePermissionDAO permissionDao = new DevicePermissionDAO()) {
             if ("addSchedule".equals(operation)) {
                 String switchId = required(request, "switchId", 20, "switch");
